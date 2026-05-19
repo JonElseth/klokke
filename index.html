@@ -327,7 +327,7 @@
             50% { transform: translateY(4px); }
         }
 
-        /* --- SENSASJONELL NY SIDE-SKROLL-PIL (HØYRE) --- */
+        /* --- INTERAKTIV HINT-KNAPP (HØYRE) --- */
         #side-scroll-hint {
             position: fixed;
             bottom: 35px;
@@ -342,7 +342,11 @@
             box-shadow: 0 8px 25px rgba(0,0,0,0.25);
             z-index: 999;
             transition: opacity 0.4s ease, transform 0.4s ease;
-            pointer-events: none; /* Gjør at den ikke blokkerer sveipingen bak seg */
+            cursor: pointer;
+            
+            /* VIKTIG: ÅPNER FOR TRYKK PÅ SELVE KNAPPEN */
+            pointer-events: auto !important; 
+            
             animation: bounceHoriz 2s infinite;
         }
 
@@ -377,8 +381,8 @@
             </div>
     </div>
 
-    <div id="side-scroll-hint">
-        <span>Se dager fremover</span>
+    <div id="side-scroll-hint" onclick="scrollCalendarForward()">
+        <span>Skyv på skjermen for å se dager fremover</span>
         <span class="side-arrow-icon">→</span>
     </div>
 
@@ -396,14 +400,23 @@
         const scrollContainer = document.getElementById('scroll-container');
         const sideHint = document.getElementById('side-scroll-hint');
 
-        // STYRER SIDE-PILEN BASERT PÅ HVOR DE HAR SKROLLET
+        // FUNKSJON SOM TRIGGES NÅR DE TRYKKER PÅ KNAPPEN
+        function scrollCalendarForward() {
+            resetReturnTimer();
+            // Ruller kalenderbåndet fremover med 3 fulle kortbredder for et skikkelig "hopp" frem i tid
+            const cardWidth = document.querySelector('.day-card').clientWidth;
+            scrollContainer.scrollBy({ left: cardWidth * 3, behavior: 'smooth' });
+        }
+
         function handleSideHintVisibility() {
             if (scrollContainer.scrollLeft > 50) {
-                sideHint.style.opacity = '0'; // Skjul pilen hvis de har bladd mot høyre
+                sideHint.style.opacity = '0'; 
                 sideHint.style.transform = 'scale(0.9) translateX(10px)';
+                sideHint.style.pointerEvents = 'none'; // Deaktiverer knappen når den er skjult
             } else {
-                sideHint.style.opacity = '1'; // Vis pilen igjen hvis de er helt på startposisjonen
+                sideHint.style.opacity = '1'; 
                 sideHint.style.transform = 'scale(1) translateX(0)';
+                sideHint.style.pointerEvents = 'auto'; // Aktiverer knappen igjen på startposisjon
             }
         }
 
@@ -418,7 +431,6 @@
             }, 180000);
         }
 
-        // Lyttere for å fange opp skrolling og berøring
         scrollContainer.addEventListener('touchstart', resetReturnTimer);
         scrollContainer.addEventListener('touchmove', resetReturnTimer);
         scrollContainer.addEventListener('mousemove', resetReturnTimer);
