@@ -25,7 +25,7 @@
             overflow: hidden;
             transition: background 1.5s ease, color 1.5s ease;
             
-            /* SPERRE FOR BERØRING PÅ BAKGRUNN */
+            /* SPERRE FOR BERØRING PÅ REN BAKGRUNN */
             pointer-events: none; 
             user-select: none;
         }
@@ -201,7 +201,7 @@
             scroll-behavior: smooth; 
             position: relative;
             
-            /* ÅPNER KUN BERØRING FOR KALENDERSEKSJONEN */
+            /* SIKRER AT FINGRE KAN RØRE HELE KALENDER-OMRÅDET */
             pointer-events: auto !important; 
             scrollbar-width: none; 
         }
@@ -343,10 +343,7 @@
             z-index: 999;
             transition: opacity 0.4s ease, transform 0.4s ease;
             cursor: pointer;
-            
-            /* VIKTIG: ÅPNER FOR TRYKK PÅ SELVE KNAPPEN */
             pointer-events: auto !important; 
-            
             animation: bounceHoriz 2s infinite;
         }
 
@@ -400,10 +397,8 @@
         const scrollContainer = document.getElementById('scroll-container');
         const sideHint = document.getElementById('side-scroll-hint');
 
-        // FUNKSJON SOM TRIGGES NÅR DE TRYKKER PÅ KNAPPEN
         function scrollCalendarForward() {
             resetReturnTimer();
-            // Ruller kalenderbåndet fremover med 3 fulle kortbredder for et skikkelig "hopp" frem i tid
             const cardWidth = document.querySelector('.day-card').clientWidth;
             scrollContainer.scrollBy({ left: cardWidth * 3, behavior: 'smooth' });
         }
@@ -412,11 +407,11 @@
             if (scrollContainer.scrollLeft > 50) {
                 sideHint.style.opacity = '0'; 
                 sideHint.style.transform = 'scale(0.9) translateX(10px)';
-                sideHint.style.pointerEvents = 'none'; // Deaktiverer knappen når den er skjult
+                sideHint.style.pointerEvents = 'none'; 
             } else {
                 sideHint.style.opacity = '1'; 
                 sideHint.style.transform = 'scale(1) translateX(0)';
-                sideHint.style.pointerEvents = 'auto'; // Aktiverer knappen igjen på startposisjon
+                sideHint.style.pointerEvents = 'auto'; 
             }
         }
 
