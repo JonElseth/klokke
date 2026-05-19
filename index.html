@@ -40,19 +40,17 @@
             border: 3px solid #ffffff;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
         }
-        /* Standard aktive kort med avtaler */
         .day-mode .day-card {
             background: rgba(255, 255, 255, 0.85);
             border: 2px solid #ffffff;
             box-shadow: 0 4px 10px rgba(0,0,0,0.03);
-            opacity: 1;
         }
-        /* EKSTREMT DIMMET KORT UTEN PLANER */
-        .day-mode .day-card.empty-day {
-            background: rgba(255, 255, 255, 0.25);
-            border: 2px solid rgba(255, 255, 255, 0.2);
+        /* Tomme faste kort (I går/I dag) får en litt mer dempet stil enn de aktive */
+        .day-mode .day-card.empty-fixed {
+            background: rgba(255, 255, 255, 0.4);
+            border: 2px solid rgba(255, 255, 255, 0.4);
             box-shadow: none;
-            opacity: 0.45; /* Gjøres veldig gjennomsiktig */
+            opacity: 0.7;
         }
         .day-mode .yesterday-card {
             background: rgba(220, 225, 230, 0.6);
@@ -62,10 +60,10 @@
             background: #ffffff;
             border: 5px solid #0066cc; 
             box-shadow: 0 10px 25px rgba(0, 102, 204, 0.2);
-            opacity: 1 !important; /* I dag er aldri dimmet */
+            opacity: 1 !important;
         }
         .day-mode .event-item { background: #f2f2f7; border: 1px solid #d1d1d6; }
-        .day-mode .no-events { color: #555555; }
+        .day-mode .no-events { color: #666666; }
         .day-mode .scroll-indicator { color: #0066cc; background: rgba(255,255,255,0.9); }
 
         .night-mode { 
@@ -80,14 +78,12 @@
         .night-mode .day-card {
             background: rgba(44, 44, 46, 0.85);
             border: 2px solid rgba(255, 255, 255, 0.1);
-            opacity: 1;
         }
-        /* EKSTREMT DIMMET KORT UTEN PLANER (NATTMODUS) */
-        .night-mode .day-card.empty-day {
-            background: rgba(20, 20, 22, 0.25);
-            border: 2px solid rgba(255, 255, 255, 0.03);
+        .night-mode .day-card.empty-fixed {
+            background: rgba(28, 28, 30, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.02);
             box-shadow: none;
-            opacity: 0.3;
+            opacity: 0.6;
         }
         .night-mode .yesterday-card {
             background: rgba(28, 28, 30, 0.5);
@@ -490,21 +486,29 @@
                     });
                 }
 
+                // RADIKAL DESIGN-OPPDATERING: 
+                // Hvis det ikke er noen planer, og det er en fremtidig dag (ikke i går eller i dag), HOPPER VI OVER HELE DAGEN!
+                if (!hasValidEvents && !isYesterday && !isToday) {
+                    continue; 
+                }
+
                 if (!hasValidEvents) {
                     eventsHtml += '<li class="no-events">Ingen planer</li>';
                 }
 
                 const card = document.createElement('div');
                 
-                // SMARTE KLASSER: Hvis dagen ikke har avtaler (og ikke er i dag), får den klassen 'empty-day'
                 if (isYesterday) {
                     card.className = 'day-card yesterday-card';
                 } else if (isToday) {
                     card.className = 'day-card today-card';
-                } else if (!hasValidEvents) {
-                    card.className = 'day-card empty-day'; // Slukker lyset for tomme dager!
                 } else {
                     card.className = 'day-card';
+                }
+                
+                // Hvis i går eller i dag er tomme, gir vi dem en litt mer dempet stil for ryddighet
+                if (!hasValidEvents && (isYesterday || isToday)) {
+                    card.classList.add('empty-fixed');
                 }
                 
                 let dayName = ukeDager[currentDay.getDay()];
