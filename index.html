@@ -218,12 +218,13 @@
             height: 100%; 
         }
 
-        /* NÅ SATT TIL Å DELE PÅ 4 SYNLIGE KORT I STEDET FOR 7 */
+        /* NY BREDDE-FORMEL: 
+           Deler på 4.5 slik at det akkurat blir plass til 4 hele kort, pluss HALVE det 5. kortet! */
         .day-card {
-            width: calc((1400px - (3 * 15px)) / 4); 
+            width: calc((1400px - (4 * 15px)) / 4.5); 
             flex-shrink: 0; 
             border-radius: 8px; 
-            padding: 18px 15px; /* Litt mer innvendig luft siden kortene er brede */
+            padding: 18px 15px; 
             height: 100%; 
             display: flex;
             flex-direction: column;
@@ -233,12 +234,12 @@
 
         @media (max-width: 1400px) {
             .day-card {
-                width: calc((100vw - 40px - (3 * 15px)) / 4); 
+                width: calc((100vw - 40px - (4 * 15px)) / 4.5); 
             }
         }
 
         .day-name {
-            font-size: 1.8vw; /* Justert litt opp siden kortet har mye bedre plass */
+            font-size: 1.6vw; 
             font-weight: 800;
             text-align: center;
             padding-bottom: 12px;
@@ -261,7 +262,7 @@
         }
 
         .event-list {
-            font-size: 1.4vw; /* Økt skriftstørrelsen på avtalene for bedre lesbarhet! */
+            font-size: 1.3vw; 
             list-style: none;
             overflow-y: auto; 
             scroll-behavior: smooth;
@@ -290,7 +291,7 @@
         .event-time {
             font-weight: 800;
             display: block;
-            font-size: 1.3vw;
+            font-size: 1.2vw;
             margin-bottom: 4px;
             color: #cc4400; 
         }
@@ -301,7 +302,7 @@
         
         .no-events {
             text-align: center;
-            font-size: 1.5vw;
+            font-size: 1.4vw;
             margin-top: 50px;
             font-weight: 700;
             letter-spacing: -0.2px;
@@ -541,7 +542,7 @@
                     <div class="day-name">${dayName}</div>
                     <div class="event-list-wrapper">
                         <ul class="event-list" id="list-${dayString}">${eventsHtml}</ul>
-                        <div class="scroll-indicator" id="arrow-${dayString}">↓</div>
+                        <div class="scroll-indicator" id="arrow-${dayString}"></div>
                     </div>
                 `;
                 
