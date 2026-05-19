@@ -25,7 +25,7 @@
             overflow: hidden;
             transition: background 1.5s ease, color 1.5s ease;
             
-            /* SPERRE FOR BERØRING PÅ REN BAKGRUNN */
+            /* SPERRE FOR BERØRING PÅ BAKGRUNN */
             pointer-events: none; 
             user-select: none;
         }
@@ -201,9 +201,12 @@
             scroll-behavior: smooth; 
             position: relative;
             
-            /* SIKRER AT FINGRE KAN RØRE HELE KALENDER-OMRÅDET */
+            /* SIKRER AT FINGRE KAN RØRE KALENDEREN */
             pointer-events: auto !important; 
             scrollbar-width: none; 
+            
+            /* DEAKTIVERER STANDARD NETTLESER-SVEIP FOR Å UNNGÅ KRASJ MED ANDROID-SYSTEMET */
+            touch-action: pan-x; 
         }
         .calendar-section::-webkit-scrollbar {
             display: none;
@@ -255,6 +258,7 @@
             overflow: hidden;
             display: flex;
             flex-direction: column;
+            pointer-events: auto !important; /* Åpner berøring for listeboksen */
         }
 
         .event-list {
@@ -265,6 +269,9 @@
             flex-grow: 1;
             padding-bottom: 25px; 
             scrollbar-width: none; 
+            
+            /* FORTALER ANDROID AT DETTE SPESIFIKKE OMRÅDET KUN SKAL RULLE OPP/NED */
+            touch-action: pan-y; 
         }
         .event-list::-webkit-scrollbar {
             display: none;
@@ -426,6 +433,7 @@
             }, 180000);
         }
 
+        // Globale lyttere som fanger opp berøring
         scrollContainer.addEventListener('touchstart', resetReturnTimer);
         scrollContainer.addEventListener('touchmove', resetReturnTimer);
         scrollContainer.addEventListener('mousemove', resetReturnTimer);
@@ -607,12 +615,17 @@
                 const listEl = card.querySelector('.event-list');
                 const indicatorEl = card.querySelector('.scroll-indicator');
 
+                // STOPPER SIDEVEIS SVEIPING FRA Å OVERTA HVIS MAN DRAR RETT OPP/NED INNI EN BOKS
+                listEl.addEventListener('touchmove', (e) => {
+                    e.stopPropagation(); 
+                    resetReturnTimer();
+                }, { passive: true });
+
                 listEl.addEventListener('scroll', () => {
                     updateScrollIndicators(listEl, indicatorEl);
                     resetReturnTimer();
                 });
                 listEl.addEventListener('touchstart', resetReturnTimer);
-                listEl.addEventListener('touchmove', resetReturnTimer);
 
                 setTimeout(() => updateScrollIndicators(listEl, indicatorEl), 100);
             }
