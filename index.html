@@ -201,11 +201,8 @@
             scroll-behavior: smooth; 
             position: relative;
             
-            /* SIKRER AT FINGRE KAN RØRE KALENDEREN */
             pointer-events: auto !important; 
             scrollbar-width: none; 
-            
-            /* DEAKTIVERER STANDARD NETTLESER-SVEIP FOR Å UNNGÅ KRASJ MED ANDROID-SYSTEMET */
             touch-action: pan-x; 
         }
         .calendar-section::-webkit-scrollbar {
@@ -258,7 +255,7 @@
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            pointer-events: auto !important; /* Åpner berøring for listeboksen */
+            pointer-events: auto !important; 
         }
 
         .event-list {
@@ -269,8 +266,6 @@
             flex-grow: 1;
             padding-bottom: 25px; 
             scrollbar-width: none; 
-            
-            /* FORTALER ANDROID AT DETTE SPESIFIKKE OMRÅDET KUN SKAL RULLE OPP/NED */
             touch-action: pan-y; 
         }
         .event-list::-webkit-scrollbar {
@@ -311,7 +306,7 @@
             letter-spacing: -0.2px;
         }
 
-        /* --- STYLING FOR VERTIKAL BOKS-PIL (NED) --- */
+        /* --- STYLING FOR VERTIKAL BOKS-PIL (NÅ SOM AKTIV TRYKKBART IKON) --- */
         .scroll-indicator {
             position: absolute;
             bottom: 5px;
@@ -325,7 +320,12 @@
             align-items: center;
             border-radius: 50%;
             box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-            z-index: 10;
+            z-index: 99;
+            cursor: pointer;
+            
+            /* VIKTIG: Tvinger Android til å godta klikk på pilen uavhengig av listen bak */
+            pointer-events: auto !important; 
+            
             animation: bounceVert 1.5s infinite;
         }
 
@@ -410,6 +410,16 @@
             scrollContainer.scrollBy({ left: cardWidth * 3, behavior: 'smooth' });
         }
 
+        // FUNKSJON SOM RULLER EN ENKELTBOKS NEDOVER NÅR MAN KLIKKER PÅ PILA
+        function scrollBoxDownward(listId) {
+            resetReturnTimer();
+            const listEl = document.getElementById(listId);
+            if (listEl) {
+                // Ruller nedover med 120 piksler per trykk for en rolig og kontrollert flyt
+                listEl.scrollBy({ top: 120, behavior: 'smooth' });
+            }
+        }
+
         function handleSideHintVisibility() {
             if (scrollContainer.scrollLeft > 50) {
                 sideHint.style.opacity = '0'; 
@@ -433,7 +443,6 @@
             }, 180000);
         }
 
-        // Globale lyttere som fanger opp berøring
         scrollContainer.addEventListener('touchstart', resetReturnTimer);
         scrollContainer.addEventListener('touchmove', resetReturnTimer);
         scrollContainer.addEventListener('mousemove', resetReturnTimer);
@@ -602,11 +611,12 @@
                     dayName = `${dayName.toUpperCase()}<br>${dateNum}. ${monthName}`;
                 }
 
+                // OPPDATERT: Pil-indikatoren har nå fått en "onclick"-kommando som kaller på scroll-funksjonen vår!
                 card.innerHTML = `
                     <div class="day-name">${dayName}</div>
                     <div class="event-list-wrapper">
                         <ul class="event-list" id="list-${dayString}">${eventsHtml}</ul>
-                        <div class="scroll-indicator" id="arrow-${dayString}">↓</div>
+                        <div class="scroll-indicator" id="arrow-${dayString}" onclick="scrollBoxDownward('list-${dayString}')">↓</div>
                     </div>
                 `;
                 
@@ -615,7 +625,6 @@
                 const listEl = card.querySelector('.event-list');
                 const indicatorEl = card.querySelector('.scroll-indicator');
 
-                // STOPPER SIDEVEIS SVEIPING FRA Å OVERTA HVIS MAN DRAR RETT OPP/NED INNI EN BOKS
                 listEl.addEventListener('touchmove', (e) => {
                     e.stopPropagation(); 
                     resetReturnTimer();
