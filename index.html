@@ -40,14 +40,12 @@
             border: 3px solid #ffffff;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
         }
-        /* Aktive fremtidige dager med planer */
         .day-mode .day-card {
             background: rgba(255, 255, 255, 0.9);
             border: 2px solid #ffffff;
             box-shadow: 0 6px 15px rgba(0,0,0,0.05);
             opacity: 1;
         }
-        /* EKSTREMT DIMMET HVIS DAGEN ER TOM */
         .day-mode .day-card.empty-day {
             background: rgba(255, 255, 255, 0.2);
             border: 2px solid rgba(255, 255, 255, 0.15);
@@ -59,7 +57,6 @@
             border: 2px solid rgba(170, 180, 190, 0.4);
             opacity: 0.6;
         }
-        /* FARGEBOMBE FOR I DAG (DAGMODUS) */
         .day-mode .today-card {
             background: #004499 !important; 
             color: #ffffff !important;
@@ -77,7 +74,8 @@
         .day-mode .event-item { background: #f2f2f7; border: 1px solid #d1d1d6; color: #111111; }
         .day-mode .today-card .event-item { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); color: #ffffff; }
         .day-mode .no-events { color: #555555; }
-        .day-mode .scroll-indicator { color: #0066cc; background: rgba(255,255,255,0.9); }
+        .day-mode .scroll-indicator { color: #cc4400; background: rgba(255,255,255,0.95); border: 2px solid #cc4400; }
+        .day-mode #side-scroll-hint { background: #004499; color: white; }
 
         .night-mode { 
             background: linear-gradient(135deg, #0b0f19 0%, #17273a 100%); 
@@ -88,13 +86,11 @@
             border: 3px solid rgba(255, 255, 255, 0.15);
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
         }
-        /* Aktive fremtidige dager med planer (Nattmodus) */
         .night-mode .day-card {
             background: rgba(44, 44, 46, 0.85);
             border: 2px solid rgba(255, 255, 255, 0.1);
             opacity: 1;
         }
-        /* EKSTREMT DIMMET HVIS DAGEN ER TOM (NATTMODUS) */
         .night-mode .day-card.empty-day {
             background: rgba(20, 20, 22, 0.25);
             border: 2px solid rgba(255, 255, 255, 0.03);
@@ -106,7 +102,6 @@
             border: 2px solid rgba(255, 255, 255, 0.03);
             opacity: 0.5;
         }
-        /* FARGEBOMBE FOR I DAG (NATTMODUS) */
         .night-mode .today-card {
             background: #103060 !important;
             color: #ffffff !important;
@@ -124,7 +119,8 @@
         .night-mode .event-item { background: #2c2c2e; border: 1px solid #3a3a3c; color: #ffffff; }
         .night-mode .today-card .event-item { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15); color: #ffffff; }
         .night-mode .no-events { color: #8e8e93; }
-        .night-mode .scroll-indicator { color: #0a84ff; background: rgba(44,44,46,0.9); }
+        .night-mode .scroll-indicator { color: #ff9f0a; background: rgba(44,44,46,0.95); border: 2px solid #ff9f0a; }
+        .night-mode #side-scroll-hint { background: #0a84ff; color: white; }
 
         /* --- STARTKNAPPEN FOR OPPSTART --- */
         #start-overlay {
@@ -203,6 +199,7 @@
             margin-bottom: 5px;
             overflow-x: auto; 
             scroll-behavior: smooth; 
+            position: relative;
             
             /* ÅPNER KUN BERØRING FOR KALENDERSEKSJONEN */
             pointer-events: auto !important; 
@@ -216,10 +213,9 @@
             display: flex; 
             gap: 15px;
             height: 100%; 
+            padding-bottom: 10px;
         }
 
-        /* NY BREDDE-FORMEL: 
-           Deler på 4.5 slik at det akkurat blir plass til 4 hele kort, pluss HALVE det 5. kortet! */
         .day-card {
             width: calc((1400px - (4 * 15px)) / 4.5); 
             flex-shrink: 0; 
@@ -308,11 +304,12 @@
             letter-spacing: -0.2px;
         }
 
+        /* --- STYLING FOR VERTIKAL BOKS-PIL (NED) --- */
         .scroll-indicator {
             position: absolute;
             bottom: 5px;
             right: 5px;
-            font-size: 1.6vw;
+            font-size: 1.5vw;
             font-weight: 900;
             width: 32px;
             height: 32px;
@@ -320,14 +317,44 @@
             justify-content: center;
             align-items: center;
             border-radius: 50%;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
             z-index: 10;
-            animation: bounce 1.5s infinite;
+            animation: bounceVert 1.5s infinite;
         }
 
-        @keyframes bounce {
+        @keyframes bounceVert {
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(4px); }
+        }
+
+        /* --- SENSASJONELL NY SIDE-SKROLL-PIL (HØYRE) --- */
+        #side-scroll-hint {
+            position: fixed;
+            bottom: 35px;
+            right: 40px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 24px;
+            border-radius: 50px;
+            font-size: 1.3vw;
+            font-weight: 800;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+            z-index: 999;
+            transition: opacity 0.4s ease, transform 0.4s ease;
+            pointer-events: none; /* Gjør at den ikke blokkerer sveipingen bak seg */
+            animation: bounceHoriz 2s infinite;
+        }
+
+        .side-arrow-icon {
+            font-size: 1.8vw;
+            font-weight: 900;
+            line-height: 1;
+        }
+
+        @keyframes bounceHoriz {
+            0%, 100% { transform: translateX(0); }
+            50% { transform: translateX(8px); }
         }
     </style>
 </head>
@@ -350,6 +377,11 @@
             </div>
     </div>
 
+    <div id="side-scroll-hint">
+        <span>Se dager fremover</span>
+        <span class="side-arrow-icon">→</span>
+    </div>
+
     <script src="https://apis.google.com/js/api.js"></script>
     <script>
         // --- KONFIGURASJON ---
@@ -362,6 +394,18 @@
         let wakeLock = null;
         let returnTimeout = null;
         const scrollContainer = document.getElementById('scroll-container');
+        const sideHint = document.getElementById('side-scroll-hint');
+
+        // STYRER SIDE-PILEN BASERT PÅ HVOR DE HAR SKROLLET
+        function handleSideHintVisibility() {
+            if (scrollContainer.scrollLeft > 50) {
+                sideHint.style.opacity = '0'; // Skjul pilen hvis de har bladd mot høyre
+                sideHint.style.transform = 'scale(0.9) translateX(10px)';
+            } else {
+                sideHint.style.opacity = '1'; // Vis pilen igjen hvis de er helt på startposisjonen
+                sideHint.style.transform = 'scale(1) translateX(0)';
+            }
+        }
 
         function resetReturnTimer() {
             clearTimeout(returnTimeout);
@@ -374,10 +418,14 @@
             }, 180000);
         }
 
+        // Lyttere for å fange opp skrolling og berøring
         scrollContainer.addEventListener('touchstart', resetReturnTimer);
         scrollContainer.addEventListener('touchmove', resetReturnTimer);
         scrollContainer.addEventListener('mousemove', resetReturnTimer);
-        scrollContainer.addEventListener('scroll', resetReturnTimer);
+        scrollContainer.addEventListener('scroll', () => {
+            resetReturnTimer();
+            handleSideHintVisibility();
+        });
 
         async function requestWakeLock() {
             try {
@@ -406,6 +454,7 @@
             updateClockAndLayout();
             generateCalendarGrid(); 
             resetReturnTimer();
+            handleSideHintVisibility();
             
             try {
                 gapi.load('client', () => {
@@ -542,7 +591,7 @@
                     <div class="day-name">${dayName}</div>
                     <div class="event-list-wrapper">
                         <ul class="event-list" id="list-${dayString}">${eventsHtml}</ul>
-                        <div class="scroll-indicator" id="arrow-${dayString}"></div>
+                        <div class="scroll-indicator" id="arrow-${dayString}">↓</div>
                     </div>
                 `;
                 
