@@ -40,9 +40,19 @@
             border: 3px solid #ffffff;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
         }
+        /* Standard aktive kort med avtaler */
         .day-mode .day-card {
-            background: rgba(255, 255, 255, 0.6);
-            border: 2px solid rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.85);
+            border: 2px solid #ffffff;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+            opacity: 1;
+        }
+        /* EKSTREMT DIMMET KORT UTEN PLANER */
+        .day-mode .day-card.empty-day {
+            background: rgba(255, 255, 255, 0.25);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            box-shadow: none;
+            opacity: 0.45; /* Gjøres veldig gjennomsiktig */
         }
         .day-mode .yesterday-card {
             background: rgba(220, 225, 230, 0.6);
@@ -52,9 +62,11 @@
             background: #ffffff;
             border: 5px solid #0066cc; 
             box-shadow: 0 10px 25px rgba(0, 102, 204, 0.2);
+            opacity: 1 !important; /* I dag er aldri dimmet */
         }
         .day-mode .event-item { background: #f2f2f7; border: 1px solid #d1d1d6; }
-        .day-mode .no-events { color: #444444; }
+        .day-mode .no-events { color: #555555; }
+        .day-mode .scroll-indicator { color: #0066cc; background: rgba(255,255,255,0.9); }
 
         .night-mode { 
             background: linear-gradient(135deg, #0b0f19 0%, #17273a 100%); 
@@ -66,8 +78,16 @@
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
         }
         .night-mode .day-card {
-            background: rgba(36, 36, 38, 0.7);
-            border: 2px solid rgba(255, 255, 255, 0.08);
+            background: rgba(44, 44, 46, 0.85);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            opacity: 1;
+        }
+        /* EKSTREMT DIMMET KORT UTEN PLANER (NATTMODUS) */
+        .night-mode .day-card.empty-day {
+            background: rgba(20, 20, 22, 0.25);
+            border: 2px solid rgba(255, 255, 255, 0.03);
+            box-shadow: none;
+            opacity: 0.3;
         }
         .night-mode .yesterday-card {
             background: rgba(28, 28, 30, 0.5);
@@ -77,9 +97,11 @@
             background: rgba(44, 44, 46, 1);
             border: 5px solid #0a84ff;
             box-shadow: 0 10px 25px rgba(10, 132, 255, 0.3);
+            opacity: 1 !important;
         }
         .night-mode .event-item { background: #2c2c2e; border: 1px solid #3a3a3c; }
-        .night-mode .no-events { color: #cccccc; }
+        .night-mode .no-events { color: #8e8e93; }
+        .night-mode .scroll-indicator { color: #0a84ff; background: rgba(44,44,46,0.9); }
 
         /* --- STARTKNAPPEN FOR OPPSTART --- */
         #start-overlay {
@@ -181,7 +203,8 @@
             height: 100%; 
             display: flex;
             flex-direction: column;
-            transition: background 0.5s ease, border 0.5s ease;
+            position: relative; 
+            transition: all 0.5s ease;
         }
 
         @media (max-width: 1400px) {
@@ -199,6 +222,7 @@
             border-bottom: 3px solid rgba(128, 128, 128, 0.2);
             letter-spacing: -0.2px;
             line-height: 1.2;
+            flex-shrink: 0;
         }
 
         .yesterday-card .day-name { color: #666666; }
@@ -210,11 +234,25 @@
         }
         .night-mode .today-card .day-name { color: #3399ff; }
 
+        .event-list-wrapper {
+            position: relative;
+            flex-grow: 1;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
         .event-list {
             font-size: 1.15vw; 
             list-style: none;
-            overflow-y: auto;
+            overflow-y: auto; 
+            scroll-behavior: smooth;
             flex-grow: 1;
+            padding-bottom: 25px; 
+            scrollbar-width: none; 
+        }
+        .event-list::-webkit-scrollbar {
+            display: none;
         }
 
         .event-item {
@@ -248,6 +286,28 @@
             margin-top: 40px;
             font-weight: 700;
             letter-spacing: -0.2px;
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            font-size: 1.4vw;
+            font-weight: 900;
+            width: 28px;
+            height: 28px;
+            display: none; 
+            justify-content: center;
+            align-items: center;
+            border-radius: 50%;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+            z-index: 10;
+            animation: bounce 1.5s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(4px); }
         }
     </style>
 </head>
@@ -283,12 +343,14 @@
         let returnTimeout = null;
         const scrollContainer = document.getElementById('scroll-container');
 
-        // --- AUTOMATISK RETUR-KODE (NÅ SATT TIL 3 MINUTTER) ---
         function resetReturnTimer() {
             clearTimeout(returnTimeout);
-            // 180000 millisekunder = 3 minutter
             returnTimeout = setTimeout(() => {
                 scrollContainer.scrollTo({ left: 0, behavior: 'smooth' });
+                const activeLists = document.querySelectorAll('.event-list');
+                activeLists.forEach(list => {
+                    list.scrollTo({ top: 0, behavior: 'smooth' });
+                });
             }, 180000);
         }
 
@@ -389,6 +451,17 @@
             periodElement.style.color = periodFg;
         }
 
+        function updateScrollIndicators(listEl, indicatorEl) {
+            const hasMoreToScroll = listEl.scrollHeight > listEl.clientHeight;
+            const isAtBottom = listEl.scrollHeight - listEl.scrollTop <= listEl.clientHeight + 5;
+
+            if (hasMoreToScroll && !isAtBottom) {
+                indicatorEl.style.display = 'flex'; 
+            } else {
+                indicatorEl.style.display = 'none'; 
+            }
+        }
+
         function generateCalendarGrid(eventsByDay = {}) {
             const grid = document.getElementById('calendar-grid');
             grid.innerHTML = '';
@@ -403,28 +476,7 @@
                 const isYesterday = i === -1;
                 const isToday = i === 0;
                 
-                const card = document.createElement('div');
-                if (isYesterday) {
-                    card.className = 'day-card yesterday-card';
-                } else if (isToday) {
-                    card.className = 'day-card today-card';
-                } else {
-                    card.className = 'day-card';
-                }
-                
-                let dayName = ukeDager[currentDay.getDay()];
-                const dateNum = currentDay.getDate();
-                const monthName = maaneder[currentDay.getMonth()];
-                
-                if (isYesterday) {
-                    dayName = `I GÅR<br>${dateNum}. ${monthName}`;
-                } else if (isToday) {
-                    dayName = `I DAG<br>${dateNum}. ${monthName}`;
-                } else {
-                    dayName = `${dayName.toUpperCase()}<br>${dateNum}. ${monthName}`;
-                }
-                
-                let eventsHtml = '<ul class="event-list">';
+                let eventsHtml = '';
                 let hasValidEvents = false;
 
                 if (eventsByDay[dayString] && eventsByDay[dayString].length > 0) {
@@ -441,13 +493,53 @@
                 if (!hasValidEvents) {
                     eventsHtml += '<li class="no-events">Ingen planer</li>';
                 }
-                eventsHtml += '</ul>';
+
+                const card = document.createElement('div');
+                
+                // SMARTE KLASSER: Hvis dagen ikke har avtaler (og ikke er i dag), får den klassen 'empty-day'
+                if (isYesterday) {
+                    card.className = 'day-card yesterday-card';
+                } else if (isToday) {
+                    card.className = 'day-card today-card';
+                } else if (!hasValidEvents) {
+                    card.className = 'day-card empty-day'; // Slukker lyset for tomme dager!
+                } else {
+                    card.className = 'day-card';
+                }
+                
+                let dayName = ukeDager[currentDay.getDay()];
+                const dateNum = currentDay.getDate();
+                const monthName = maaneder[currentDay.getMonth()];
+                
+                if (isYesterday) {
+                    dayName = `I GÅR<br>${dateNum}. ${monthName}`;
+                } else if (isToday) {
+                    dayName = `I DAG<br>${dateNum}. ${monthName}`;
+                } else {
+                    dayName = `${dayName.toUpperCase()}<br>${dateNum}. ${monthName}`;
+                }
 
                 card.innerHTML = `
                     <div class="day-name">${dayName}</div>
-                    ${eventsHtml}
+                    <div class="event-list-wrapper">
+                        <ul class="event-list" id="list-${dayString}">${eventsHtml}</ul>
+                        <div class="scroll-indicator" id="arrow-${dayString}">↓</div>
+                    </div>
                 `;
+                
                 grid.appendChild(card);
+
+                const listEl = card.querySelector('.event-list');
+                const indicatorEl = card.querySelector('.scroll-indicator');
+
+                listEl.addEventListener('scroll', () => {
+                    updateScrollIndicators(listEl, indicatorEl);
+                    resetReturnTimer();
+                });
+                listEl.addEventListener('touchstart', resetReturnTimer);
+                listEl.addEventListener('touchmove', resetReturnTimer);
+
+                setTimeout(() => updateScrollIndicators(listEl, indicatorEl), 100);
             }
         }
 
