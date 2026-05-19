@@ -61,7 +61,7 @@
         }
         /* FARGEBOMBE FOR I DAG (DAGMODUS) */
         .day-mode .today-card {
-            background: #004499 !important; /* Kraftig mørkeblå */
+            background: #004499 !important; 
             color: #ffffff !important;
             border: 5px solid #002266; 
             box-shadow: 0 12px 30px rgba(0, 68, 153, 0.35);
@@ -218,11 +218,12 @@
             height: 100%; 
         }
 
+        /* NÅ SATT TIL Å DELE PÅ 4 SYNLIGE KORT I STEDET FOR 7 */
         .day-card {
-            width: calc((1400px - (6 * 15px)) / 7); 
+            width: calc((1400px - (3 * 15px)) / 4); 
             flex-shrink: 0; 
             border-radius: 8px; 
-            padding: 18px 10px;
+            padding: 18px 15px; /* Litt mer innvendig luft siden kortene er brede */
             height: 100%; 
             display: flex;
             flex-direction: column;
@@ -232,12 +233,12 @@
 
         @media (max-width: 1400px) {
             .day-card {
-                width: calc((100vw - 40px - (6 * 15px)) / 7); 
+                width: calc((100vw - 40px - (3 * 15px)) / 4); 
             }
         }
 
         .day-name {
-            font-size: 1.4vw; 
+            font-size: 1.8vw; /* Justert litt opp siden kortet har mye bedre plass */
             font-weight: 800;
             text-align: center;
             padding-bottom: 12px;
@@ -260,7 +261,7 @@
         }
 
         .event-list {
-            font-size: 1.15vw; 
+            font-size: 1.4vw; /* Økt skriftstørrelsen på avtalene for bedre lesbarhet! */
             list-style: none;
             overflow-y: auto; 
             scroll-behavior: smooth;
@@ -273,35 +274,35 @@
         }
 
         .event-item {
-            margin-bottom: 10px;
-            padding: 10px 10px;
-            border-radius: 4px; 
+            margin-bottom: 12px;
+            padding: 12px 14px;
+            border-radius: 6px; 
             line-height: 1.3;
             font-weight: 700; 
-            border-left: 6px solid #e65100; 
+            border-left: 8px solid #e65100; 
         }
 
         .yesterday-card .event-item {
             opacity: 0.5;
-            border-left: 6px solid #777777;
+            border-left: 8px solid #777777;
         }
 
         .event-time {
             font-weight: 800;
             display: block;
-            font-size: 1.1vw;
+            font-size: 1.3vw;
             margin-bottom: 4px;
             color: #cc4400; 
         }
         .night-mode .event-time { color: #ff9f0a; }
-        .today-card .event-time { color: #ffcc00 !important; } /* Spesialfarge inni "I Dag"-kortet */
+        .today-card .event-time { color: #ffcc00 !important; } 
         .yesterday-card .event-time { color: #555555 !important; }
         .night-mode .yesterday-card .event-time { color: #aaaaaa !important; }
         
         .no-events {
             text-align: center;
-            font-size: 1.2vw;
-            margin-top: 40px;
+            font-size: 1.5vw;
+            margin-top: 50px;
             font-weight: 700;
             letter-spacing: -0.2px;
         }
@@ -310,10 +311,10 @@
             position: absolute;
             bottom: 5px;
             right: 5px;
-            font-size: 1.4vw;
+            font-size: 1.6vw;
             font-weight: 900;
-            width: 28px;
-            height: 28px;
+            width: 32px;
+            height: 32px;
             display: none; 
             justify-content: center;
             align-items: center;
@@ -514,15 +515,14 @@
 
                 const card = document.createElement('div');
                 
-                // UKEDAGSSTRUKTUR (Klasser)
                 if (isYesterday) {
                     card.className = 'day-card yesterday-card';
                 } else if (isToday) {
-                    card.className = 'day-card today-card'; // Blir til den fete fargebomben!
+                    card.className = 'day-card today-card'; 
                 } else if (!hasValidEvents) {
-                    card.className = 'day-card empty-day'; // Slukker lyset for tomme fremtidsdager
+                    card.className = 'day-card empty-day'; 
                 } else {
-                    card.className = 'day-card'; // Lyser sterkt hvis det er planer
+                    card.className = 'day-card'; 
                 }
                 
                 let dayName = ukeDager[currentDay.getDay()];
