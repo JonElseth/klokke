@@ -22,7 +22,7 @@
             align-items: center;
             height: 100vh;
             
-            /* SIKKERHETSSONE FOR DEKSELET */
+            /* SIKKERHETSSONE FOR DEKSELET (STORSKJERM) */
             padding: 60px 45px 55px 45px; 
             
             overflow: hidden;
@@ -405,6 +405,108 @@
             transform: scale(0.9) translateX(-10px);
             transition: opacity 0.4s ease, transform 0.4s ease;
         }
+
+        /* ==========================================================================
+           ⚡ DE NYE RESPONSIVE MOBIL-REGLENE (Trer i kraft på skjermer under 768px)
+           ========================================================================== */
+        @media (max-width: 768px) {
+            body {
+                padding: 20px 15px; /* Mindre padding på mobil */
+                overflow-y: auto;   /* Tillat skrolling nedover på hele siden */
+                height: auto;
+            }
+
+            /* Topppanel re-design på mobil */
+            .top-section {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+                padding: 15px;
+                margin-bottom: 20px;
+                gap: 10px;
+            }
+
+            .time {
+                font-size: 18vw; /* Gjør klokka stor og fin på høykant */
+            }
+
+            .right-info {
+                align-items: center;
+                text-align: center;
+            }
+
+            .date-container {
+                font-size: 6vw;
+            }
+
+            .period-container {
+                font-size: 5vw;
+                padding: 6px 16px;
+            }
+
+            /* Gjør om kalenderbåndet til en ren vertikal liste */
+            .calendar-section {
+                overflow-x: visible;
+                overflow-y: visible;
+                height: auto;
+                margin-bottom: 20px;
+            }
+
+            .calendar-grid {
+                flex-direction: column; /* Stablas vertikalt */
+                width: 100%;
+                gap: 20px;
+            }
+
+            .day-card {
+                width: 100% !important; /* Fyller hele mobilbredden */
+                height: auto;
+                min-height: 150px;
+                padding: 15px;
+            }
+
+            .day-name {
+                font-size: 5vw;
+                margin-bottom: 10px;
+                padding-bottom: 8px;
+            }
+
+            .holiday-text {
+                font-size: 3.5vw;
+                margin-bottom: 10px;
+            }
+
+            .event-list {
+                overflow-y: visible; /* Ingen interne skrollefelt i boksene på mobil */
+                height: auto;
+                padding-bottom: 0;
+            }
+
+            .event-item {
+                padding: 10px 12px;
+                font-size: 4.2vw;
+            }
+
+            .event-time {
+                font-size: 3.8vw;
+            }
+
+            .no-events {
+                font-size: 4.5vw;
+                margin-top: 20px;
+                margin-bottom: 10px;
+            }
+
+            /* Skjul navigasjonsknappene helt på mobil da de blir overflødige */
+            #side-scroll-hint, #home-btn, .scroll-indicator {
+                display: none !important;
+            }
+
+            .start-btn {
+                font-size: 6vw;
+                padding: 15px 40px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -470,15 +572,20 @@
         }
 
         function returnToHomePosition() {
-            scrollContainer.scrollTo({ left: 0, behavior: 'smooth' });
-            const activeLists = document.querySelectorAll('.event-list');
-            activeLists.forEach(list => {
-                list.scrollTo({ top: 0, behavior: 'smooth' });
-            });
+            // Sjekk om vi er på mobil før vi prøver å skrolle sidelengs
+            if (window.innerWidth > 768) {
+                scrollContainer.scrollTo({ left: 0, behavior: 'smooth' });
+                const activeLists = document.querySelectorAll('.event-list');
+                activeLists.forEach(list => {
+                    list.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+            }
             resetReturnTimer();
         }
 
         function handleButtonVisibilities() {
+            if (window.innerWidth <= 768) return; // Hopp over hvis vi er på mobil
+            
             if (scrollContainer.scrollLeft > 50) {
                 sideHint.style.opacity = '0'; 
                 sideHint.style.transform = 'scale(0.9) translateX(10px)';
@@ -499,6 +606,7 @@
         }
 
         function resetReturnTimer() {
+            if (window.innerWidth <= 768) return; // Ingen retur-timer på mobilen til administratorer
             clearTimeout(returnTimeout);
             returnTimeout = setTimeout(returnToHomePosition, 180000); 
         }
@@ -507,6 +615,10 @@
             resetReturnTimer();
             handleButtonVisibilities();
         });
+
+        // Event-lyttere på hele mobilvinduet for å holde liv i ting
+        window.addEventListener('scroll', resetReturnTimer);
+        window.addEventListener('touchstart', resetReturnTimer);
 
         async function requestWakeLock() {
             try {
@@ -521,17 +633,19 @@
             } catch (err) { console.log("Skjermlås ikke tilgjengelig."); }
         }
 
-        // FUNKSJONEN SOM UTKREVER TRYKK OG TVINGER FULLSKJERM VED OPPSTART
         function startApp() {
             document.getElementById('start-overlay').style.display = 'none';
 
-            try {
-                const docElm = document.documentElement;
-                if (docElm.requestFullscreen) { docElm.requestFullscreen(); } 
-                else if (docElm.webkitRequestFullscreen) { docElm.webkitRequestFullscreen(); }
-            } catch (fErr) { console.log("Fullskjerm feilet eller blokkert."); }
+            // Bare tving fullskjerm hvis vi er på en storskjerm (ikke mobil)
+            if (window.innerWidth > 768) {
+                try {
+                    const docElm = document.documentElement;
+                    if (docElm.requestFullscreen) { docElm.requestFullscreen(); } 
+                    else if (docElm.webkitRequestFullscreen) { docElm.webkitRequestFullscreen(); }
+                } catch (fErr) { console.log("Fullskjerm blokkert."); }
+                requestWakeLock();
+            }
 
-            requestWakeLock();
             updateClockAndLayout();
             combineAndRenderGrid(); 
             resetReturnTimer();
@@ -601,6 +715,8 @@
         }
 
         function updateScrollIndicators(listEl, indicatorEl) {
+            if (window.innerWidth <= 768) return; // Trenger ikke skrolle-piler på mobil
+            
             const hasMoreToScroll = listEl.scrollHeight > listEl.clientHeight;
             const isAtBottom = listEl.scrollHeight - listEl.scrollTop <= listEl.clientHeight + 5;
 
@@ -676,91 +792,4 @@
                         li.appendChild(timeSpan);
 
                         const summarySpan = document.createElement('span');
-                        summarySpan.className = 'event-summary-text';
-                        summarySpan.textContent = ev.summary || '';
-                        
-                        li.appendChild(summarySpan);
-                        listEl.appendChild(li);
-                    });
-                }
-
-                if (!hasValidEvents) {
-                    const noEvLi = document.createElement('li');
-                    noEvLi.className = 'no-events';
-                    noEvLi.textContent = 'Ingen planer';
-                    listEl.appendChild(noEvLi);
-                }
-
-                listEl.addEventListener('scroll', () => {
-                    updateScrollIndicators(listEl, indicatorEl);
-                    resetReturnTimer();
-                });
-                
-                setTimeout(() => updateScrollIndicators(listEl, indicatorEl), 100);
-            }
-        }
-
-        function fetchBothCalendars() {
-            if (API_KEY === 'DIN_GOOGLE_API_KEY') { return; }
-
-            gapi.client.init({
-                'apiKey': API_KEY,
-                'discoveryDocs': ["https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"],
-            }).then(function() {
-                const startPeriod = new Date();
-                startPeriod.setDate(startPeriod.getDate() - 1);
-                startPeriod.setHours(0,0,0,0);
-                
-                const endPeriod = new Date();
-                endPeriod.setDate(endPeriod.getDate() + 31); 
-
-                const personalRequest = gapi.client.calendar.events.list({
-                    'calendarId': CALENDAR_ID,
-                    'timeMin': startPeriod.toISOString(),
-                    'timeMax': endPeriod.toISOString(),
-                    'showDeleted': false,
-                    'singleEvents': true,
-                    'orderBy': 'startTime'
-                });
-
-                const holidayRequest = gapi.client.calendar.events.list({
-                    'calendarId': HOLIDAY_CALENDAR_ID,
-                    'timeMin': startPeriod.toISOString(),
-                    'timeMax': endPeriod.toISOString(),
-                    'showDeleted': false,
-                    'singleEvents': true
-                });
-
-                return Promise.all([personalRequest, holidayRequest]);
-            }).then(function(responses) {
-                const personalEvents = responses[0].result.items;
-                const holidayEvents = responses[1].result.items;
-
-                const tempEvents = {};
-                personalEvents.forEach(event => {
-                    const start = event.start.dateTime || event.start.date;
-                    const dateKey = start.split('T')[0];
-                    if (!tempEvents[dateKey]) { tempEvents[dateKey] = []; }
-                    tempEvents[dateKey].push(event);
-                });
-                globalEventsCache = tempEvents;
-
-                const tempHolidays = {};
-                holidayEvents.forEach(holiday => {
-                    const start = holiday.start.date || holiday.start.dateTime;
-                    const dateKey = start.split('T')[0];
-                    tempHolidays[dateKey] = holiday.summary; 
-                });
-                globalHolidaysCache = tempHolidays;
-
-                combineAndRenderGrid();
-            }).catch(err => {
-                console.log("Feil under henting av kalenderdata: ", err);
-                combineAndRenderGrid();
-            });
-        }
-
-        setInterval(updateClockAndLayout, 5000);
-    </script>
-</body>
-</html>
+                        summarySpan.className = 'event-summary-text
