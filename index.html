@@ -28,7 +28,6 @@
             overflow: hidden;
             transition: background 1.5s ease, color 1.5s ease;
             user-select: none;
-            position: relative;
         }
 
         /* --- SENIOR-OPTIMALISERTE TEMAER --- */
@@ -79,19 +78,6 @@
         .day-mode #side-scroll-hint { background: #004499; color: white; }
         .day-mode #home-btn { background: #333333; color: white; }
 
-        /* FASTMONTERT FADE FOR DAGMODUS (Flyttet ned for å ikke skygge for datooverskriften) */
-        .day-mode::after {
-            content: "";
-            position: absolute;
-            top: 295px; /* Flyttet ned fra 198px så overskriften går klar */
-            right: 45px; 
-            width: 140px; 
-            height: calc(100vh - 295px - 74px - 35px); 
-            background: linear-gradient(to right, rgba(230,235,240,0) 0%, #bac7d3 100%);
-            pointer-events: none;
-            z-index: 9998; 
-        }
-
         .night-mode { 
             background: linear-gradient(135deg, #0b0f19 0%, #17273a 100%); 
             color: #ffffff; 
@@ -137,19 +123,6 @@
         .night-mode .scroll-indicator { color: #ff9f0a; background: rgba(44,44,46,0.95); border: 2px solid #ff9f0a; }
         .night-mode #side-scroll-hint { background: #0a84ff; color: white; }
         .night-mode #home-btn { background: #2c2c2e; color: white; border: 2px solid rgba(255,255,255,0.2); }
-
-        /* FASTMONTERT FADE FOR NATTMODUS (Flyttet ned for å ikke skygge for datooverskriften) */
-        .night-mode::after {
-            content: "";
-            position: absolute;
-            top: 295px; /* Flyttet ned fra 198px så overskriften går klar */
-            right: 45px;
-            width: 140px;
-            height: calc(100vh - 295px - 74px - 35px);
-            background: linear-gradient(to right, rgba(23,39,58,0) 0%, #152436 100%);
-            pointer-events: none;
-            z-index: 9998;
-        }
 
         /* --- STYLING FOR HELLIGDAGER --- */
         .holiday-title {
@@ -246,7 +219,7 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.05);
         }
 
-        /* --- NEDERSTE DEL: KALENDER --- */
+        /* --- NEDERSTE DEL: KALENDER (AKTIVERT MAGNETISK SNAPPING) --- */
         .calendar-section {
             width: 100%;
             max-width: 1400px; 
@@ -258,6 +231,9 @@
             position: relative;
             scrollbar-width: none; 
             pointer-events: auto !important; 
+            
+            /* Låser skrollingen til faste punkter loddrett */
+            scroll-snap-type: x mandatory; 
         }
         .calendar-section::-webkit-scrollbar {
             display: none;
@@ -280,6 +256,9 @@
             flex-direction: column;
             position: relative; 
             transition: all 0.5s ease;
+            
+            /* Sier til nettleseren at starten av hvert kort er et magnetisk stopp-punkt */
+            scroll-snap-align: start; 
         }
 
         @media (max-width: 1400px) {
@@ -441,8 +420,12 @@
                 height: auto;
             }
 
-            body::after {
-                display: none !important;
+            .calendar-section {
+                scroll-snap-type: none; /* Kobler ut magneten på mobilen */
+                overflow-x: visible;
+                overflow-y: visible;
+                height: auto;
+                margin-bottom: 20px;
             }
 
             .top-section {
@@ -459,13 +442,6 @@
             .date-container { font-size: 6vw; }
             .period-container { font-size: 5vw; padding: 6px 16px; }
 
-            .calendar-section {
-                overflow-x: visible;
-                overflow-y: visible;
-                height: auto;
-                margin-bottom: 20px;
-            }
-
             .calendar-grid {
                 flex-direction: column; 
                 width: 100%;
@@ -477,6 +453,7 @@
                 height: auto;
                 min-height: 150px;
                 padding: 15px;
+                scroll-snap-align: none;
             }
 
             .day-name { font-size: 5vw; margin-bottom: 10px; padding-bottom: 8px; }
@@ -551,7 +528,8 @@
         function scrollCalendarForward() {
             resetReturnTimer();
             const cardWidth = document.querySelector('.day-card').clientWidth;
-            scrollContainer.scrollBy({ left: cardWidth * 3, behavior: 'smooth' });
+            // Skroller akkurat 4 hele kort fremover for å matche rutenettet
+            scrollContainer.scrollBy({ left: cardWidth * 4, behavior: 'smooth' });
         }
 
         function scrollBoxDownward(listId) {
