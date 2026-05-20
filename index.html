@@ -79,14 +79,17 @@
         .day-mode #side-scroll-hint { background: #004499; color: white; }
         .day-mode #home-btn { background: #333333; color: white; }
 
-        /* DYNAMISK FADE FOR DAGMODUS (Glir over i høyre hjørne-gradient) */
-        .day-mode .calendar-section::after {
+        /* FASTMONTERT FADE FOR DAGMODUS (Låst til høyre glasskant innenfor rammen din) */
+        .day-mode::after {
             content: "";
             position: absolute;
-            top: 0; right: 0; width: 120px; height: 100%;
+            top: 198px; /* Starter akkurat der kalenderseksjonen begynner */
+            right: 45px; /* Låst akkurat der dekselet ditt slutter */
+            width: 140px; 
+            height: calc(100vh - 198px - 74px - 35px); /* Dekker kun kalenderhøyden */
             background: linear-gradient(to right, rgba(230,235,240,0) 0%, #bac7d3 100%);
             pointer-events: none;
-            z-index: 100;
+            z-index: 9998; /* Ligger som et fast glasslokk over kortene som skroller */
         }
 
         .night-mode { 
@@ -135,14 +138,17 @@
         .night-mode #side-scroll-hint { background: #0a84ff; color: white; }
         .night-mode #home-btn { background: #2c2c2e; color: white; border: 2px solid rgba(255,255,255,0.2); }
 
-        /* DYNAMISK FADE FOR NATTMODUS (Glir over i mørkeblå natt-gradient) */
-        .night-mode .calendar-section::after {
+        /* FASTMONTERT FADE FOR NATTMODUS */
+        .night-mode::after {
             content: "";
             position: absolute;
-            top: 0; right: 0; width: 120px; height: 100%;
+            top: 198px;
+            right: 45px;
+            width: 140px;
+            height: calc(100vh - 198px - 74px - 35px);
             background: linear-gradient(to right, rgba(23,39,58,0) 0%, #152436 100%);
             pointer-events: none;
-            z-index: 100;
+            z-index: 9998;
         }
 
         /* --- STYLING FOR HELLIGDAGER --- */
@@ -389,7 +395,7 @@
             font-size: 1.3vw;
             font-weight: 800;
             box-shadow: 0 8px 25px rgba(0,0,0,0.25);
-            z-index: 999;
+            z-index: 9999; /* Lagt helt på topp */
             transition: opacity 0.4s ease, transform 0.4s ease;
             cursor: pointer;
             pointer-events: auto !important;
@@ -420,7 +426,7 @@
             font-size: 1.3vw;
             font-weight: 800;
             box-shadow: 0 8px 25px rgba(0,0,0,0.2);
-            z-index: 999;
+            z-index: 9999; /* Lagt helt på topp */
             cursor: pointer;
             opacity: 0; 
             transform: scale(0.9) translateX(-10px);
@@ -435,8 +441,8 @@
                 height: auto;
             }
 
-            /* Fjern fade-effekten helt på mobiltelefoner */
-            .calendar-section::after {
+            /* Kobler ut den faste faden fullstendig på mobil */
+            body::after {
                 display: none !important;
             }
 
