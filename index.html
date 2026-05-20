@@ -35,8 +35,8 @@
         /* --- RESPONSIVT LAYOUT MED GRID --- */
         .main-layout {
             display: grid;
-            grid-template-columns: 42% 1fr;
-            gap: 60px;
+            grid-template-columns: 45% 1fr;
+            gap: 50px;
             height: 100%;
             width: 100%;
             position: relative;
@@ -60,7 +60,7 @@
             justify-content: space-between;
             height: 100%;
             border-right: 1px solid rgba(0,0,0,0.08);
-            padding-right: 40px;
+            padding-right: 30px;
         }
         .night-mode .left-panel {
             border-right: 1px solid rgba(255,255,255,0.08);
@@ -68,9 +68,9 @@
 
         /* Analog Klokke */
         .analog-clock-svg {
-            width: 280px;
-            height: 280px;
-            max-width: 80%;
+            width: 340px;
+            height: 340px;
+            max-width: 95%;
         }
         
         .clock-face { fill: none; }
@@ -86,9 +86,9 @@
         }
 
         .hand { stroke-linecap: round; }
-        .hand-hour { stroke: #1e293b; stroke-width: 5; }
-        .hand-minute { stroke: #1e293b; stroke-width: 3.5; }
-        .hand-second { stroke: #ef4444; stroke-width: 1.2; }
+        .hand-hour { stroke: #1e293b; stroke-width: 5.5; }
+        .hand-minute { stroke: #1e293b; stroke-width: 4; }
+        .hand-second { stroke: #ef4444; stroke-width: 1.3; }
         .center-dot { fill: #ef4444; }
 
         .night-mode .tick-minute { stroke: #94a3b8; }
@@ -97,10 +97,10 @@
         /* Digital og Periode */
         .digital-time {
             font-family: 'Poppins', sans-serif;
-            font-size: 8vw;
+            font-size: 7.5vw;
             font-weight: 700;
             line-height: 0.9;
-            margin: 10px 0;
+            margin: 5px 0;
             letter-spacing: -4px;
             text-align: center;
         }
@@ -114,33 +114,47 @@
             font-family: 'Poppins', sans-serif;
             font-size: 34px;
             font-weight: 700;
-            margin-bottom: 12px;
+            margin-bottom: 15px;
             line-height: 1.1;
         }
 
+        /* DØGNPERIODE - TILPASSET STØRRELSE, RENT UTSEENDE OG DYNAMISK FARGE */
         .period-text {
-            font-size: 24px;
+            font-family: 'Poppins', sans-serif; 
+            font-size: 32px; /* Justert ned for et mer harmonisk uttrykk */
             font-weight: 700;
-            background: #e2e8f0;
-            padding: 8px 30px;
+            background: #e2e8f0; 
+            padding: 10px 40px; 
             border-radius: 50px;
             display: inline-block;
-            color: #1e293b;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            transition: color 1s ease, background 1s ease;
         }
+        
+        /* Fargestiler for de ulike periodene på døgnet (Dagtid) */
+        .period-morgen { color: #e11d48; background: #ffe4e6; }       /* Frisk rosa/rød */
+        .period-formiddag { color: #ea580c; background: #ffedd5; }    /* Lun oransje */
+        .period-ettermiddag { color: #991b1b; background: #f1f5f9; }  /* Kraftig mørkerød med nøytral boks */
+        .period-kveld { color: #be123c; background: #ffe4e6; }        /* Dempet rød/rosa */
+        
+        /* Fargestiler for nattmodus */
         .night-mode .period-text { 
             background: #1e293b; 
-            color: #f8fafc;
+            color: #94a3b8; /* Behagelig gråblå tone for natta så det ikke blender */
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        .night-mode .period-text.period-natt {
+            color: #38bdf8; /* Fin lys blåfarge som indikerer natt */
+            background: #1e293b;
         }
 
-        /* --- HØYRE PANEL: AVTALER (MED VERTICAL MAGNET / SNAP) --- */
+        /* --- HØYRE PANEL: AVTALER --- */
         .right-panel {
             height: 100%;
             overflow-y: auto;
             scrollbar-width: none;
             padding-bottom: 80px; 
             pointer-events: auto !important;
-            
-            /* AKTIVERER VERTIKAL MAGNETISK SKROLLING (Låser seg loddrett) */
             scroll-snap-type: y mandatory;
         }
         .right-panel::-webkit-scrollbar { 
@@ -153,10 +167,8 @@
             padding: 10px 0;
             border-radius: 12px;
             transition: background 0.5s ease, padding 0.5s ease;
-            
-            /* SIER AT TOPPEN AV HVER DAG ER ET MAGNETISK STOPP-PUNKT */
             scroll-snap-align: start;
-            scroll-margin-top: 10px; /* Gir litt fin luft over det magnetiske stoppet */
+            scroll-margin-top: 10px; 
         }
 
         /* STYLING FOR DAGENS DATO (FREMHEVET) */
@@ -164,7 +176,7 @@
             background-color: #f1f5f9; 
             padding: 20px;
             border: 1px solid #cbd5e1;
-            scroll-margin-top: 20px; /* Tilpasset det tykkere kortet */
+            scroll-margin-top: 20px; 
         }
         .night-mode .day-section.today-highlight {
             background-color: #1e293b; 
@@ -247,12 +259,12 @@
         }
         .night-mode .event-time { color: #f87171; }
 
-        /* --- SKROLLE-KNAPP / LEDETEXT (LANDSKAPSMODUS) --- */
+        /* --- SKROLLE-KNAPP / LEDETEXT --- */
         .scroll-hint-btn {
             position: absolute;
             bottom: 10px;
             right: 0;
-            width: calc(58% - 20px); 
+            width: calc(55% - 20px); 
             background: #1e293b;
             color: #ffffff;
             text-align: center;
@@ -311,15 +323,16 @@
             .night-mode .left-panel { border-bottom-color: rgba(255,255,255,0.08); }
 
             .analog-clock-svg {
-                width: 200px;
-                height: 200px;
+                width: 260px;
+                height: 260px;
             }
 
             .digital-time { font-size: 14vw; }
             .date-text { font-size: 26px; }
+            .period-text { font-size: 28px; }
 
             .right-panel {
-                scroll-snap-type: none; /* Kobler ut magneten på små mobilskjermer */
+                scroll-snap-type: none; 
                 height: auto;
                 overflow: visible;
                 padding-bottom: 120px; 
@@ -480,12 +493,20 @@
             const isNight = h >= 22 || h < 7;
             document.getElementById('layout-box').className = `main-layout ${isNight ? 'night-mode' : 'day-mode'}`;
             
+            // DYNAMISK KLASSE-TILORDNING FOR PERIODE-TEKST
             let periodText = "Det er natt";
-            if (h >= 7 && h < 10) periodText = "Det er morgen";
-            else if (h >= 10 && h < 12) periodText = "Det er formiddag";
-            else if (h >= 12 && h < 18) periodText = "Det er ettermiddag";
-            else if (h >= 18 && h < 22) periodText = "Det er kveld";
-            document.getElementById('period-text').textContent = periodText;
+            let periodClass = "period-natt";
+            
+            if (h >= 7 && h < 10) { periodText = "Det er morgen"; periodClass = "period-morgen"; }
+            else if (h >= 10 && h < 12) { periodText = "Det er formiddag"; periodClass = "period-formiddag"; }
+            else if (h >= 12 && h < 18) { periodText = "Det er ettermiddag"; periodClass = "period-ettermiddag"; }
+            else if (h >= 18 && h < 22) { periodText = "Det er kveld"; periodClass = "period-kveld"; }
+            
+            const periodEl = document.getElementById('period-text');
+            periodEl.textContent = periodText;
+            
+            // Nullstiller gamle tids-klasser og legger på den aktive
+            periodEl.className = "period-text " + periodClass;
         }
 
         function renderCalendarList() {
@@ -569,13 +590,11 @@
             }
         }
 
-        // RETTING FOR VERTIKAL SNAPPING: Skroller nøyaktig ett fullt dags-avsnitt nedover
         function scrollCalendarDown() {
             resetInactivityTimer();
             const panel = document.getElementById('event-container');
             const isPortrait = window.matchMedia("(max-width: 900px) or (orientation: portrait)").matches;
             
-            // Finner høyden på det første dags-elementet i lista for å gjøre et perfekt "magnet-hopp"
             const firstDaySection = document.querySelector('.day-section');
             const stepHeight = firstDaySection ? firstDaySection.clientHeight + 25 : 250;
 
