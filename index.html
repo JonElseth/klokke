@@ -20,9 +20,6 @@
 
         body {
             background-color: #ffffff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
             height: 100vh;
             width: 100vw;
             margin: 0;
@@ -32,8 +29,17 @@
             
             /* SIKKERHETSSONE FOR DET FYSISKE DEKSELET */
             padding: 79px 60px 74px 60px; 
-            gap: 60px;
             transition: background 1.5s ease, color 1.5s ease;
+        }
+
+        /* --- RESPONSIVT LAYOUT MED GRID --- */
+        .main-layout {
+            display: grid;
+            grid-template-columns: 42% 1fr;
+            gap: 60px;
+            height: 100%;
+            width: 100%;
+            position: relative;
         }
 
         /* --- TEMAER --- */
@@ -48,7 +54,6 @@
 
         /* --- VENSTRE HALVDEL: KLOKKER OG DATO --- */
         .left-panel {
-            flex: 0 0 42%;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -63,8 +68,9 @@
 
         /* Analog Klokke */
         .analog-clock-svg {
-            width: 320px;
-            height: 320px;
+            width: 280px;
+            height: 280px;
+            max-width: 80%;
         }
         
         .clock-face { fill: none; }
@@ -91,7 +97,7 @@
         /* Digital og Periode */
         .digital-time {
             font-family: 'Poppins', sans-serif;
-            font-size: 140px;
+            font-size: 8vw;
             font-weight: 700;
             line-height: 0.9;
             margin: 10px 0;
@@ -106,14 +112,14 @@
 
         .date-text {
             font-family: 'Poppins', sans-serif;
-            font-size: 38px;
+            font-size: 34px;
             font-weight: 700;
             margin-bottom: 12px;
             line-height: 1.1;
         }
 
         .period-text {
-            font-size: 28px;
+            font-size: 24px;
             font-weight: 700;
             background: #e2e8f0;
             padding: 8px 30px;
@@ -128,10 +134,10 @@
 
         /* --- HØYRE PANEL: AVTALER (VERTIKAL LISTE) --- */
         .right-panel {
-            flex: 1;
             height: 100%;
             overflow-y: auto;
             scrollbar-width: none;
+            padding-bottom: 80px; /* Gir plass i bunnen så teksten ikke gjemmer seg bak knappen */
         }
         .right-panel::-webkit-scrollbar { 
             display: none; 
@@ -145,18 +151,17 @@
             transition: background 0.5s ease, padding 0.5s ease;
         }
 
-        /* --- STYLING FOR DAGENS DATO (FREMHEVET) --- */
+        /* STYLING FOR DAGENS DATO (FREMHEVET) */
         .day-section.today-highlight {
-            background-color: #f1f5f9; /* Mild, gråblå tone for dagtid */
+            background-color: #f1f5f9; 
             padding: 20px;
             border: 1px solid #cbd5e1;
         }
         .night-mode .day-section.today-highlight {
-            background-color: #1e293b; /* Mørkere kontrast for nattestid */
+            background-color: #1e293b; 
             border: 1px solid #334155;
         }
 
-        /* Stiplet skillelinje - skjules hvis det er siste element eller rett før en fremhevet boks */
         .day-section:not(:last-child)::after {
             content: "";
             display: block;
@@ -168,14 +173,13 @@
             border-color: #334155; 
         }
         
-        /* Fjern stiplet linje inni selve den fremhevede boksen */
         .day-section.today-highlight::after {
             display: none !important;
         }
 
         .day-title {
             font-family: 'Poppins', sans-serif;
-            font-size: 28px;
+            font-size: 26px;
             font-weight: 700;
             margin-bottom: 15px;
             text-transform: capitalize;
@@ -183,9 +187,8 @@
             align-items: center;
         }
 
-        /* Lite tekstmerke for å gjøre "I dag" ekstra tydelig */
         .today-badge {
-            font-size: 18px;
+            font-size: 16px;
             background: #ef4444;
             color: white;
             padding: 2px 12px;
@@ -197,7 +200,7 @@
         }
 
         .holiday-text {
-            font-size: 20px;
+            font-size: 18px;
             color: #ef4444;
             font-weight: 700;
             font-style: italic;
@@ -212,24 +215,20 @@
         }
 
         .event-item {
-            font-size: 24px;
+            font-size: 22px;
             margin-bottom: 12px;
             line-height: 1.3;
             position: relative;
             font-weight: 400;
         }
 
-        /* Punkttegn */
         .event-item::before {
             content: "•";
             position: absolute;
             left: -25px;
-            font-size: 30px;
+            font-size: 28px;
             line-height: 1;
             color: #64748b;
-        }
-        .night-mode .event-item::before {
-            color: #94a3b8;
         }
 
         .event-time {
@@ -237,22 +236,92 @@
             font-weight: 700;
             margin-right: 10px;
         }
-        .night-mode .event-time {
-            color: #f87171;
-        }
+        .night-mode .event-time { color: #f87171; }
 
-        .no-events-container {
-            height: 100%;
+        /* --- FASTMONTERT SKROLLE-KNAPP / LEDETEXT NEDERST --- */
+        .scroll-hint-btn {
+            position: absolute;
+            bottom: 10px;
+            right: 0;
+            width: calc(58% - 20px); /* Ligger nøyaktig sentrert under kalender-kolonnen */
+            background: #1e293b;
+            color: #ffffff;
+            text-align: center;
+            padding: 15px 20px;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: 700;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            z-index: 999;
             display: flex;
             justify-content: center;
             align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: opacity 0.4s ease, transform 0.4s ease;
+            animation: pulseBounce 2.5s infinite;
+        }
+        .night-mode .scroll-hint-btn {
+            background: #334155;
+            color: #f8fafc;
+        }
+        
+        .scroll-arrow {
+            font-size: 22px;
+            font-weight: 900;
         }
 
-        .no-events-text {
-            font-size: 28px;
-            font-weight: 400;
-            font-style: italic;
-            opacity: 0.5;
+        @keyframes pulseBounce {
+            0%, 100% { transform: translateY(0); box-shadow: 0 8px 20px rgba(0,0,0,0.2); }
+            50% { transform: translateY(4px); box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
+        }
+
+        /* --- AUTOMATISK PORTRETTMODUS (STÅENDE SKJERM / MOBIL) --- */
+        @media (max-width: 900px) or (orientation: portrait) {
+            body {
+                padding: 40px 30px;
+                overflow-y: auto; /* Tillater skrolling på hele kroppen hvis skjermen er kort */
+            }
+            
+            .main-layout {
+                grid-template-columns: 1fr; /* Setter alt i én loddrett kolonne */
+                grid-template-rows: auto 1fr;
+                gap: 40px;
+                height: auto;
+                overflow: visible;
+            }
+
+            .left-panel {
+                border-right: none;
+                border-bottom: 1px solid rgba(0,0,0,0.08);
+                padding-right: 0;
+                padding-bottom: 30px;
+                height: auto;
+            }
+            .night-mode .left-panel { border-bottom-color: rgba(255,255,255,0.08); }
+
+            .analog-clock-svg {
+                width: 220px;
+                height: 220px;
+            }
+
+            .digital-time { font-size: 14vw; }
+            .date-text { font-size: 28px; }
+
+            .right-panel {
+                height: auto;
+                overflow: visible;
+                padding-bottom: 100px;
+            }
+
+            /* Justerer knappen slik at den spenner over hele bredden i stående modus */
+            .scroll-hint-btn {
+                position: fixed;
+                bottom: 20px;
+                left: 30px;
+                right: 30px;
+                width: calc(100% - 60px);
+            }
         }
 
         /* START-OVERLAY FOR KIOSK-OPPSTART */
@@ -272,7 +341,6 @@
             border: none;
             border-radius: 12px;
             cursor: pointer;
-            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
         }
     </style>
 </head>
@@ -282,26 +350,35 @@
         <button class="start-btn" onclick="startApp()">Start systemet</button>
     </div>
 
-    <div class="left-panel">
-        <svg class="analog-clock-svg" viewBox="0 0 100 100" id="analog-clock">
-            <circle cx="50" cy="50" r="48" class="clock-face" />
-            <g id="ticks"></g>
-            <g id="numbers"></g>
-            <line id="hour-hand" class="hand hand-hour" x1="50" y1="50" x2="50" y2="30" />
-            <line id="minute-hand" class="hand hand-minute" x1="50" y1="50" x2="50" y2="18" />
-            <line id="second-hand" class="hand hand-second" x1="50" y1="50" x2="50" y2="12" />
-            <circle cx="50" cy="50" r="2.5" class="center-dot" />
-        </svg>
+    <div class="main-layout" id="layout-box">
+        
+        <div class="left-panel">
+            <svg class="analog-clock-svg" viewBox="0 0 100 100" id="analog-clock">
+                <circle cx="50" cy="50" r="48" class="clock-face" />
+                <g id="ticks"></g>
+                <g id="numbers"></g>
+                <line id="hour-hand" class="hand hand-hour" x1="50" y1="50" x2="50" y2="30" />
+                <line id="minute-hand" class="hand hand-minute" x1="50" y1="50" x2="50" y2="18" />
+                <line id="second-hand" class="hand hand-second" x1="50" y1="50" x2="50" y2="12" />
+                <circle cx="50" cy="50" r="2.5" class="center-dot" />
+            </svg>
 
-        <div class="date-display">
-            <div class="digital-time" id="digital-clock">00:00</div>
-            <div class="date-text" id="date-text">Ukedag 1. januar</div>
-            <div class="period-text" id="period-text">Det er...</div>
+            <div class="date-display">
+                <div class="digital-time" id="digital-clock">00:00</div>
+                <div class="date-text" id="date-text">Ukedag 1. januar</div>
+                <div class="period-text" id="period-text">Det er...</div>
+            </div>
         </div>
+
+        <div class="right-panel" id="event-container">
+            </div>
+
+        <div class="scroll-hint-btn" id="scroll-hint-element" onclick="scrollCalendarDown()">
+            <span>Dra eller trykk for å se de neste 30 dagene</span>
+            <span class="scroll-arrow">↓</span>
+        </div>
+
     </div>
-
-    <div class="right-panel" id="event-container">
-        </div>
 
     <script src="https://apis.google.com/js/api.js"></script>
     <script>
@@ -365,7 +442,14 @@
             document.getElementById('minute-hand').setAttribute('transform', `rotate(${m * 6 + s * 0.1} 50 50)`);
             document.getElementById('hour-hand').setAttribute('transform', `rotate(${(h % 12) * 30 + m * 0.5} 50 50)`);
 
-            document.getElementById('digital-clock').textContent = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+            // Bruker lokaltilpasset tidsvisning for storskjerm
+            let hoursStr = String(h).padStart(2, '0');
+            let minutesStr = String(m).padStart(2, '0');
+            try {
+                hoursStr = now.toLocaleTimeString('no-NO', { hour: '2-digit', hour12: false, timeZone: 'Europe/Oslo' });
+                minutesStr = now.toLocaleTimeString('no-NO', { minute: '2-digit', timeZone: 'Europe/Oslo' }).padStart(2, '0');
+            } catch(e) {}
+            document.getElementById('digital-clock').textContent = `${hoursStr}:${minutesStr}`;
 
             const dayName = ukeDager[now.getDay()];
             const dayNum = now.getDate();
@@ -374,7 +458,7 @@
             document.getElementById('date-text').textContent = `${dayName} ${dayNum}. ${monthName} ${yearNum}`;
 
             const isNight = h >= 22 || h < 7;
-            document.body.className = isNight ? "night-mode" : "day-mode";
+            document.getElementById('layout-box').className = `main-layout ${isNight ? 'night-mode' : 'day-mode'}`;
             
             let periodText = "Det er natt";
             if (h >= 7 && h < 10) periodText = "Det er morgen";
@@ -409,7 +493,6 @@
                 const daySection = document.createElement('div');
                 daySection.className = 'day-section';
                 
-                // Sjekk om dette er i dag, og legg til fremhevingsklassen
                 if (dateKey === todayKey) {
                     daySection.className += ' today-highlight';
                 }
@@ -422,7 +505,6 @@
                 title.className = 'day-title';
                 title.textContent = `${dayName} ${dateNum}. ${monthName}:`;
                 
-                // Legg på et lite rødt flagg hvis det er i dag
                 if (dateKey === todayKey) {
                     title.innerHTML += '<span class="today-badge">I dag</span>';
                 }
@@ -467,6 +549,28 @@
             }
         }
 
+        // Knapp-skrolling
+        function scrollCalendarDown() {
+            resetInactivityTimer();
+            const panel = document.getElementById('event-container');
+            panel.scrollBy({ top: 250, behavior: 'smooth' });
+        }
+
+        // Skjuler knappen hvis man skroller nedover i listen
+        function handleScrollVisibility() {
+            const panel = document.getElementById('event-container');
+            const hint = document.getElementById('scroll-hint-element');
+            if (panel.scrollTop > 60) {
+                hint.style.opacity = '0';
+                hint.style.transform = 'translateY(10px)';
+                hint.style.pointerEvents = 'none';
+            } else {
+                hint.style.opacity = '1';
+                hint.style.transform = 'translateY(0)';
+                hint.style.pointerEvents = 'auto';
+            }
+        }
+
         function fetchCalendarData() {
             if (API_KEY === 'DIN_GOOGLE_API_KEY') return;
 
@@ -503,7 +607,7 @@
                 personalEvents.forEach(event => {
                     const s = event.start.dateTime || event.start.date;
                     const key = s.split('T')[0];
-                    if (!tempEvents[key]) tempEvents[key] = [];
+                    if (!tempEvents[key]) { tempEvents[key] = []; }
                     tempEvents[key].push(event);
                 });
                 globalEventsCache = tempEvents;
@@ -534,7 +638,12 @@
         }
 
         function setupInactivityListeners() {
-            window.addEventListener('scroll', resetInactivityTimer, true);
+            const panel = document.getElementById('event-container');
+            panel.addEventListener('scroll', () => {
+                resetInactivityTimer();
+                handleScrollVisibility();
+            });
+            
             window.addEventListener('touchstart', resetInactivityTimer, true);
             window.addEventListener('touchmove', resetInactivityTimer, true);
             window.addEventListener('mousedown', resetInactivityTimer, true);
