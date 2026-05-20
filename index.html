@@ -21,10 +21,7 @@
             justify-content: flex-start; 
             align-items: center;
             height: 100vh;
-            
-            /* SIKKERHETSSONE FOR DEKSELET (Økt padding rundt hele siden) */
-            padding: 60px 45px 55px 45px; 
-            
+            padding: 25px 20px 20px 20px; 
             overflow: hidden;
             transition: background 1.5s ease, color 1.5s ease;
             user-select: none;
@@ -160,7 +157,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 35px; /* Økt litt for mer luft til ukesbåndet */
+            margin-bottom: 25px; 
         }
 
         .time {
@@ -203,7 +200,7 @@
             max-width: 1400px; 
             flex-grow: 1; 
             display: flex;
-            margin-bottom: 35px; /* Gir luft ned til de faste knappene på rammen */
+            margin-bottom: 5px;
             overflow-x: auto; 
             scroll-behavior: smooth; 
             position: relative;
@@ -221,7 +218,6 @@
         }
 
         .day-card {
-            /* Justert bredde-regnestykket for å kompensere for økte sitemarger */
             width: calc((1400px - (4 * 15px)) / 4.5); 
             flex-shrink: 0; 
             border-radius: 8px; 
@@ -235,7 +231,7 @@
 
         @media (max-width: 1400px) {
             .day-card {
-                width: calc((100vw - 90px - (4 * 15px)) / 4.5); 
+                width: calc((100vw - 40px - (4 * 15px)) / 4.5); 
             }
         }
 
@@ -333,11 +329,11 @@
             50% { transform: translateY(4px); }
         }
 
-        /* --- SIDERULL-KNAPP (TRUKKET INN FRA KANTEN) --- */
+        /* --- SIDERULL-KNAPP (HØYRE) --- */
         #side-scroll-hint {
             position: fixed;
-            bottom: 65px; /* Flyttet opp */
-            right: 65px;  /* Flyttet inn */
+            bottom: 35px;
+            right: 40px;
             display: flex;
             align-items: center;
             gap: 12px;
@@ -363,11 +359,11 @@
             50% { transform: translateX(8px); }
         }
 
-        /* --- HJEM-KNAPP (TRUKKET INN FRA KANTEN) --- */
+        /* --- HJEM-KNAPP (VENSTRE) --- */
         #home-btn {
             position: fixed;
-            bottom: 65px; /* Flyttet opp */
-            left: 65px;  /* Flyttet inn */
+            bottom: 35px;
+            left: 40px;
             display: flex;
             align-items: center;
             gap: 10px;
@@ -520,4 +516,206 @@
             try {
                 const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Europe/Oslo' };
                 dateString = now.toLocaleDateString('no-NO', options).replace('.', '');
-            } catch(e
+            } catch(e) {}
+            document.getElementById('date').textContent = dateString;
+
+            const intHours = parseInt(hours, 10);
+            const isNight = (intHours >= 22 || intHours < 7);
+            document.body.className = isNight ? "night-mode" : "day-mode";
+
+            let periodText = "";
+            let periodBg = "";
+            let periodFg = "";
+            
+            if (intHours >= 7 && intHours < 9) { 
+                periodText = "Det er morgen"; 
+                periodBg = isNight ? "#ffcc00" : "#ffebd6"; 
+                periodFg = isNight ? "#000000" : "#7a583a";
+            } else if (intHours >= 9 && intHours < 12) { 
+                periodText = "Det er formiddag"; 
+                periodBg = isNight ? "#ff9f0a" : "#ffe0cc"; 
+                periodFg = isNight ? "#000000" : "#a63a00";
+            } else if (intHours >= 12 && intHours < 18) { 
+                periodText = "Det er ettermiddag"; 
+                periodBg = isNight ? "#ffffff" : "#e2e2e7"; 
+                periodFg = "#111111";
+            } else if (intHours >= 18 && intHours < 22) { 
+                periodText = "Det er kveld"; 
+                periodBg = isNight ? "#ff9f0a" : "#ffe0cc"; 
+                periodFg = isNight ? "#000000" : "#ba4300";
+            } else { 
+                periodText = "Det er natt"; 
+                periodBg = isNight ? "#1f3a60" : "#003bb3"; 
+                periodFg = "#ffffff";
+            }
+
+            const periodElement = document.getElementById('period');
+            periodElement.textContent = periodText;
+            periodElement.style.backgroundColor = periodBg;
+            periodElement.style.color = periodFg;
+        }
+
+        function updateScrollIndicators(listEl, indicatorEl) {
+            const hasMoreToScroll = listEl.scrollHeight > listEl.clientHeight;
+            const isAtBottom = listEl.scrollHeight - listEl.scrollTop <= listEl.clientHeight + 5;
+
+            if (hasMoreToScroll && !isAtBottom) {
+                indicatorEl.style.display = 'flex'; 
+            } else {
+                indicatorEl.style.display = 'none'; 
+            }
+        }
+
+        function combineAndRenderGrid() {
+            const grid = document.getElementById('calendar-grid');
+            grid.innerHTML = '';
+            
+            const today = new Date();
+
+            for (let i = -1; i < 30; i++) {
+                const currentDay = new Date();
+                currentDay.setDate(today.getDate() + i);
+                
+                const dayString = currentDay.toISOString().split('T')[0];
+                const isYesterday = i === -1;
+                const isToday = i === 0;
+                
+                const holidayName = globalHolidaysCache[dayString] || null;
+                const isHoliday = holidayName !== null;
+
+                const card = document.createElement('div');
+                if (isYesterday) card.className = 'day-card yesterday-card';
+                else if (isToday) card.className = 'day-card today-card'; 
+                else if (!globalEventsCache[dayString] || globalEventsCache[dayString].length === 0) card.className = 'day-card empty-day'; 
+                else card.className = 'day-card'; 
+
+                let dayName = ukeDager[currentDay.getDay()];
+                const dateNum = currentDay.getDate();
+                const monthName = maaneder[currentDay.getMonth()];
+                
+                if (isYesterday) dayName = `I GÅR<br>${dateNum}. ${monthName}`;
+                else if (isToday) dayName = `I DAG<br>${dateNum}. ${monthName}`;
+                else dayName = `${dayName.toUpperCase()}<br>${dateNum}. ${monthName}`;
+
+                const useRedTitle = (currentDay.getDay() === 0 || isHoliday) && !isToday && !isYesterday;
+
+                card.innerHTML = `
+                    <div class="day-name ${useRedTitle ? 'holiday-title' : ''}">${dayName}</div>
+                    ${isHoliday ? `<div class="holiday-text">${holidayName}</div>` : ''}
+                    <div class="event-list-wrapper">
+                        <ul class="event-list" id="list-${dayString}"></ul>
+                        <div class="scroll-indicator" id="arrow-${dayString}" onclick="scrollBoxDownward('list-${dayString}')">↓</div>
+                    </div>
+                `;
+                
+                grid.appendChild(card);
+                const listEl = card.querySelector('.event-list');
+                const indicatorEl = card.querySelector('.scroll-indicator');
+
+                let hasValidEvents = false;
+
+                if (globalEventsCache[dayString] && globalEventsCache[dayString].length > 0) {
+                    globalEventsCache[dayString].forEach(ev => {
+                        hasValidEvents = true;
+                        let timeStr = 'Hele dagen';
+                        try {
+                            timeStr = ev.start.dateTime ? new Date(ev.start.dateTime).toLocaleTimeString('no-NO', {hour: '2-digit', minute:'2-digit', timeZone: 'Europe/Oslo'}) : 'Hele dagen';
+                        } catch(e) {}
+                        
+                        const li = document.createElement('li');
+                        li.className = 'event-item';
+                        
+                        const timeSpan = document.createElement('span');
+                        timeSpan.className = 'event-time';
+                        timeSpan.textContent = timeStr;
+                        li.appendChild(timeSpan);
+
+                        const summarySpan = document.createElement('span');
+                        summarySpan.className = 'event-summary-text';
+                        summarySpan.textContent = ev.summary || '';
+                        
+                        li.appendChild(summarySpan);
+                        listEl.appendChild(li);
+                    });
+                }
+
+                if (!hasValidEvents) {
+                    const noEvLi = document.createElement('li');
+                    noEvLi.className = 'no-events';
+                    noEvLi.textContent = 'Ingen planer';
+                    listEl.appendChild(noEvLi);
+                }
+
+                listEl.addEventListener('scroll', () => {
+                    updateScrollIndicators(listEl, indicatorEl);
+                    resetReturnTimer();
+                });
+                
+                setTimeout(() => updateScrollIndicators(listEl, indicatorEl), 100);
+            }
+        }
+
+        function fetchBothCalendars() {
+            if (API_KEY === 'DIN_GOOGLE_API_KEY') { return; }
+
+            gapi.client.init({
+                'apiKey': API_KEY,
+                'discoveryDocs': ["https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"],
+            }).then(function() {
+                const startPeriod = new Date();
+                startPeriod.setDate(startPeriod.getDate() - 1);
+                startPeriod.setHours(0,0,0,0);
+                
+                const endPeriod = new Date();
+                endPeriod.setDate(endPeriod.getDate() + 31); 
+
+                const personalRequest = gapi.client.calendar.events.list({
+                    'calendarId': CALENDAR_ID,
+                    'timeMin': startPeriod.toISOString(),
+                    'timeMax': endPeriod.toISOString(),
+                    'showDeleted': false,
+                    'singleEvents': true,
+                    'orderBy': 'startTime'
+                });
+
+                const holidayRequest = gapi.client.calendar.events.list({
+                    'calendarId': HOLIDAY_CALENDAR_ID,
+                    'timeMin': startPeriod.toISOString(),
+                    'timeMax': endPeriod.toISOString(),
+                    'showDeleted': false,
+                    'singleEvents': true
+                });
+
+                return Promise.all([personalRequest, holidayRequest]);
+            }).then(function(responses) {
+                const personalEvents = responses[0].result.items;
+                const holidayEvents = responses[1].result.items;
+
+                const tempEvents = {};
+                personalEvents.forEach(event => {
+                    const start = event.start.dateTime || event.start.date;
+                    const dateKey = start.split('T')[0];
+                    if (!tempEvents[dateKey]) { tempEvents[dateKey] = []; }
+                    tempEvents[dateKey].push(event);
+                });
+                globalEventsCache = tempEvents;
+
+                const tempHolidays = {};
+                holidayEvents.forEach(holiday => {
+                    const start = holiday.start.date || holiday.start.dateTime;
+                    const dateKey = start.split('T')[0];
+                    tempHolidays[dateKey] = holiday.summary; 
+                });
+                globalHolidaysCache = tempHolidays;
+
+                combineAndRenderGrid();
+            }).catch(err => {
+                console.log("Feil under henting av kalenderdata: ", err);
+                combineAndRenderGrid();
+            });
+        }
+
+        setInterval(updateClockAndLayout, 5000);
+    </script>
+</body>
+</html>
