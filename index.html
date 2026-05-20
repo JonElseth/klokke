@@ -256,14 +256,14 @@
         }
         .night-mode .event-time { color: #f87171; }
 
-        /* --- KORREKT KRAFTIG GUL SKROLLEKNAPP MED KORREKT FET RØD PIL --- */
+        /* --- KORREKT GUL SKROLLEKNAPP MED MYK, FET, AVRUNDET PIL --- */
         .scroll-hint-btn {
             position: absolute;
             bottom: 25px;
             right: 25px;
             width: 85px;
             height: 85px;
-            background: #ffde00; /* Kraftig gul bilskilt-farge */
+            background: #ffde00; 
             border: 4px solid #ffffff; 
             border-radius: 50%;
             display: flex;
@@ -283,11 +283,18 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
         
-        /* Den KORREKTE, fete pilgrafikken */
+        /* Den perfekte, tykke og avrundede pilen */
         .scroll-arrow-svg {
             width: 50px;
             height: 50px;
-            fill: #d00000; /* Klar rød */
+        }
+
+        .scroll-arrow-path {
+            fill: none;
+            stroke: #d00000; /* Stoppskilt-rød */
+            stroke-width: 5.5; /* Gjør pilen skikkelig fet */
+            stroke-linecap: round; /* Runder av endene på skaftet og spissene */
+            stroke-linejoin: round; /* Runder av der pilspissen møtes */
         }
 
         @keyframes miniPulseBounce {
@@ -404,7 +411,7 @@
 
         <div class="scroll-hint-btn" id="scroll-hint-element" onclick="scrollCalendarDown()">
             <svg class="scroll-arrow-svg" viewBox="0 0 24 24">
-                <path d="M12 16.5l-6-6h12z"/>
+                <path class="scroll-arrow-path" d="M12 4v14M6 12l6 6 6-6"/>
             </svg>
         </div>
 
@@ -609,3 +616,128 @@
                 hint.style.pointerEvents = 'none';
             } else {
                 hint.style.opacity = '1';
+                hint.style.transform = 'scale(1) translateY(0)';
+                hint.style.pointerEvents = 'auto';
+            }
+        }
+
+        function fetchCalendarData() {
+            if (API_KEY === 'DIN_GOOGLE_API_KEY') return;
+
+            gapi.client.init({
+                'apiKey': API_KEY,
+                'discoveryDocs': ["https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"],
+            }).then(function() {
+                const start = new Date();
+                start.setHours(0,0,0,0);
+                const end = new Date();
+                end.setDate(end.getDate() + 31);
+
+                const personalRequest = gapi.client.calendar.events.list({
+                    'calendarId': CALENDAR_ID,
+                    'timeMin': start.toISOString(),
+                    'timeMax': end.toISOString(),
+                    'singleEvents': true,
+                    'orderBy': 'startTime'
+                });
+
+                const holidayRequest = gapi.client.calendar.events.list({
+                    'calendarId': HOLIDAY_CALENDAR_ID,
+                    'timeMin': start.toISOString(),
+                    'timeMax': end.toISOString(),
+                    'singleEvents': true
+                });
+
+                return Promise.all([personalRequest, holidayRequest]);
+            }).then(function(responses) {
+                const personalEvents = responses[0].result.items;
+                const holidayEvents = responses[1].result.items;
+
+                const tempEvents = {};
+                personalEvents.forEach(event => {
+                    const s = event.start.dateTime || event.start.date;
+                    const key = s.split('T')[0];
+                    if (!tempEvents[key]) { tempEvents[key] = []; }
+                    tempEvents[key].push(event);
+                });
+                globalEventsCache = tempEvents;
+
+                const tempHolidays = {};
+                holidayEvents.forEach(h => {
+                    const s = h.start.date || h.start.dateTime;
+                    const key = s.split('T')[0];
+                    tempHolidays[key] = h.summary;
+                });
+                globalHolidaysCache = tempHolidays;
+
+                renderCalendarList();
+            }).catch(err => {
+                console.log("Feil under henting av kalenderdata:", err);
+                renderCalendarList();
+            });
+        }
+
+        function resetInactivityTimer() {
+            clearTimeout(inactivityTimeout);
+            inactivityTimeout = setTimeout(function() {
+                const panel = document.getElementById('event-container');
+                const isPortrait = window.matchMedia("(max-width: 900px) or (orientation: portrait)").matches;
+                if (isPortrait) {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                } else if (panel) {
+                    panel.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+            }, 180000); 
+        }
+
+        function setupInactivityListeners() {
+            const panel = document.getElementById('event-container');
+            panel.addEventListener('scroll', () => {
+                resetInactivityTimer();
+                handleScrollVisibility();
+            });
+            window.addEventListener('scroll', () => {
+                resetInactivityTimer();
+                handleScrollVisibility();
+            });
+            window.addEventListener('touchstart', resetInactivityTimer, true);
+            window.addEventListener('touchmove', resetInactivityTimer, true);
+            window.addEventListener('mousedown', resetInactivityTimer, true);
+            resetInactivityTimer();
+        }
+
+        async function requestWakeLock() {
+            try {
+                if ('wakeLock' in navigator) {
+                    wakeLock = await navigator.wakeLock.request('screen');
+                }
+            } catch (err) {}
+        }
+
+        function startApp() {
+            document.getElementById('start-overlay').style.display = 'none';
+            
+            try {
+                const docElm = document.documentElement;
+                if (docElm.requestFullscreen) { docElm.requestFullscreen(); }
+                else if (docElm.webkitRequestFullscreen) { docElm.webkitRequestFullscreen(); }
+            } catch (e) {}
+
+            requestWakeLock();
+            buildClockUI();
+            updateClockAndLayout();
+            renderCalendarList();
+            setupInactivityListeners();
+            
+            setInterval(updateClockAndLayout, 1000);
+
+            try {
+                gapi.load('client', () => {
+                    fetchCalendarData();
+                    setInterval(fetchCalendarData, 300000); 
+                });
+            } catch (gErr) {}
+        }
+    </script>
+</body>
+</html>
