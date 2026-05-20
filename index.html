@@ -256,7 +256,7 @@
         }
         .night-mode .event-time { color: #f87171; }
 
-        /* --- KORREKT GUL SKROLLEKNAPP MED MYK, FET, AVRUNDET PIL --- */
+        /* --- GUL SKROLLEKNAPP --- */
         .scroll-hint-btn {
             position: absolute;
             bottom: 25px;
@@ -283,7 +283,6 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
         
-        /* Den perfekte, tykke og avrundede pilen */
         .scroll-arrow-svg {
             width: 50px;
             height: 50px;
@@ -291,10 +290,10 @@
 
         .scroll-arrow-path {
             fill: none;
-            stroke: #d00000; /* Stoppskilt-rød */
-            stroke-width: 5.5; /* Gjør pilen skikkelig fet */
-            stroke-linecap: round; /* Runder av endene på skaftet og spissene */
-            stroke-linejoin: round; /* Runder av der pilspissen møtes */
+            stroke: #d00000; 
+            stroke-width: 5.5; 
+            stroke-linecap: round; 
+            stroke-linejoin: round; 
         }
 
         @keyframes miniPulseBounce {
@@ -411,7 +410,7 @@
 
         <div class="scroll-hint-btn" id="scroll-hint-element" onclick="scrollCalendarDown()">
             <svg class="scroll-arrow-svg" viewBox="0 0 24 24">
-                <path class="scroll-arrow-path" d="M12 4v14M6 12l6 6 6-6"/>
+                <path class="scroll-arrow-path" d="M 12 4 L 12 18 M 6 12 L 12 18 L 18 12"/>
             </svg>
         </div>
 
