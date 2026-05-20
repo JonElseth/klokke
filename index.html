@@ -137,7 +137,8 @@
             height: 100%;
             overflow-y: auto;
             scrollbar-width: none;
-            padding-bottom: 80px; /* Gir plass i bunnen så teksten ikke gjemmer seg bak knappen */
+            padding-bottom: 80px; 
+            pointer-events: auto !important; /* Sikrer at touch fungerer */
         }
         .right-panel::-webkit-scrollbar { 
             display: none; 
@@ -238,12 +239,12 @@
         }
         .night-mode .event-time { color: #f87171; }
 
-        /* --- FASTMONTERT SKROLLE-KNAPP / LEDETEXT NEDERST --- */
+        /* --- SKROLLE-KNAPP / LEDETEXT (LANDSKAPSMODUS) --- */
         .scroll-hint-btn {
             position: absolute;
             bottom: 10px;
             right: 0;
-            width: calc(58% - 20px); /* Ligger nøyaktig sentrert under kalender-kolonnen */
+            width: calc(58% - 20px); /* Sentrert under kalendersporet i landskap */
             background: #1e293b;
             color: #ffffff;
             text-align: center;
@@ -252,12 +253,13 @@
             font-size: 18px;
             font-weight: 700;
             box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-            z-index: 999;
+            z-index: 9999;
             display: flex;
             justify-content: center;
             align-items: center;
             gap: 10px;
             cursor: pointer;
+            pointer-events: auto !important; /* Tvinger Chrome til å tillate klikk */
             transition: opacity 0.4s ease, transform 0.4s ease;
             animation: pulseBounce 2.5s infinite;
         }
@@ -276,17 +278,17 @@
             50% { transform: translateY(4px); box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
         }
 
-        /* --- AUTOMATISK PORTRETTMODUS (STÅENDE SKJERM / MOBIL) --- */
+        /* --- AUTOMATISK PORTRETTMODUS (STÅENDE NETTBRETT / MOBIL) --- */
         @media (max-width: 900px) or (orientation: portrait) {
             body {
-                padding: 40px 30px;
-                overflow-y: auto; /* Tillater skrolling på hele kroppen hvis skjermen er kort */
+                padding: 40px 20px;
+                overflow-y: auto; 
             }
             
             .main-layout {
-                grid-template-columns: 1fr; /* Setter alt i én loddrett kolonne */
+                grid-template-columns: 1fr; 
                 grid-template-rows: auto 1fr;
-                gap: 40px;
+                gap: 30px;
                 height: auto;
                 overflow: visible;
             }
@@ -295,32 +297,32 @@
                 border-right: none;
                 border-bottom: 1px solid rgba(0,0,0,0.08);
                 padding-right: 0;
-                padding-bottom: 30px;
+                padding-bottom: 20px;
                 height: auto;
             }
             .night-mode .left-panel { border-bottom-color: rgba(255,255,255,0.08); }
 
             .analog-clock-svg {
-                width: 220px;
-                height: 220px;
+                width: 200px;
+                height: 200px;
             }
 
             .digital-time { font-size: 14vw; }
-            .date-text { font-size: 28px; }
+            .date-text { font-size: 26px; }
 
             .right-panel {
                 height: auto;
                 overflow: visible;
-                padding-bottom: 100px;
+                padding-bottom: 120px; /* God klaring over knappen */
             }
 
-            /* Justerer knappen slik at den spenner over hele bredden i stående modus */
+            /* KRITISK RETTING FOR MOBIL/PORTRETT: Knappen klistres fast nederst på skjermglasset */
             .scroll-hint-btn {
                 position: fixed;
                 bottom: 20px;
-                left: 30px;
-                right: 30px;
-                width: calc(100% - 60px);
+                left: 20px;
+                right: 20px;
+                width: calc(100% - 40px); /* Tar full bredde minus luft på sidene */
             }
         }
 
@@ -442,7 +444,6 @@
             document.getElementById('minute-hand').setAttribute('transform', `rotate(${m * 6 + s * 0.1} 50 50)`);
             document.getElementById('hour-hand').setAttribute('transform', `rotate(${(h % 12) * 30 + m * 0.5} 50 50)`);
 
-            // Bruker lokaltilpasset tidsvisning for storskjerm
             let hoursStr = String(h).padStart(2, '0');
             let minutesStr = String(m).padStart(2, '0');
             try {
@@ -549,20 +550,32 @@
             }
         }
 
-        // Knapp-skrolling
+        // RETTING: Dynamisk sjekk av svingretning (landskap vs portrett) for knappe-skrolling
         function scrollCalendarDown() {
             resetInactivityTimer();
-            const panel = document.getElementById('event-container');
-            panel.scrollBy({ top: 250, behavior: 'smooth' });
+            
+            // Hvis vi er i portrettmodus (mobil), skroller vi hele vinduet/kroppen. I landskap skroller vi panelet.
+            const isPortrait = window.matchMedia("(max-width: 900px) or (orientation: portrait)").matches;
+            
+            if (isPortrait) {
+                window.scrollBy({ top: 350, behavior: 'smooth' });
+            } else {
+                const panel = document.getElementById('event-container');
+                panel.scrollBy({ top: 250, behavior: 'smooth' });
+            }
         }
 
-        // Skjuler knappen hvis man skroller nedover i listen
+        // Tones ut ved skrolling slik at den ikke dekker innhold
         function handleScrollVisibility() {
             const panel = document.getElementById('event-container');
             const hint = document.getElementById('scroll-hint-element');
-            if (panel.scrollTop > 60) {
+            const isPortrait = window.matchMedia("(max-width: 900px) or (orientation: portrait)").matches;
+            
+            const currentScroll = isPortrait ? window.scrollY : panel.scrollTop;
+
+            if (currentScroll > 40) {
                 hint.style.opacity = '0';
-                hint.style.transform = 'translateY(10px)';
+                hint.style.transform = 'translateY(15px)';
                 hint.style.pointerEvents = 'none';
             } else {
                 hint.style.opacity = '1';
@@ -627,60 +640,40 @@
             });
         }
 
-        function resetInactivityTimer() {
+        function resetInactivityTimeout() {
             clearTimeout(inactivityTimeout);
             inactivityTimeout = setTimeout(function() {
-                const container = document.getElementById('event-container');
-                if (container) {
-                    container.scrollTo({ top: 0, behavior: 'smooth' });
+                const panel = document.getElementById('event-container');
+                const isPortrait = window.matchMedia("(max-width: 900px) or (orientation: portrait)").matches;
+                
+                if (isPortrait) {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                } else if (panel) {
+                    panel.scrollTo({ top: 0, behavior: 'smooth' });
                 }
             }, 180000); 
         }
 
         function setupInactivityListeners() {
             const panel = document.getElementById('event-container');
+            
+            // Lytter både på kalenderpanelet (landskap) og selve vinduet (portrett/mobil)
             panel.addEventListener('scroll', () => {
-                resetInactivityTimer();
+                resetInactivityTimeout();
+                handleScrollVisibility();
+            });
+            window.addEventListener('scroll', () => {
+                resetInactivityTimeout();
                 handleScrollVisibility();
             });
             
-            window.addEventListener('touchstart', resetInactivityTimer, true);
-            window.addEventListener('touchmove', resetInactivityTimer, true);
-            window.addEventListener('mousedown', resetInactivityTimer, true);
-            resetInactivityTimer();
+            window.addEventListener('touchstart', resetInactivityTimeout, true);
+            window.addEventListener('touchmove', resetInactivityTimeout, true);
+            window.addEventListener('mousedown', resetInactivityTimeout, true);
+            resetInactivityTimeout();
         }
 
         async function requestWakeLock() {
             try {
                 if ('wakeLock' in navigator) {
                     wakeLock = await navigator.wakeLock.request('screen');
-                }
-            } catch (err) {}
-        }
-
-        function startApp() {
-            document.getElementById('start-overlay').style.display = 'none';
-            
-            try {
-                const docElm = document.documentElement;
-                if (docElm.requestFullscreen) { docElm.requestFullscreen(); }
-            } catch (e) {}
-
-            requestWakeLock();
-            buildClockUI();
-            updateClockAndLayout();
-            renderCalendarList();
-            setupInactivityListeners();
-            
-            setInterval(updateClockAndLayout, 1000);
-
-            try {
-                gapi.load('client', () => {
-                    fetchCalendarData();
-                    setInterval(fetchCalendarData, 300000); 
-                });
-            } catch (gErr) {}
-        }
-    </script>
-</body>
-</html>
