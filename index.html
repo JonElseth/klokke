@@ -21,7 +21,10 @@
             justify-content: flex-start; 
             align-items: center;
             height: 100vh;
-            padding: 25px 20px 20px 20px; 
+            
+            /* SIKKERHETSSONE FOR DEKSELET */
+            padding: 60px 45px 55px 45px; 
+            
             overflow: hidden;
             transition: background 1.5s ease, color 1.5s ease;
             user-select: none;
@@ -121,7 +124,7 @@
         .night-mode #side-scroll-hint { background: #0a84ff; color: white; }
         .night-mode #home-btn { background: #2c2c2e; color: white; border: 2px solid rgba(255,255,255,0.2); }
 
-        /* --- STYLING FOR HILLIGDAGER --- */
+        /* --- STYLING FOR HELLIGDAGER --- */
         .holiday-title {
             color: #dc3545 !important; 
             font-weight: 800;
@@ -148,6 +151,28 @@
             color: #ffcc00 !important; 
         }
 
+        /* --- STARTKNAPPEN FOR OPPSTART --- */
+        #start-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background-color: #1c1c1e;
+            display: flex; justify-content: center; align-items: center;
+            z-index: 9999;
+            pointer-events: auto !important;
+        }
+
+        .start-btn {
+            padding: 25px 60px;
+            font-size: 3vw;
+            font-weight: 700;
+            background: #007aff;
+            color: white;
+            border: none;
+            border-radius: 8px; 
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(0, 122, 255, 0.3);
+        }
+
         /* --- ØVERSTE DEL: TITELPANEL --- */
         .top-section {
             width: 100%;
@@ -157,7 +182,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 25px; 
+            margin-bottom: 35px; 
         }
 
         .time {
@@ -200,11 +225,12 @@
             max-width: 1400px; 
             flex-grow: 1; 
             display: flex;
-            margin-bottom: 5px;
+            margin-bottom: 35px; 
             overflow-x: auto; 
             scroll-behavior: smooth; 
             position: relative;
             scrollbar-width: none; 
+            pointer-events: auto !important; 
         }
         .calendar-section::-webkit-scrollbar {
             display: none;
@@ -231,7 +257,7 @@
 
         @media (max-width: 1400px) {
             .day-card {
-                width: calc((100vw - 40px - (4 * 15px)) / 4.5); 
+                width: calc((100vw - 90px - (4 * 15px)) / 4.5); 
             }
         }
 
@@ -329,11 +355,11 @@
             50% { transform: translateY(4px); }
         }
 
-        /* --- SIDERULL-KNAPP (HØYRE) --- */
+        /* --- SIDERULL-KNAPP --- */
         #side-scroll-hint {
             position: fixed;
-            bottom: 35px;
-            right: 40px;
+            bottom: 65px; 
+            right: 65px;  
             display: flex;
             align-items: center;
             gap: 12px;
@@ -345,6 +371,7 @@
             z-index: 999;
             transition: opacity 0.4s ease, transform 0.4s ease;
             cursor: pointer;
+            pointer-events: auto !important;
             animation: bounceHoriz 2s infinite;
         }
 
@@ -359,11 +386,11 @@
             50% { transform: translateX(8px); }
         }
 
-        /* --- HJEM-KNAPP (VENSTRE) --- */
+        /* --- HJEM-KNAPP --- */
         #home-btn {
             position: fixed;
-            bottom: 35px;
-            left: 40px;
+            bottom: 65px; 
+            left: 65px;  
             display: flex;
             align-items: center;
             gap: 10px;
@@ -380,7 +407,11 @@
         }
     </style>
 </head>
-<body onload="initApp()">
+<body>
+
+    <div id="start-overlay">
+        <button class="start-btn" onclick="startApp()">Start systemet</button>
+    </div>
 
     <div class="top-section glass-panel">
         <div class="time" id="clock">00:00</div>
@@ -412,310 +443,4 @@
         const HOLIDAY_CALENDAR_ID = 'no.norwegian#holiday@group.v.calendar.google.com'; 
 
         const ukeDager = ["Søndag", "Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag", "Lørdag"];
-        const maaneder = ["januar", "februar", "mars", "april", "mai", "juni", "juli", "august", "september", "oktober", "november", "desember"];
-        
-        let wakeLock = null;
-        let returnTimeout = null;
-        
-        let globalEventsCache = {}; 
-        let globalHolidaysCache = {}; 
-        
-        const scrollContainer = document.getElementById('scroll-container');
-        const sideHint = document.getElementById('side-scroll-hint');
-        const homeBtn = document.getElementById('home-btn');
-
-        function scrollCalendarForward() {
-            resetReturnTimer();
-            const cardWidth = document.querySelector('.day-card').clientWidth;
-            scrollContainer.scrollBy({ left: cardWidth * 3, behavior: 'smooth' });
-        }
-
-        function scrollBoxDownward(listId) {
-            resetReturnTimer();
-            const listEl = document.getElementById(listId);
-            if (listEl) {
-                listEl.scrollBy({ top: 120, behavior: 'smooth' });
-            }
-        }
-
-        function returnToHomePosition() {
-            scrollContainer.scrollTo({ left: 0, behavior: 'smooth' });
-            const activeLists = document.querySelectorAll('.event-list');
-            activeLists.forEach(list => {
-                list.scrollTo({ top: 0, behavior: 'smooth' });
-            });
-            resetReturnTimer();
-        }
-
-        function handleButtonVisibilities() {
-            if (scrollContainer.scrollLeft > 50) {
-                sideHint.style.opacity = '0'; 
-                sideHint.style.transform = 'scale(0.9) translateX(10px)';
-                sideHint.style.pointerEvents = 'none'; 
-                
-                homeBtn.style.opacity = '1';
-                homeBtn.style.transform = 'scale(1) translateX(0)';
-                homeBtn.style.pointerEvents = 'auto';
-            } else {
-                sideHint.style.opacity = '1'; 
-                sideHint.style.transform = 'scale(1) translateX(0)';
-                sideHint.style.pointerEvents = 'auto'; 
-                
-                homeBtn.style.opacity = '0';
-                homeBtn.style.transform = 'scale(0.9) translateX(-10px)';
-                homeBtn.style.pointerEvents = 'none';
-            }
-        }
-
-        function resetReturnTimer() {
-            clearTimeout(returnTimeout);
-            returnTimeout = setTimeout(returnToHomePosition, 180000); 
-        }
-
-        scrollContainer.addEventListener('scroll', () => {
-            resetReturnTimer();
-            handleButtonVisibilities();
-        });
-
-        async function requestWakeLock() {
-            try {
-                if ('wakeLock' in navigator) {
-                    wakeLock = await navigator.wakeLock.request('screen');
-                }
-            } catch (err) { console.log("Skjermlås ikke tilgjengelig."); }
-        }
-
-        function initApp() {
-            requestWakeLock();
-            updateClockAndLayout();
-            combineAndRenderGrid(); 
-            resetReturnTimer();
-            handleButtonVisibilities();
-            
-            try {
-                gapi.load('client', () => {
-                    fetchBothCalendars();
-                    setInterval(fetchBothCalendars, 300000); 
-                });
-            } catch (gErr) { console.log("Google API lastefeil: ", gErr); }
-        }
-
-        function updateClockAndLayout() {
-            const now = new Date();
-            let hours = String(now.getHours()).padStart(2, '0');
-            let minutes = String(now.getMinutes()).padStart(2, '0');
-            
-            try {
-                hours = now.toLocaleTimeString('no-NO', { hour: '2-digit', hour12: false, timeZone: 'Europe/Oslo' });
-                minutes = now.toLocaleTimeString('no-NO', { minute: '2-digit', timeZone: 'Europe/Oslo' }).padStart(2, '0');
-            } catch(e) {}
-            
-            document.getElementById('clock').textContent = `${hours}:${minutes}`;
-
-            let dateString = "Ukedag";
-            try {
-                const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Europe/Oslo' };
-                dateString = now.toLocaleDateString('no-NO', options).replace('.', '');
-            } catch(e) {}
-            document.getElementById('date').textContent = dateString;
-
-            const intHours = parseInt(hours, 10);
-            const isNight = (intHours >= 22 || intHours < 7);
-            document.body.className = isNight ? "night-mode" : "day-mode";
-
-            let periodText = "";
-            let periodBg = "";
-            let periodFg = "";
-            
-            if (intHours >= 7 && intHours < 9) { 
-                periodText = "Det er morgen"; 
-                periodBg = isNight ? "#ffcc00" : "#ffebd6"; 
-                periodFg = isNight ? "#000000" : "#7a583a";
-            } else if (intHours >= 9 && intHours < 12) { 
-                periodText = "Det er formiddag"; 
-                periodBg = isNight ? "#ff9f0a" : "#ffe0cc"; 
-                periodFg = isNight ? "#000000" : "#a63a00";
-            } else if (intHours >= 12 && intHours < 18) { 
-                periodText = "Det er ettermiddag"; 
-                periodBg = isNight ? "#ffffff" : "#e2e2e7"; 
-                periodFg = "#111111";
-            } else if (intHours >= 18 && intHours < 22) { 
-                periodText = "Det er kveld"; 
-                periodBg = isNight ? "#ff9f0a" : "#ffe0cc"; 
-                periodFg = isNight ? "#000000" : "#ba4300";
-            } else { 
-                periodText = "Det er natt"; 
-                periodBg = isNight ? "#1f3a60" : "#003bb3"; 
-                periodFg = "#ffffff";
-            }
-
-            const periodElement = document.getElementById('period');
-            periodElement.textContent = periodText;
-            periodElement.style.backgroundColor = periodBg;
-            periodElement.style.color = periodFg;
-        }
-
-        function updateScrollIndicators(listEl, indicatorEl) {
-            const hasMoreToScroll = listEl.scrollHeight > listEl.clientHeight;
-            const isAtBottom = listEl.scrollHeight - listEl.scrollTop <= listEl.clientHeight + 5;
-
-            if (hasMoreToScroll && !isAtBottom) {
-                indicatorEl.style.display = 'flex'; 
-            } else {
-                indicatorEl.style.display = 'none'; 
-            }
-        }
-
-        function combineAndRenderGrid() {
-            const grid = document.getElementById('calendar-grid');
-            grid.innerHTML = '';
-            
-            const today = new Date();
-
-            for (let i = -1; i < 30; i++) {
-                const currentDay = new Date();
-                currentDay.setDate(today.getDate() + i);
-                
-                const dayString = currentDay.toISOString().split('T')[0];
-                const isYesterday = i === -1;
-                const isToday = i === 0;
-                
-                const holidayName = globalHolidaysCache[dayString] || null;
-                const isHoliday = holidayName !== null;
-
-                const card = document.createElement('div');
-                if (isYesterday) card.className = 'day-card yesterday-card';
-                else if (isToday) card.className = 'day-card today-card'; 
-                else if (!globalEventsCache[dayString] || globalEventsCache[dayString].length === 0) card.className = 'day-card empty-day'; 
-                else card.className = 'day-card'; 
-
-                let dayName = ukeDager[currentDay.getDay()];
-                const dateNum = currentDay.getDate();
-                const monthName = maaneder[currentDay.getMonth()];
-                
-                if (isYesterday) dayName = `I GÅR<br>${dateNum}. ${monthName}`;
-                else if (isToday) dayName = `I DAG<br>${dateNum}. ${monthName}`;
-                else dayName = `${dayName.toUpperCase()}<br>${dateNum}. ${monthName}`;
-
-                const useRedTitle = (currentDay.getDay() === 0 || isHoliday) && !isToday && !isYesterday;
-
-                card.innerHTML = `
-                    <div class="day-name ${useRedTitle ? 'holiday-title' : ''}">${dayName}</div>
-                    ${isHoliday ? `<div class="holiday-text">${holidayName}</div>` : ''}
-                    <div class="event-list-wrapper">
-                        <ul class="event-list" id="list-${dayString}"></ul>
-                        <div class="scroll-indicator" id="arrow-${dayString}" onclick="scrollBoxDownward('list-${dayString}')">↓</div>
-                    </div>
-                `;
-                
-                grid.appendChild(card);
-                const listEl = card.querySelector('.event-list');
-                const indicatorEl = card.querySelector('.scroll-indicator');
-
-                let hasValidEvents = false;
-
-                if (globalEventsCache[dayString] && globalEventsCache[dayString].length > 0) {
-                    globalEventsCache[dayString].forEach(ev => {
-                        hasValidEvents = true;
-                        let timeStr = 'Hele dagen';
-                        try {
-                            timeStr = ev.start.dateTime ? new Date(ev.start.dateTime).toLocaleTimeString('no-NO', {hour: '2-digit', minute:'2-digit', timeZone: 'Europe/Oslo'}) : 'Hele dagen';
-                        } catch(e) {}
-                        
-                        const li = document.createElement('li');
-                        li.className = 'event-item';
-                        
-                        const timeSpan = document.createElement('span');
-                        timeSpan.className = 'event-time';
-                        timeSpan.textContent = timeStr;
-                        li.appendChild(timeSpan);
-
-                        const summarySpan = document.createElement('span');
-                        summarySpan.className = 'event-summary-text';
-                        summarySpan.textContent = ev.summary || '';
-                        
-                        li.appendChild(summarySpan);
-                        listEl.appendChild(li);
-                    });
-                }
-
-                if (!hasValidEvents) {
-                    const noEvLi = document.createElement('li');
-                    noEvLi.className = 'no-events';
-                    noEvLi.textContent = 'Ingen planer';
-                    listEl.appendChild(noEvLi);
-                }
-
-                listEl.addEventListener('scroll', () => {
-                    updateScrollIndicators(listEl, indicatorEl);
-                    resetReturnTimer();
-                });
-                
-                setTimeout(() => updateScrollIndicators(listEl, indicatorEl), 100);
-            }
-        }
-
-        function fetchBothCalendars() {
-            if (API_KEY === 'DIN_GOOGLE_API_KEY') { return; }
-
-            gapi.client.init({
-                'apiKey': API_KEY,
-                'discoveryDocs': ["https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"],
-            }).then(function() {
-                const startPeriod = new Date();
-                startPeriod.setDate(startPeriod.getDate() - 1);
-                startPeriod.setHours(0,0,0,0);
-                
-                const endPeriod = new Date();
-                endPeriod.setDate(endPeriod.getDate() + 31); 
-
-                const personalRequest = gapi.client.calendar.events.list({
-                    'calendarId': CALENDAR_ID,
-                    'timeMin': startPeriod.toISOString(),
-                    'timeMax': endPeriod.toISOString(),
-                    'showDeleted': false,
-                    'singleEvents': true,
-                    'orderBy': 'startTime'
-                });
-
-                const holidayRequest = gapi.client.calendar.events.list({
-                    'calendarId': HOLIDAY_CALENDAR_ID,
-                    'timeMin': startPeriod.toISOString(),
-                    'timeMax': endPeriod.toISOString(),
-                    'showDeleted': false,
-                    'singleEvents': true
-                });
-
-                return Promise.all([personalRequest, holidayRequest]);
-            }).then(function(responses) {
-                const personalEvents = responses[0].result.items;
-                const holidayEvents = responses[1].result.items;
-
-                const tempEvents = {};
-                personalEvents.forEach(event => {
-                    const start = event.start.dateTime || event.start.date;
-                    const dateKey = start.split('T')[0];
-                    if (!tempEvents[dateKey]) { tempEvents[dateKey] = []; }
-                    tempEvents[dateKey].push(event);
-                });
-                globalEventsCache = tempEvents;
-
-                const tempHolidays = {};
-                holidayEvents.forEach(holiday => {
-                    const start = holiday.start.date || holiday.start.dateTime;
-                    const dateKey = start.split('T')[0];
-                    tempHolidays[dateKey] = holiday.summary; 
-                });
-                globalHolidaysCache = tempHolidays;
-
-                combineAndRenderGrid();
-            }).catch(err => {
-                console.log("Feil under henting av kalenderdata: ", err);
-                combineAndRenderGrid();
-            });
-        }
-
-        setInterval(updateClockAndLayout, 5000);
-    </script>
-</body>
-</html>
+        const maaneder =
