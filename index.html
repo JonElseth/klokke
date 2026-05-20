@@ -2,11 +2,20 @@
 <html lang="no">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
     
     <meta name="robots" content="noindex, nofollow">
     
     <title>Digital og Analog Seniorkalender</title>
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#ffffff" id="theme-meta">
+    
+    <link rel="shortcut icon" href="https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/calendar_today/default/48px.svg">
+    <link rel="manifest" href='data:application/json,{"name":"Seniorkalender","short_name":"Kalender","start_url":".","display":"standalone","orientation":"landscape","background_color":"#ffffff","theme_color":"#ffffff"}'>
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
@@ -31,7 +40,7 @@
             transition: background 1.5s ease, color 1.5s ease;
         }
 
-        /* --- TEMAER FLYTTET TIL BODY SÅ MARGENE SKIFTER FARGE --- */
+        /* --- TEMAER --- */
         body.day-mode { 
             background: #ffffff; 
             color: #1e293b; 
@@ -377,7 +386,9 @@
         }
     </style>
 </head>
-<body class="day-mode"> <div id="start-overlay">
+<body class="day-mode">
+
+    <div id="start-overlay">
         <button class="start-btn" onclick="startApp()">Vis klokke & kalender</button>
     </div>
 
@@ -488,9 +499,11 @@
             const yearNum = now.getFullYear();
             document.getElementById('date-text').textContent = `${dayName} ${dayNum}. ${monthName} ${yearNum}`;
 
-            // JON: RETTET HER - NÅ OPPDATERES KLASSEN DIREKTE PÅ DET YTTERSTE ELEMENTET (DOCUMENT.BODY)
             const isNight = h >= 22 || h < 7;
             document.body.className = isNight ? "night-mode" : "day-mode";
+            
+            // Justerer systemets temafarge dynamisk for overlinjen i Android
+            document.getElementById('theme-meta').setAttribute('content', isNight ? '#0f172a' : '#ffffff');
             
             let periodText = "Det er natt";
             let periodClass = "period-natt";
@@ -713,6 +726,7 @@
         function startApp() {
             document.getElementById('start-overlay').style.display = 'none';
             
+            // BER NETTLESEREN OM EKTE FULLSKJERM (Skjuler systemlinjer og klokke i Android)
             try {
                 const docElm = document.documentElement;
                 if (docElm.requestFullscreen) { docElm.requestFullscreen(); }
