@@ -7,6 +7,10 @@
     <meta name="robots" content="noindex, nofollow">
     
     <title>Digital og Analog Seniorkalender</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+    
     <style>
         * {
             box-sizing: border-box;
@@ -15,198 +19,226 @@
         }
 
         body {
-            font-family: '-apple-system', BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             height: 100vh;
             width: 100vw;
+            margin: 0;
+            font-family: 'Lato', sans-serif;
             overflow: hidden;
             user-select: none;
             
             /* SIKKERHETSSONE FOR DET FYSISKE DEKSELET */
-            padding: 60px 50px; 
-            
-            display: flex;
-            gap: 50px; /* Luft mellom venstre og høyre halvdel */
+            padding: 79px 60px 74px 60px; 
+            gap: 60px;
             transition: background 1.5s ease, color 1.5s ease;
         }
 
         /* --- TEMAER --- */
         .day-mode { 
             background: #ffffff; 
-            color: #000000; 
+            color: #1e293b; 
         }
         .night-mode { 
-            background: #0b0f19; 
-            color: #ffffff; 
+            background: #0f172a; 
+            color: #f8fafc; 
         }
 
-        /* --- VENSTRE HALVDEL: TID OG INFO --- */
+        /* --- VENSTRE HALVDEL: KLOKKER OG DATO --- */
         .left-panel {
-            width: 45%;
-            height: 100%;
+            flex: 0 0 42%;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: space-between;
-            padding: 10px 0;
+            height: 100%;
+            border-right: 1px solid rgba(0,0,0,0.08);
+            padding-right: 40px;
+        }
+        .night-mode .left-panel {
+            border-right: 1px solid rgba(255,255,255,0.08);
         }
 
-        /* Analog Klokke med SVG-grafikk */
-        .analog-clock {
-            width: 28vh;
-            height: 28vh;
-            position: relative;
+        /* Analog Klokke */
+        .analog-clock-svg {
+            width: 320px;
+            height: 320px;
         }
-        .clock-face { fill: none; stroke: none; }
-        .clock-text { font-weight: 700; font-size: 11px; text-anchor: middle; dominant-baseline: middle; }
-        .day-mode .clock-text { fill: #000000; }
-        .night-mode .clock-text { fill: #ffffff; }
         
-        .hour-tick { stroke-width: 2.5; stroke-linecap: round; }
-        .day-mode .hour-tick { stroke: #000000; }
-        .night-mode .hour-tick { stroke: #ffffff; }
+        .clock-face { fill: none; }
+        .tick-minute { stroke: #334155; stroke-width: 0.6; }
+        .tick-hour { stroke: #1e293b; stroke-width: 2.8; stroke-linecap: round; }
+        .clock-number { 
+            font-family: 'Poppins', sans-serif; 
+            font-weight: 700; 
+            font-size: 8.5px; 
+            fill: #1e293b; 
+            text-anchor: middle; 
+            dominant-baseline: middle; 
+        }
 
         .hand { stroke-linecap: round; }
-        .hour-hand { stroke-width: 5; }
-        .minute-hand { stroke-width: 3.5; }
-        .second-hand { stroke-width: 1.5; stroke: #dc3545; }
-        
-        .day-mode .hour-hand, .day-mode .minute-hand { stroke: #000000; }
-        .night-mode .hour-hand, .night-mode .minute-hand { stroke: #ffffff; }
+        .hand-hour { stroke: #1e293b; stroke-width: 5; }
+        .hand-minute { stroke: #1e293b; stroke-width: 3.5; }
+        .hand-second { stroke: #ef4444; stroke-width: 1.2; }
+        .center-dot { fill: #ef4444; }
 
-        /* Digital tidsvisning */
+        .night-mode .tick-minute { stroke: #94a3b8; }
+        .night-mode .tick-hour, .night-mode .clock-number, .night-mode .hand-hour, .night-mode .hand-minute { fill: #f8fafc; stroke: #f8fafc; }
+
+        /* Digital og Periode */
         .digital-time {
-            font-size: 10.5vw;
-            font-weight: 800;
+            font-family: 'Poppins', sans-serif;
+            font-size: 140px;
+            font-weight: 700;
             line-height: 0.9;
-            letter-spacing: -2px;
-            margin-top: 10px;
+            margin: 10px 0;
+            letter-spacing: -4px;
+            text-align: center;
+        }
+
+        .date-display {
+            text-align: center;
+            width: 100%;
         }
 
         .date-text {
-            font-size: 3.2vw;
-            font-weight: 800;
-            text-align: center;
+            font-family: 'Poppins', sans-serif;
+            font-size: 38px;
+            font-weight: 700;
+            margin-bottom: 12px;
             line-height: 1.1;
-            margin-top: 15px;
         }
 
-        .period-container {
-            font-size: 2.8vw;
-            font-weight: 800;
-            padding: 12px 35px;
-            border-radius: 30px;
-            margin-top: 15px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        .period-text {
+            font-size: 28px;
+            font-weight: 700;
+            background: #e2e8f0;
+            padding: 8px 30px;
+            border-radius: 50px;
             display: inline-block;
-            text-align: center;
+            color: #1e293b;
+        }
+        .night-mode .period-text { 
+            background: #1e293b; 
+            color: #f8fafc;
         }
 
-        /* --- HØYRE HALVDEL: VERTIKAL LISTE OVER PLANER --- */
+        /* --- HØYRE PANEL: AVTALER (VERTIKAL LISTE) --- */
         .right-panel {
-            width: 55%;
+            flex: 1;
             height: 100%;
             overflow-y: auto;
-            scrollbar-width: none; /* Skjuler skrollefelt */
-            padding-right: 10px;
+            scrollbar-width: none;
         }
-        .right-panel::-webkit-scrollbar {
-            display: none;
+        .right-panel::-webkit-scrollbar { 
+            display: none; 
         }
 
-        .day-group {
+        .day-section {
             width: 100%;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
 
-        /* Stiplet skillestrek nøyaktig som på skissen din */
-        .day-group::after {
+        /* Stiplet skillelinje */
+        .day-section:not(:last-child)::after {
             content: "";
             display: block;
             width: 100%;
-            margin-top: 20px;
-            border-bottom: 2px dashed #000000;
-            opacity: 0.3;
+            border-bottom: 2px dashed #cbd5e1;
+            margin-top: 25px;
         }
-        .night-mode .day-group::after {
-            border-bottom: 2px dashed #ffffff;
-        }
-        .day-group:last-child::after {
-            display: none; /* Ingen strek etter siste dag */
+        .night-mode .day-section:not(:last-child)::after { 
+            border-color: #334155; 
         }
 
-        .day-header {
-            font-size: 2.2vw;
-            font-weight: 800;
-            margin-bottom: 12px;
+        .day-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 15px;
             text-transform: capitalize;
         }
-        
-        .holiday-header-text {
-            font-size: 1.5vw;
-            color: #dc3545;
+
+        .holiday-text {
+            font-size: 20px;
+            color: #ef4444;
             font-weight: 700;
             font-style: italic;
-            margin-top: -8px;
-            margin-bottom: 12px;
+            margin-top: -10px;
+            margin-bottom: 15px;
             text-transform: uppercase;
         }
 
         .event-list {
             list-style: none;
-            padding-left: 20px;
+            padding-left: 25px;
         }
 
         .event-item {
-            font-size: 1.8vw;
-            font-weight: 700;
-            margin-bottom: 10px;
+            font-size: 24px;
+            margin-bottom: 12px;
             line-height: 1.3;
             position: relative;
+            font-weight: 400;
         }
-        
-        /* Punkttegn (bullet) på listen */
+
+        /* Punkttegn */
         .event-item::before {
             content: "•";
             position: absolute;
-            left: -20px;
-            font-size: 2.2vw;
+            left: -25px;
+            font-size: 30px;
             line-height: 1;
+            color: #64748b;
+        }
+        .night-mode .event-item::before {
+            color: #94a3b8;
         }
 
         .event-time {
-            color: #dc3545; /* Rød tid nøyaktig som på tegningen */
-            font-weight: 800;
-            margin-right: 8px;
+            color: #ef4444; 
+            font-weight: 700;
+            margin-right: 10px;
         }
         .night-mode .event-time {
-            color: #ff453a;
+            color: #f87171;
+        }
+
+        .no-events-container {
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         .no-events-text {
-            font-size: 1.8vw;
-            font-weight: 700;
+            font-size: 28px;
+            font-weight: 400;
             font-style: italic;
             opacity: 0.5;
-            padding-left: 20px;
         }
 
-        /* STARTKNAPPEN FOR KIOSK-OPPSTART */
+        /* START-OVERLAY FOR KIOSK-OPPSTART */
         #start-overlay {
             position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            background-color: #1c1c1e;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #0f172a;
             display: flex; justify-content: center; align-items: center;
             z-index: 99999;
         }
         .start-btn {
             padding: 25px 60px;
-            font-size: 3vw;
-            font-weight: 700;
-            background: #007aff;
+            font-size: 32px;
+            font-family: 'Poppins', sans-serif;
+            background: #3b82f6;
             color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: 12px;
             cursor: pointer;
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
         }
     </style>
 </head>
@@ -217,45 +249,29 @@
     </div>
 
     <div class="left-panel">
-        <svg class="analog-clock" viewBox="0 0 100 100">
-            <circle class="clock-face" cx="50" cy="50" r="48"/>
-            <text class="clock-text" x="50" y="10">12</text>
-            <text class="clock-text" x="71" y="16">1</text>
-            <text class="clock-text" x="86" y="30">2</text>
-            <text class="clock-text" x="92" y="50">3</text>
-            <text class="clock-text" x="86" y="70">4</text>
-            <text class="clock-text" x="71" y="85">5</text>
-            <text class="clock-text" x="50" y="91">6</text>
-            <text class="clock-text" x="29" y="85">7</text>
-            <text class="clock-text" x="14" y="70">8</text>
-            <text class="clock-text" x="8" y="50">9</text>
-            <text class="clock-text" x="14" y="30">10</text>
-            <text class="clock-text" x="29" y="16">11</text>
-            
-            <line class="hour-tick" x1="50" y1="2" x2="50" y2="5" />
-            <line class="hour-tick" x1="98" y1="50" x2="95" y2="50" />
-            <line class="hour-tick" x1="50" y1="98" x2="50" y2="95" />
-            <line class="hour-tick" x1="2" y1="50" x2="5" y2="50" />
-
-            <line id="hour-hand" class="hand hour-hand" x1="50" y1="50" x2="50" y2="28" />
-            <line id="minute-hand" class="hand minute-hand" x1="50" y1="50" x2="50" y2="16" />
-            <line id="second-hand" class="hand second-hand" x1="50" y1="50" x2="50" y2="12" />
-            <circle cx="50" cy="50" r="2" fill="#dc3545"/>
+        <svg class="analog-clock-svg" viewBox="0 0 100 100" id="analog-clock">
+            <circle cx="50" cy="50" r="48" class="clock-face" />
+            <g id="ticks"></g>
+            <g id="numbers"></g>
+            <line id="hour-hand" class="hand hand-hour" x1="50" y1="50" x2="50" y2="30" />
+            <line id="minute-hand" class="hand hand-minute" x1="50" y1="50" x2="50" y2="18" />
+            <line id="second-hand" class="hand hand-second" x1="50" y1="50" x2="50" y2="12" />
+            <circle cx="50" cy="50" r="2.5" class="center-dot" />
         </svg>
 
-        <div style="text-align: center; width: 100%;">
-            <div class="digital-time" id="clock">00:00</div>
-            <div class="date-text" id="date">Onsdag 20 Mai 2026</div>
-            <div class="period-container" id="period">Det er ettermiddag</div>
+        <div class="date-display">
+            <div class="digital-time" id="digital-clock">00:00</div>
+            <div class="date-text" id="date-text">Ukedag 1. januar</div>
+            <div class="period-text" id="period-text">Det er...</div>
         </div>
     </div>
 
-    <div class="right-panel" id="calendar-container">
+    <div class="right-panel" id="event-container">
         </div>
 
     <script src="https://apis.google.com/js/api.js"></script>
     <script>
-        // --- GOOGLE INTEGRASJON ---
+        // --- GOOGLE API-KONFIGURASJON ---
         const API_KEY = 'AIzaSyDabiLiH6tR1bonxhjgNqq9PoTSa9wogzE';
         const CALENDAR_ID = '6836a3463ada75841f11c52afbd588f7467b5c7014a9ac8118e24205f42d301c@group.calendar.google.com'; 
         const HOLIDAY_CALENDAR_ID = 'no.norwegian#holiday@group.v.calendar.google.com'; 
@@ -267,143 +283,143 @@
         let globalHolidaysCache = {}; 
         let wakeLock = null;
 
-        function startApp() {
-            document.getElementById('start-overlay').style.display = 'none';
-
-            try {
-                if (document.documentElement.requestFullscreen) { document.documentElement.requestFullscreen(); }
-            } catch (e) {}
-
-            if ('wakeLock' in navigator) {
-                navigator.wakeLock.request('screen').then(lock => { wakeLock = lock; });
+        function buildClockUI() {
+            const ticksG = document.getElementById('ticks');
+            const numsG = document.getElementById('numbers');
+            ticksG.innerHTML = '';
+            numsG.innerHTML = '';
+            
+            for (let i = 0; i < 60; i++) {
+                const isHour = i % 5 === 0;
+                const angle = (i * 6) * (Math.PI / 180);
+                const r1 = isHour ? 41 : 44;
+                const r2 = 48;
+                const x1 = 50 + r1 * Math.sin(angle);
+                const y1 = 50 - r1 * Math.cos(angle);
+                const x2 = 50 + r2 * Math.sin(angle);
+                const y2 = 50 - r2 * Math.cos(angle);
+                
+                const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                line.setAttribute("x1", x1); line.setAttribute("y1", y1);
+                line.setAttribute("x2", x2); line.setAttribute("y2", y2);
+                line.classList.add(isHour ? "tick-hour" : "tick-minute");
+                ticksG.appendChild(line);
             }
 
-            updateClock();
-            renderCalendarList();
-            
-            setInterval(updateClock, 1000); // Oppdaterer viserne og uret hvert sekund
-
-            try {
-                gapi.load('client', () => {
-                    fetchCalendarData();
-                    setInterval(fetchCalendarData, 300000); 
-                });
-            } catch (err) {}
+            for (let i = 1; i <= 12; i++) {
+                const angle = (i * 30) * (Math.PI / 180);
+                const r = 33; 
+                const x = 50 + r * Math.sin(angle);
+                const y = 50 - r * Math.cos(angle) + 0.5; 
+                
+                const txt = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                txt.setAttribute("x", x); txt.setAttribute("y", y);
+                txt.classList.add("clock-number");
+                txt.textContent = i;
+                numsG.appendChild(txt);
+            }
         }
 
-        function updateClock() {
+        function updateClockAndLayout() {
             const now = new Date();
-            
-            // 1. ANALOGT UR: Regn ut rotasjon for viserne
-            const secs = now.getSeconds();
-            const mins = now.getMinutes();
-            const hrs = now.getHours();
+            const s = now.getSeconds();
+            const m = now.getMinutes();
+            const h = now.getHours();
 
-            const secAngle = secs * 6;
-            const minAngle = mins * 6 + secs * 0.1;
-            const hrAngle = (hrs % 12) * 30 + mins * 0.5;
+            document.getElementById('second-hand').setAttribute('transform', `rotate(${s * 6} 50 50)`);
+            document.getElementById('minute-hand').setAttribute('transform', `rotate(${m * 6 + s * 0.1} 50 50)`);
+            document.getElementById('hour-hand').setAttribute('transform', `rotate(${(h % 12) * 30 + m * 0.5} 50 50)`);
 
-            document.getElementById('second-hand').setAttribute('transform', `rotate(${secAngle} 50 50)`);
-            document.getElementById('minute-hand').setAttribute('transform', `rotate(${minAngle} 50 50)`);
-            document.getElementById('hour-hand').setAttribute('transform', `rotate(${hrAngle} 50 50)`);
+            document.getElementById('digital-clock').textContent = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
 
-            // 2. DIGITALT UR
-            const hoursStr = String(hrs).padStart(2, '0');
-            const minsStr = String(mins).padStart(2, '0');
-            document.getElementById('clock').textContent = `${hoursStr}:${minsStr}`;
-
-            // 3. DATO PÅ FORMEN: "Onsdag 20 Mai 2026"
             const dayName = ukeDager[now.getDay()];
             const dayNum = now.getDate();
-            const monthName = maaneder[now.getMonth()];
+            const monthName = maaneder[now.getMonth()].toLowerCase();
             const yearNum = now.getFullYear();
-            document.getElementById('date').textContent = `${dayName} ${dayNum} ${monthName} ${yearNum}`;
+            document.getElementById('date-text').textContent = `${dayName} ${dayNum}. ${monthName} ${yearNum}`;
 
-            // 4. DAGS/NATTPERIODE OG BAKGRUNNSTEMA
-            const isNight = (hrs >= 22 || hrs < 7);
+            const isNight = h >= 22 || h < 7;
             document.body.className = isNight ? "night-mode" : "day-mode";
-
-            let periodText = "";
-            let periodBg = "";
-            let periodFg = "";
-
-            if (hrs >= 7 && hrs < 9) { periodText = "Det er morgen"; periodBg = "#ffebd6"; periodFg = "#7a583a"; }
-            else if (hrs >= 9 && hrs < 12) { periodText = "Det er formiddag"; periodBg = "#ffe0cc"; periodFg = "#a63a00"; }
-            else if (hrs >= 12 && hrs < 18) { periodText = "Det er ettermiddag"; periodBg = "#e2e2e7"; periodFg = "#000000"; }
-            else if (hrs >= 18 && hrs < 22) { periodText = "Det er kveld"; periodBg = "#ffe0cc"; periodFg = "#ba4300"; }
-            else { periodText = "Det er natt"; periodBg = "#1f3a60"; periodFg = "#ffffff"; }
-
-            const periodEl = document.getElementById('period');
-            periodEl.textContent = periodText;
-            periodEl.style.backgroundColor = periodBg;
-            periodEl.style.color = periodFg;
+            
+            let periodText = "Det er natt";
+            if (h >= 7 && h < 10) periodText = "Det er morgen";
+            else if (h >= 10 && h < 12) periodText = "Det er formiddag";
+            else if (h >= 12 && h < 18) periodText = "Det er ettermiddag";
+            else if (h >= 18 && h < 22) periodText = "Det er kveld";
+            document.getElementById('period-text').textContent = periodText;
         }
 
         function renderCalendarList() {
-            const container = document.getElementById('calendar-container');
+            const container = document.getElementById('event-container');
             container.innerHTML = '';
             
             const today = new Date();
+            let totalDaysRendered = 0;
 
-            // Vi henter og viser de neste 4 dagene nedover på skjermen
-            for (let i = 0; i < 4; i++) {
+            // Løper gjennom de neste 30 dagene for å finne dager med innhold
+            for (let i = 0; i < 30; i++) {
                 const currentDay = new Date();
                 currentDay.setDate(today.getDate() + i);
                 const dateKey = currentDay.toISOString().split('T')[0];
 
-                const dayGroup = document.createElement('div');
-                dayGroup.className = 'day-group';
+                const hasPersonalEvents = globalEventsCache[dateKey] && globalEventsCache[dateKey].length > 0;
+                const hasHoliday = globalHolidaysCache[dateKey];
 
-                // Formaterer overskriften, f.eks: "Fredag 28. desember:"
+                // Hvis dagen hverken har avtaler eller er helligdag, hopper vi glatt over den!
+                if (!hasPersonalEvents && !hasHoliday) {
+                    continue;
+                }
+
+                totalDaysRendered++;
+
+                const daySection = document.createElement('div');
+                daySection.className = 'day-section';
+
                 const dayName = ukeDager[currentDay.getDay()];
                 const dateNum = currentDay.getDate();
                 const monthName = maaneder[currentDay.getMonth()].toLowerCase();
                 
-                const header = document.createElement('div');
-                header.className = 'day-header';
-                header.innerHTML = `${dayName} ${dateNum}. ${monthName}:`;
-                dayGroup.appendChild(header);
+                const title = document.createElement('div');
+                title.className = 'day-title';
+                title.textContent = `${dayName} ${dateNum}. ${monthName}:`;
+                daySection.appendChild(title);
 
-                // Sjekk om det er helligdag
-                if (globalHolidaysCache[dateKey]) {
-                    const holidayEl = document.createElement('div');
-                    holidayEl.className = 'holiday-header-text';
-                    holidayEl.textContent = globalHolidaysCache[dateKey];
-                    dayGroup.appendChild(holidayEl);
+                if (hasHoliday) {
+                    const holDiv = document.createElement('div');
+                    holDiv.className = 'holiday-text';
+                    holDiv.textContent = globalHolidaysCache[dateKey];
+                    daySection.appendChild(holDiv);
                 }
 
-                const list = document.createElement('ul');
-                list.className = 'event-list';
+                if (hasPersonalEvents) {
+                    const list = document.createElement('ul');
+                    list.className = 'event-list';
 
-                let hasEvents = false;
-
-                if (globalEventsCache[dateKey] && globalEventsCache[dateKey].length > 0) {
                     globalEventsCache[dateKey].forEach(ev => {
-                        hasEvents = true;
                         const li = document.createElement('li');
                         li.className = 'event-item';
 
                         let timeStr = 'Hele dagen';
                         if (ev.start.dateTime) {
                             const d = new Date(ev.start.dateTime);
-                            timeStr = d.toLocaleTimeString('no-NO', {hour: '2-digit', minute:'2-digit', timeZone: 'Europe/Oslo'});
+                            timeStr = d.toLocaleTimeString('no-NO', {hour: '2-digit', minute:'2-digit', timeZone: 'Europe/Oslo'}).replace(':', '.');
                         }
 
-                        li.innerHTML = `<span class="event-time">${timeStr}:</span> ${ev.summary || ''}`;
+                        li.innerHTML = `<span class="event-time">${timeStr}:</span>${ev.summary || ''}`;
                         list.appendChild(li);
                     });
+                    daySection.appendChild(list);
                 }
 
-                if (!hasEvents) {
-                    const noEv = document.createElement('div');
-                    noEv.className = 'no-events-text';
-                    noEv.textContent = 'Ingen planer';
-                    dayGroup.appendChild(noEv);
-                } else {
-                    dayGroup.appendChild(list);
-                }
+                container.appendChild(daySection);
+            }
 
-                container.appendChild(dayGroup);
+            // Hvis det mot formodning er 0 avtaler på 30 dager, viser vi en ren infotekst
+            if (totalDaysRendered === 0) {
+                const noEvContainer = document.createElement('div');
+                noEvContainer.className = 'no-events-container';
+                noEvContainer.innerHTML = '<div class="no-events-text">Ingen planer de neste 30 dagene</div>';
+                container.appendChild(noEvContainer);
             }
         }
 
@@ -417,7 +433,7 @@
                 const start = new Date();
                 start.setHours(0,0,0,0);
                 const end = new Date();
-                end.setDate(end.getDate() + 7);
+                end.setDate(end.getDate() + 31); // Henter data for 31 dager frem i tid
 
                 const personalRequest = gapi.client.calendar.events.list({
                     'calendarId': CALENDAR_ID,
@@ -458,9 +474,40 @@
 
                 renderCalendarList();
             }).catch(err => {
-                console.log("Feil ved henting av data:", err);
+                console.log("Feil under henting av kalenderdata:", err);
                 renderCalendarList();
             });
+        }
+
+        async function requestWakeLock() {
+            try {
+                if ('wakeLock' in navigator) {
+                    wakeLock = await navigator.wakeLock.request('screen');
+                }
+            } catch (err) {}
+        }
+
+        function startApp() {
+            document.getElementById('start-overlay').style.display = 'none';
+            
+            try {
+                const docElm = document.documentElement;
+                if (docElm.requestFullscreen) { docElm.requestFullscreen(); }
+            } catch (e) {}
+
+            requestWakeLock();
+            buildClockUI();
+            updateClockAndLayout();
+            renderCalendarList();
+            
+            setInterval(updateClockAndLayout, 1000);
+
+            try {
+                gapi.load('client', () => {
+                    fetchCalendarData();
+                    setInterval(fetchCalendarData, 300000); 
+                });
+            } catch (gErr) {}
         }
     </script>
 </body>
