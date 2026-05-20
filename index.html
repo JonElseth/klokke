@@ -94,10 +94,10 @@
         .night-mode .tick-minute { stroke: #94a3b8; }
         .night-mode .tick-hour, .night-mode .clock-number, .night-mode .hand-hour, .night-mode .hand-minute { fill: #f8fafc; stroke: #f8fafc; }
 
-        /* Digital og Periode */
-	.digital-time {
+        /* Digital ur - JON: ØKT FRA 7.5vw TIL 9.5vw FOR BEDRE PROPORSJONER */
+        .digital-time {
             font-family: 'Poppins', sans-serif;
-            font-size: 9.5vw; /* Endre fra 7.5vw til 9.5vw for å matche skissen din */
+            font-size: 9.5vw;
             font-weight: 700;
             line-height: 0.9;
             margin: 5px 0;
@@ -118,10 +118,10 @@
             line-height: 1.1;
         }
 
-        /* DØGNPERIODE - TILPASSET STØRRELSE, RENT UTSEENDE OG DYNAMISK FARGE */
+        /* DØGNPERIODE */
         .period-text {
             font-family: 'Poppins', sans-serif; 
-            font-size: 32px; /* Justert ned for et mer harmonisk uttrykk */
+            font-size: 32px; 
             font-weight: 700;
             background: #e2e8f0; 
             padding: 10px 40px; 
@@ -131,20 +131,18 @@
             transition: color 1s ease, background 1s ease;
         }
         
-        /* Fargestiler for de ulike periodene på døgnet (Dagtid) */
-        .period-morgen { color: #e11d48; background: #ffe4e6; }       /* Frisk rosa/rød */
-        .period-formiddag { color: #ea580c; background: #ffedd5; }    /* Lun oransje */
-        .period-ettermiddag { color: #991b1b; background: #f1f5f9; }  /* Kraftig mørkerød med nøytral boks */
-        .period-kveld { color: #be123c; background: #ffe4e6; }        /* Dempet rød/rosa */
+        .period-morgen { color: #e11d48; background: #ffe4e6; }       
+        .period-formiddag { color: #ea580c; background: #ffedd5; }    
+        .period-ettermiddag { color: #991b1b; background: #f1f5f9; }  
+        .period-kveld { color: #be123c; background: #ffe4e6; }        
         
-        /* Fargestiler for nattmodus */
         .night-mode .period-text { 
             background: #1e293b; 
-            color: #94a3b8; /* Behagelig gråblå tone for natta så det ikke blender */
+            color: #94a3b8; 
             box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
         .night-mode .period-text.period-natt {
-            color: #38bdf8; /* Fin lys blåfarge som indikerer natt */
+            color: #38bdf8; 
             background: #1e293b;
         }
 
@@ -153,7 +151,7 @@
             height: 100%;
             overflow-y: auto;
             scrollbar-width: none;
-            padding-bottom: 80px; 
+            padding-bottom: 100px; /* Mer luft i bunnen siden den store knappen er borte */
             pointer-events: auto !important;
             scroll-snap-type: y mandatory;
         }
@@ -171,7 +169,6 @@
             scroll-margin-top: 10px; 
         }
 
-        /* STYLING FOR DAGENS DATO (FREMHEVET) */
         .day-section.today-highlight {
             background-color: #f1f5f9; 
             padding: 20px;
@@ -259,43 +256,45 @@
         }
         .night-mode .event-time { color: #f87171; }
 
-        /* --- SKROLLE-KNAPP / LEDETEXT --- */
+        /* --- JON: NY SVEVENDE, RUND SKROLLEKNAPP --- */
         .scroll-hint-btn {
             position: absolute;
-            bottom: 10px;
-            right: 0;
-            width: calc(55% - 20px); 
-            background: #1e293b;
-            color: #ffffff;
-            text-align: center;
-            padding: 15px 20px;
-            border-radius: 50px;
-            font-size: 18px;
-            font-weight: 700;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-            z-index: 9999;
+            bottom: 20px;
+            right: 20px;
+            width: 70px;
+            height: 70px;
+            background: #ffffff;
+            color: #1e293b;
+            border: 2px solid #cbd5e1;
+            border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 10px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            z-index: 9999;
             cursor: pointer;
             pointer-events: auto !important; 
-            transition: opacity 0.4s ease, transform 0.4s ease;
-            animation: pulseBounce 2.5s infinite;
+            transition: opacity 0.4s ease, transform 0.4s ease, background 0.4s ease;
+            animation: miniPulseBounce 2.5s infinite;
         }
+        
         .night-mode .scroll-hint-btn {
-            background: #334155;
+            background: #1e293b;
             color: #f8fafc;
+            border-color: #334155;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
         }
         
         .scroll-arrow {
-            font-size: 22px;
-            font-weight: 900;
+            font-size: 34px;
+            font-weight: 700;
+            line-height: 1;
+            margin-top: -2px; /* Finjustering for pilens sentrering i sirkelen */
         }
 
-        @keyframes pulseBounce {
-            0%, 100% { transform: translateY(0); box-shadow: 0 8px 20px rgba(0,0,0,0.2); }
-            50% { transform: translateY(4px); box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
+        @keyframes miniPulseBounce {
+            0%, 100% { transform: scale(1) translateY(0); }
+            50% { transform: scale(1.05) translateY(5px); }
         }
 
         /* --- AUTOMATISK PORTRETTMODUS --- */
@@ -340,10 +339,8 @@
 
             .scroll-hint-btn {
                 position: fixed;
-                bottom: 20px;
-                left: 20px;
-                right: 20px;
-                width: calc(100% - 40px); 
+                bottom: 30px;
+                right: 30px;
             }
         }
 
@@ -408,7 +405,6 @@
             </div>
 
         <div class="scroll-hint-btn" id="scroll-hint-element" onclick="scrollCalendarDown()">
-            <span>Dra eller trykk for å se de neste 30 dagene</span>
             <span class="scroll-arrow">↓</span>
         </div>
 
@@ -493,7 +489,6 @@
             const isNight = h >= 22 || h < 7;
             document.getElementById('layout-box').className = `main-layout ${isNight ? 'night-mode' : 'day-mode'}`;
             
-            // DYNAMISK KLASSE-TILORDNING FOR PERIODE-TEKST
             let periodText = "Det er natt";
             let periodClass = "period-natt";
             
@@ -504,8 +499,6 @@
             
             const periodEl = document.getElementById('period-text');
             periodEl.textContent = periodText;
-            
-            // Nullstiller gamle tids-klasser og legger på den aktive
             periodEl.className = "period-text " + periodClass;
         }
 
@@ -608,16 +601,17 @@
         function handleScrollVisibility() {
             const panel = document.getElementById('event-container');
             const hint = document.getElementById('scroll-hint-element');
-            const isPortrait = window.matchMedia("(max-width: 900px) or (orientation: portrait)").matches;
-            const currentScroll = isPortrait ? window.scrollY : panel.scrollTop;
+            
+            // JON: Siden knappen nå er så liten, kan vi skjule den når brukeren har skrollet et lite stykke ned
+            const currentScroll = panel.scrollTop;
 
-            if (currentScroll > 40) {
+            if (currentScroll > 150) {
                 hint.style.opacity = '0';
-                hint.style.transform = 'translateY(15px)';
+                hint.style.transform = 'scale(0.5) translateY(15px)';
                 hint.style.pointerEvents = 'none';
             } else {
                 hint.style.opacity = '1';
-                hint.style.transform = 'translateY(0)';
+                hint.style.transform = 'scale(1) translateY(0)';
                 hint.style.pointerEvents = 'auto';
             }
         }
