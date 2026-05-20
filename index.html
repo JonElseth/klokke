@@ -443,4 +443,324 @@
         const HOLIDAY_CALENDAR_ID = 'no.norwegian#holiday@group.v.calendar.google.com'; 
 
         const ukeDager = ["Søndag", "Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag", "Lørdag"];
-        const maaneder =
+        const maaneder = ["januar", "februar", "mars", "april", "mai", "juni", "juli", "august", "september", "oktober", "november", "desember"];
+        
+        let wakeLock = null;
+        let returnTimeout = null;
+        
+        let globalEventsCache = {}; 
+        let globalHolidaysCache = {}; 
+        
+        const scrollContainer = document.getElementById('scroll-container');
+        const sideHint = document.getElementById('side-scroll-hint');
+        const homeBtn = document.getElementById('home-btn');
+
+        function scrollCalendarForward() {
+            resetReturnTimer();
+            const cardWidth = document.querySelector('.day-card').clientWidth;
+            scrollContainer.scrollBy({ left: cardWidth * 3, behavior: 'smooth' });
+        }
+
+        function scrollBoxDownward(listId) {
+            resetReturnTimer();
+            const listEl = document.getElementById(listId);
+            if (listEl) {
+                listEl.scrollBy({ top: 120, behavior: 'smooth' });
+            }
+        }
+
+        function returnToHomePosition() {
+            scrollContainer.scrollTo({ left: 0, behavior: 'smooth' });
+            const activeLists = document.querySelectorAll('.event-list');
+            activeLists.forEach(list => {
+                list.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+            resetReturnTimer();
+        }
+
+        function handleButtonVisibilities() {
+            if (scrollContainer.scrollLeft > 50) {
+                sideHint.style.opacity = '0'; 
+                sideHint.style.transform = 'scale(0.9) translateX(10px)';
+                sideHint.style.pointerEvents = 'none'; 
+                
+                homeBtn.style.opacity = '1';
+                homeBtn.style.transform = 'scale(1) translateX(0)';
+                homeBtn.style.pointerEvents = 'auto';
+            } else {
+                sideHint.style.opacity = '1'; 
+                sideHint.style.transform = 'scale(1) translateX(0)';
+                sideHint.style.pointerEvents = 'auto'; 
+                
+                homeBtn.style.opacity = '0';
+                homeBtn.style.transform = 'scale(0.9) translateX(-10px)';
+                homeBtn.style.pointerEvents = 'none';
+            }
+        }
+
+        function resetReturnTimer() {
+            clearTimeout(returnTimeout);
+            returnTimeout = setTimeout(returnToHomePosition, 180000); 
+        }
+
+        scrollContainer.addEventListener('scroll', () => {
+            resetReturnTimer();
+            handleButtonVisibilities();
+        });
+
+        async function requestWakeLock() {
+            try {
+                if ('wakeLock' in navigator) {
+                    wakeLock = await navigator.wakeLock.request('screen');
+                    document.addEventListener('visibilitychange', async () => {
+                        if (wakeLock !== null && document.visibilityState === 'visible') {
+                            wakeLock = await navigator.wakeLock.request('screen');
+                        }
+                    });
+                }
+            } catch (err) { console.log("Skjermlås ikke tilgjengelig."); }
+        }
+
+        // FUNKSJONEN SOM UTKREVER TRYKK OG TVINGER FULLSKJERM VED OPPSTART
+        function startApp() {
+            document.getElementById('start-overlay').style.display = 'none';
+
+            try {
+                const docElm = document.documentElement;
+                if (docElm.requestFullscreen) { docElm.requestFullscreen(); } 
+                else if (docElm.webkitRequestFullscreen) { docElm.webkitRequestFullscreen(); }
+            } catch (fErr) { console.log("Fullskjerm feilet eller blokkert."); }
+
+            requestWakeLock();
+            updateClockAndLayout();
+            combineAndRenderGrid(); 
+            resetReturnTimer();
+            handleButtonVisibilities();
+            
+            try {
+                gapi.load('client', () => {
+                    fetchBothCalendars();
+                    setInterval(fetchBothCalendars, 300000); 
+                });
+            } catch (gErr) { console.log("Google API lastefeil: ", gErr); }
+        }
+
+        function updateClockAndLayout() {
+            const now = new Date();
+            let hours = String(now.getHours()).padStart(2, '0');
+            let minutes = String(now.getMinutes()).padStart(2, '0');
+            
+            try {
+                hours = now.toLocaleTimeString('no-NO', { hour: '2-digit', hour12: false, timeZone: 'Europe/Oslo' });
+                minutes = now.toLocaleTimeString('no-NO', { minute: '2-digit', timeZone: 'Europe/Oslo' }).padStart(2, '0');
+            } catch(e) {}
+            
+            document.getElementById('clock').textContent = `${hours}:${minutes}`;
+
+            let dateString = "Ukedag";
+            try {
+                const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Europe/Oslo' };
+                dateString = now.toLocaleDateString('no-NO', options).replace('.', '');
+            } catch(e) {}
+            document.getElementById('date').textContent = dateString;
+
+            const intHours = parseInt(hours, 10);
+            const isNight = (intHours >= 22 || intHours < 7);
+            document.body.className = isNight ? "night-mode" : "day-mode";
+
+            let periodText = "";
+            let periodBg = "";
+            let periodFg = "";
+            
+            if (intHours >= 7 && intHours < 9) { 
+                periodText = "Det er morgen"; 
+                periodBg = isNight ? "#ffcc00" : "#ffebd6"; 
+                periodFg = isNight ? "#000000" : "#7a583a";
+            } else if (intHours >= 9 && intHours < 12) { 
+                periodText = "Det er formiddag"; 
+                periodBg = isNight ? "#ff9f0a" : "#ffe0cc"; 
+                periodFg = isNight ? "#000000" : "#a63a00";
+            } else if (intHours >= 12 && intHours < 18) { 
+                periodText = "Det er ettermiddag"; 
+                periodBg = isNight ? "#ffffff" : "#e2e2e7"; 
+                periodFg = "#111111";
+            } else if (intHours >= 18 && intHours < 22) { 
+                periodText = "Det er kveld"; 
+                periodBg = isNight ? "#ff9f0a" : "#ffe0cc"; 
+                periodFg = isNight ? "#000000" : "#ba4300";
+            } else { 
+                periodText = "Det er natt"; 
+                periodBg = isNight ? "#1f3a60" : "#003bb3"; 
+                periodFg = "#ffffff";
+            }
+
+            const periodElement = document.getElementById('period');
+            periodElement.textContent = periodText;
+            periodElement.style.backgroundColor = periodBg;
+            periodElement.style.color = periodFg;
+        }
+
+        function updateScrollIndicators(listEl, indicatorEl) {
+            const hasMoreToScroll = listEl.scrollHeight > listEl.clientHeight;
+            const isAtBottom = listEl.scrollHeight - listEl.scrollTop <= listEl.clientHeight + 5;
+
+            if (hasMoreToScroll && !isAtBottom) {
+                indicatorEl.style.display = 'flex'; 
+            } else {
+                indicatorEl.style.display = 'none'; 
+            }
+        }
+
+        function combineAndRenderGrid() {
+            const grid = document.getElementById('calendar-grid');
+            grid.innerHTML = '';
+            
+            const today = new Date();
+
+            for (let i = -1; i < 30; i++) {
+                const currentDay = new Date();
+                currentDay.setDate(today.getDate() + i);
+                
+                const dayString = currentDay.toISOString().split('T')[0];
+                const isYesterday = i === -1;
+                const isToday = i === 0;
+                
+                const holidayName = globalHolidaysCache[dayString] || null;
+                const isHoliday = holidayName !== null;
+
+                const card = document.createElement('div');
+                if (isYesterday) card.className = 'day-card yesterday-card';
+                else if (isToday) card.className = 'day-card today-card'; 
+                else if (!globalEventsCache[dayString] || globalEventsCache[dayString].length === 0) card.className = 'day-card empty-day'; 
+                else card.className = 'day-card'; 
+
+                let dayName = ukeDager[currentDay.getDay()];
+                const dateNum = currentDay.getDate();
+                const monthName = maaneder[currentDay.getMonth()];
+                
+                if (isYesterday) dayName = `I GÅR<br>${dateNum}. ${monthName}`;
+                else if (isToday) dayName = `I DAG<br>${dateNum}. ${monthName}`;
+                else dayName = `${dayName.toUpperCase()}<br>${dateNum}. ${monthName}`;
+
+                const useRedTitle = (currentDay.getDay() === 0 || isHoliday) && !isToday && !isYesterday;
+
+                card.innerHTML = `
+                    <div class="day-name ${useRedTitle ? 'holiday-title' : ''}">${dayName}</div>
+                    ${isHoliday ? `<div class="holiday-text">${holidayName}</div>` : ''}
+                    <div class="event-list-wrapper">
+                        <ul class="event-list" id="list-${dayString}"></ul>
+                        <div class="scroll-indicator" id="arrow-${dayString}" onclick="scrollBoxDownward('list-${dayString}')">↓</div>
+                    </div>
+                `;
+                
+                grid.appendChild(card);
+                const listEl = card.querySelector('.event-list');
+                const indicatorEl = card.querySelector('.scroll-indicator');
+
+                let hasValidEvents = false;
+
+                if (globalEventsCache[dayString] && globalEventsCache[dayString].length > 0) {
+                    globalEventsCache[dayString].forEach(ev => {
+                        hasValidEvents = true;
+                        let timeStr = 'Hele dagen';
+                        try {
+                            timeStr = ev.start.dateTime ? new Date(ev.start.dateTime).toLocaleTimeString('no-NO', {hour: '2-digit', minute:'2-digit', timeZone: 'Europe/Oslo'}) : 'Hele dagen';
+                        } catch(e) {}
+                        
+                        const li = document.createElement('li');
+                        li.className = 'event-item';
+                        
+                        const timeSpan = document.createElement('span');
+                        timeSpan.className = 'event-time';
+                        timeSpan.textContent = timeStr;
+                        li.appendChild(timeSpan);
+
+                        const summarySpan = document.createElement('span');
+                        summarySpan.className = 'event-summary-text';
+                        summarySpan.textContent = ev.summary || '';
+                        
+                        li.appendChild(summarySpan);
+                        listEl.appendChild(li);
+                    });
+                }
+
+                if (!hasValidEvents) {
+                    const noEvLi = document.createElement('li');
+                    noEvLi.className = 'no-events';
+                    noEvLi.textContent = 'Ingen planer';
+                    listEl.appendChild(noEvLi);
+                }
+
+                listEl.addEventListener('scroll', () => {
+                    updateScrollIndicators(listEl, indicatorEl);
+                    resetReturnTimer();
+                });
+                
+                setTimeout(() => updateScrollIndicators(listEl, indicatorEl), 100);
+            }
+        }
+
+        function fetchBothCalendars() {
+            if (API_KEY === 'DIN_GOOGLE_API_KEY') { return; }
+
+            gapi.client.init({
+                'apiKey': API_KEY,
+                'discoveryDocs': ["https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"],
+            }).then(function() {
+                const startPeriod = new Date();
+                startPeriod.setDate(startPeriod.getDate() - 1);
+                startPeriod.setHours(0,0,0,0);
+                
+                const endPeriod = new Date();
+                endPeriod.setDate(endPeriod.getDate() + 31); 
+
+                const personalRequest = gapi.client.calendar.events.list({
+                    'calendarId': CALENDAR_ID,
+                    'timeMin': startPeriod.toISOString(),
+                    'timeMax': endPeriod.toISOString(),
+                    'showDeleted': false,
+                    'singleEvents': true,
+                    'orderBy': 'startTime'
+                });
+
+                const holidayRequest = gapi.client.calendar.events.list({
+                    'calendarId': HOLIDAY_CALENDAR_ID,
+                    'timeMin': startPeriod.toISOString(),
+                    'timeMax': endPeriod.toISOString(),
+                    'showDeleted': false,
+                    'singleEvents': true
+                });
+
+                return Promise.all([personalRequest, holidayRequest]);
+            }).then(function(responses) {
+                const personalEvents = responses[0].result.items;
+                const holidayEvents = responses[1].result.items;
+
+                const tempEvents = {};
+                personalEvents.forEach(event => {
+                    const start = event.start.dateTime || event.start.date;
+                    const dateKey = start.split('T')[0];
+                    if (!tempEvents[dateKey]) { tempEvents[dateKey] = []; }
+                    tempEvents[dateKey].push(event);
+                });
+                globalEventsCache = tempEvents;
+
+                const tempHolidays = {};
+                holidayEvents.forEach(holiday => {
+                    const start = holiday.start.date || holiday.start.dateTime;
+                    const dateKey = start.split('T')[0];
+                    tempHolidays[dateKey] = holiday.summary; 
+                });
+                globalHolidaysCache = tempHolidays;
+
+                combineAndRenderGrid();
+            }).catch(err => {
+                console.log("Feil under henting av kalenderdata: ", err);
+                combineAndRenderGrid();
+            });
+        }
+
+        setInterval(updateClockAndLayout, 5000);
+    </script>
+</body>
+</html>
