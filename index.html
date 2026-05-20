@@ -219,7 +219,7 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.05);
         }
 
-        /* --- NEDERSTE DEL: KALENDER (AKTIVERT MAGNETISK SNAPPING) --- */
+        /* --- NEDERSTE DEL: KALENDER --- */
         .calendar-section {
             width: 100%;
             max-width: 1400px; 
@@ -231,8 +231,6 @@
             position: relative;
             scrollbar-width: none; 
             pointer-events: auto !important; 
-            
-            /* Låser skrollingen til faste punkter loddrett */
             scroll-snap-type: x mandatory; 
         }
         .calendar-section::-webkit-scrollbar {
@@ -247,7 +245,8 @@
         }
 
         .day-card {
-            width: calc((1400px - (4 * 15px)) / 4.5); 
+            /* RE-DESIGN: Delt på nøyaktig 4 i stedet for 4.5! (Hensyntar gapet) */
+            width: calc((1400px - (3 * 15px)) / 4); 
             flex-shrink: 0; 
             border-radius: 8px; 
             padding: 18px 15px; 
@@ -256,14 +255,13 @@
             flex-direction: column;
             position: relative; 
             transition: all 0.5s ease;
-            
-            /* Sier til nettleseren at starten av hvert kort er et magnetisk stopp-punkt */
             scroll-snap-align: start; 
         }
 
         @media (max-width: 1400px) {
             .day-card {
-                width: calc((100vw - 90px - (4 * 15px)) / 4.5); 
+                /* RE-DESIGN: Delt på nøyaktig 4 for mindre storskjermer også */
+                width: calc((100vw - 90px - (3 * 15px)) / 4); 
             }
         }
 
@@ -421,7 +419,7 @@
             }
 
             .calendar-section {
-                scroll-snap-type: none; /* Kobler ut magneten på mobilen */
+                scroll-snap-type: none; 
                 overflow-x: visible;
                 overflow-y: visible;
                 height: auto;
@@ -528,7 +526,7 @@
         function scrollCalendarForward() {
             resetReturnTimer();
             const cardWidth = document.querySelector('.day-card').clientWidth;
-            // Skroller akkurat 4 hele kort fremover for å matche rutenettet
+            // RE-DESIGN: Skroller nøyaktig 4 fulle kortbredder fremover i stedet for 3!
             scrollContainer.scrollBy({ left: cardWidth * 4, behavior: 'smooth' });
         }
 
