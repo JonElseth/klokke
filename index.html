@@ -68,6 +68,12 @@
             color: #ffffff !important;
             border-bottom: 3px solid rgba(255, 255, 255, 0.3);
         }
+        
+        /* HER LYSES "INGEN PLANER" OPP I DAGMODUS! */
+        .day-mode .today-card .no-events {
+            color: #ffffff !important;
+        }
+        
         .day-mode .event-item { background: #f2f2f7; border: 1px solid #d1d1d6; color: #111111; }
         .day-mode .today-card .event-item { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); color: #ffffff; }
         .day-mode .no-events { color: #555555; }
@@ -113,6 +119,12 @@
             color: #3399ff !important;
             border-bottom: 3px solid rgba(10, 132, 255, 0.4);
         }
+        
+        /* HER LYSES "INGEN PLANER" OPP I NATTMODUS! */
+        .night-mode .today-card .no-events {
+            color: #e2e2e7 !important;
+        }
+        
         .night-mode .event-item { background: #2c2c2e; border: 1px solid #3a3a3c; color: #ffffff; }
         .night-mode .today-card .event-item { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15); color: #ffffff; }
         .night-mode .no-events { color: #8e8e93; }
@@ -124,11 +136,11 @@
 
         /* --- STYLING FOR "RØDE DAGER" (HELLIGDAGER) --- */
         .holiday-title {
-            color: #dc3545 !important; /* Klassisk kalenderrød */
+            color: #dc3545 !important; 
             font-weight: 800;
         }
         .night-mode .holiday-title {
-            color: #ff453a !important; /* Litt mer lysende rød i nattmodus */
+            color: #ff453a !important; 
         }
         
         .holiday-text {
@@ -146,7 +158,7 @@
             color: #ff453a;
         }
         .today-card .holiday-text {
-            color: #ffcc00 !important; /* Gult inni det blå i dag-kortet */
+            color: #ffcc00 !important; 
         }
 
         /* --- STARTKNAPPEN FOR OPPSTART --- */
@@ -460,7 +472,7 @@
         // --- KONFIGURASJON ---
         const API_KEY = 'AIzaSyDabiLiH6tR1bonxhjgNqq9PoTSa9wogzE';
         const CALENDAR_ID = '6836a3463ada75841f11c52afbd588f7467b5c7014a9ac8118e24205f42d301c@group.calendar.google.com'; 
-        const HOLIDAY_CALENDAR_ID = 'no.norwegian#holiday@group.v.calendar.google.com'; // Offisiell norsk helligdagskalender
+        const HOLIDAY_CALENDAR_ID = 'no.norwegian#holiday@group.v.calendar.google.com'; 
 
         const ukeDager = ["Søndag", "Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag", "Lørdag"];
         const maaneder = ["januar", "februar", "mars", "april", "mai", "juni", "juli", "august", "september", "oktober", "november", "desember"];
@@ -468,7 +480,6 @@
         let wakeLock = null;
         let returnTimeout = null;
         
-        // Cacher for å flette data
         let globalEventsCache = {}; 
         let globalHolidaysCache = {}; 
         
@@ -587,7 +598,7 @@
             requestWakeLock();
 
             updateClockAndLayout();
-            combineAndRenderGrid(); // Genererer tom struktur med en gang
+            combineAndRenderGrid(); 
             resetReturnTimer();
             handleButtonVisibilities();
             
@@ -665,7 +676,6 @@
             }
         }
 
-        // --- SENTRAL FLETTERING OG PRESENTASJON AV KALENDEREN ---
         function combineAndRenderGrid() {
             const grid = document.getElementById('calendar-grid');
             grid.innerHTML = '';
@@ -680,7 +690,6 @@
                 const isYesterday = i === -1;
                 const isToday = i === 0;
                 
-                // Sjekk om denne datoen har registrert en helligdag
                 const holidayName = globalHolidaysCache[dayString] || null;
                 const isHoliday = holidayName !== null;
 
@@ -698,7 +707,6 @@
                 else if (isToday) dayName = `I DAG<br>${dateNum}. ${monthName}`;
                 else dayName = `${dayName.toUpperCase()}<br>${dateNum}. ${monthName}`;
 
-                // Hvis det er søndag ELLER en offisiell helligdag, gir vi overskriften den klassiske "rødfargen"
                 const useRedTitle = (currentDay.getDay() === 0 || isHoliday) && !isToday && !isYesterday;
 
                 card.innerHTML = `
@@ -782,7 +790,6 @@
             }
         }
 
-        // --- PARALLELL HENTING FRA BEGGE KALENDERE ---
         function fetchBothCalendars() {
             if (API_KEY === 'DIN_GOOGLE_API_KEY') { return; }
 
@@ -797,7 +804,6 @@
                 const endPeriod = new Date();
                 endPeriod.setDate(endPeriod.getDate() + 31); 
 
-                // Forespørsel 1: Dine personlige avtaler
                 const personalRequest = gapi.client.calendar.events.list({
                     'calendarId': CALENDAR_ID,
                     'timeMin': startPeriod.toISOString(),
@@ -807,7 +813,6 @@
                     'orderBy': 'startTime'
                 });
 
-                // Forespørsel 2: Offisielle norske helligdager
                 const holidayRequest = gapi.client.calendar.events.list({
                     'calendarId': HOLIDAY_CALENDAR_ID,
                     'timeMin': startPeriod.toISOString(),
@@ -816,13 +821,11 @@
                     'singleEvents': true
                 });
 
-                // Kjører begge forespørslene samtidig!
                 return Promise.all([personalRequest, holidayRequest]);
             }).then(function(responses) {
                 const personalEvents = responses[0].result.items;
                 const holidayEvents = responses[1].result.items;
 
-                // 1. Sorter personlige avtaler inn i cachen
                 const tempEvents = {};
                 personalEvents.forEach(event => {
                     const start = event.start.dateTime || event.start.date;
@@ -832,17 +835,14 @@
                 });
                 globalEventsCache = tempEvents;
 
-                // 2. Sorter helligdagene inn i cachen
                 const tempHolidays = {};
                 holidayEvents.forEach(holiday => {
                     const start = holiday.start.date || holiday.start.dateTime;
                     const dateKey = start.split('T')[0];
-                    // Lagrer navnet på helligdagen (f.eks "Skjærtorsdag")
                     tempHolidays[dateKey] = holiday.summary; 
                 });
                 globalHolidaysCache = tempHolidays;
 
-                // 3. Flett alt sammen ut på skjermen!
                 combineAndRenderGrid();
             }).catch(err => {
                 console.log("Feil under henting av kalenderdata: ", err);
