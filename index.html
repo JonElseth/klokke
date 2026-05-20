@@ -22,8 +22,8 @@
             align-items: center;
             height: 100vh;
             
-            /* SIKKERHETSSONE FOR DEKSELET (STORSKJERM) */
-            padding: 60px 45px 55px 45px; 
+            /* SIKKERHETSSONE FOR DEKSELET (Økt med 5mm i topp og bunn) */
+            padding: 79px 45px 74px 45px; 
             
             overflow: hidden;
             transition: background 1.5s ease, color 1.5s ease;
@@ -355,10 +355,10 @@
             50% { transform: translateY(4px); }
         }
 
-        /* --- SIDERULL-KNAPP --- */
+        /* --- SIDERULL-KNAPP (Flyttet bittelitt opp for å matche den nye bunnmargen) --- */
         #side-scroll-hint {
             position: fixed;
-            bottom: 65px; 
+            bottom: 84px; 
             right: 65px;  
             display: flex;
             align-items: center;
@@ -386,10 +386,10 @@
             50% { transform: translateX(8px); }
         }
 
-        /* --- HJEM-KNAPP --- */
+        /* --- HJEM-KNAPP (Flyttet bittelitt opp for å matche den nye bunnmargen) --- */
         #home-btn {
             position: fixed;
-            bottom: 65px; 
+            bottom: 84px; 
             left: 65px;  
             display: flex;
             align-items: center;
@@ -406,17 +406,14 @@
             transition: opacity 0.4s ease, transform 0.4s ease;
         }
 
-        /* ==========================================================================
-           ⚡ DE NYE RESPONSIVE MOBIL-REGLENE (Trer i kraft på skjermer under 768px)
-           ========================================================================== */
+        /* --- RESPONSIVE REGLER FOR MOBIL --- */
         @media (max-width: 768px) {
             body {
-                padding: 20px 15px; /* Mindre padding på mobil */
-                overflow-y: auto;   /* Tillat skrolling nedover på hele siden */
+                padding: 20px 15px; 
+                overflow-y: auto;   
                 height: auto;
             }
 
-            /* Topppanel re-design på mobil */
             .top-section {
                 flex-direction: column;
                 align-items: center;
@@ -426,25 +423,11 @@
                 gap: 10px;
             }
 
-            .time {
-                font-size: 18vw; /* Gjør klokka stor og fin på høykant */
-            }
+            .time { font-size: 18vw; }
+            .right-info { align-items: center; text-align: center; }
+            .date-container { font-size: 6vw; }
+            .period-container { font-size: 5vw; padding: 6px 16px; }
 
-            .right-info {
-                align-items: center;
-                text-align: center;
-            }
-
-            .date-container {
-                font-size: 6vw;
-            }
-
-            .period-container {
-                font-size: 5vw;
-                padding: 6px 16px;
-            }
-
-            /* Gjør om kalenderbåndet til en ren vertikal liste */
             .calendar-section {
                 overflow-x: visible;
                 overflow-y: visible;
@@ -453,59 +436,36 @@
             }
 
             .calendar-grid {
-                flex-direction: column; /* Stablas vertikalt */
+                flex-direction: column; 
                 width: 100%;
                 gap: 20px;
             }
 
             .day-card {
-                width: 100% !important; /* Fyller hele mobilbredden */
+                width: 100% !important; 
                 height: auto;
                 min-height: 150px;
                 padding: 15px;
             }
 
-            .day-name {
-                font-size: 5vw;
-                margin-bottom: 10px;
-                padding-bottom: 8px;
-            }
-
-            .holiday-text {
-                font-size: 3.5vw;
-                margin-bottom: 10px;
-            }
+            .day-name { font-size: 5vw; margin-bottom: 10px; padding-bottom: 8px; }
+            .holiday-text { font-size: 3.5vw; margin-bottom: 10px; }
 
             .event-list {
-                overflow-y: visible; /* Ingen interne skrollefelt i boksene på mobil */
+                overflow-y: visible; 
                 height: auto;
                 padding-bottom: 0;
             }
 
-            .event-item {
-                padding: 10px 12px;
-                font-size: 4.2vw;
-            }
+            .event-item { padding: 10px 12px; font-size: 4.2vw; }
+            .event-time { font-size: 3.8vw; }
+            .no-events { font-size: 4.5vw; margin-top: 20px; margin-bottom: 10px; }
 
-            .event-time {
-                font-size: 3.8vw;
-            }
-
-            .no-events {
-                font-size: 4.5vw;
-                margin-top: 20px;
-                margin-bottom: 10px;
-            }
-
-            /* Skjul navigasjonsknappene helt på mobil da de blir overflødige */
             #side-scroll-hint, #home-btn, .scroll-indicator {
                 display: none !important;
             }
 
-            .start-btn {
-                font-size: 6vw;
-                padding: 15px 40px;
-            }
+            .start-btn { font-size: 6vw; padding: 15px 40px; }
         }
     </style>
 </head>
@@ -572,7 +532,6 @@
         }
 
         function returnToHomePosition() {
-            // Sjekk om vi er på mobil før vi prøver å skrolle sidelengs
             if (window.innerWidth > 768) {
                 scrollContainer.scrollTo({ left: 0, behavior: 'smooth' });
                 const activeLists = document.querySelectorAll('.event-list');
@@ -584,7 +543,7 @@
         }
 
         function handleButtonVisibilities() {
-            if (window.innerWidth <= 768) return; // Hopp over hvis vi er på mobil
+            if (window.innerWidth <= 768) return; 
             
             if (scrollContainer.scrollLeft > 50) {
                 sideHint.style.opacity = '0'; 
@@ -606,7 +565,7 @@
         }
 
         function resetReturnTimer() {
-            if (window.innerWidth <= 768) return; // Ingen retur-timer på mobilen til administratorer
+            if (window.innerWidth <= 768) return; 
             clearTimeout(returnTimeout);
             returnTimeout = setTimeout(returnToHomePosition, 180000); 
         }
@@ -616,7 +575,6 @@
             handleButtonVisibilities();
         });
 
-        // Event-lyttere på hele mobilvinduet for å holde liv i ting
         window.addEventListener('scroll', resetReturnTimer);
         window.addEventListener('touchstart', resetReturnTimer);
 
@@ -636,7 +594,6 @@
         function startApp() {
             document.getElementById('start-overlay').style.display = 'none';
 
-            // Bare tving fullskjerm hvis vi er på en storskjerm (ikke mobil)
             if (window.innerWidth > 768) {
                 try {
                     const docElm = document.documentElement;
@@ -715,7 +672,7 @@
         }
 
         function updateScrollIndicators(listEl, indicatorEl) {
-            if (window.innerWidth <= 768) return; // Trenger ikke skrolle-piler på mobil
+            if (window.innerWidth <= 768) return; 
             
             const hasMoreToScroll = listEl.scrollHeight > listEl.clientHeight;
             const isAtBottom = listEl.scrollHeight - listEl.scrollTop <= listEl.clientHeight + 5;
@@ -814,7 +771,7 @@
                     });
                     setTimeout(() => updateScrollIndicators(listEl, indicatorEl), 100);
                 } else {
-                    indicatorEl.style.display = 'none'; // Tving av pilene på mobil
+                    indicatorEl.style.display = 'none'; 
                 }
             }
         }
