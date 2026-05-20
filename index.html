@@ -282,6 +282,7 @@
         let globalEventsCache = {}; 
         let globalHolidaysCache = {}; 
         let wakeLock = null;
+        let inactivityTimeout = null;
 
         function buildClockUI() {
             const ticksG = document.getElementById('ticks');
@@ -356,7 +357,6 @@
             const today = new Date();
             let totalDaysRendered = 0;
 
-            // Løper gjennom de neste 30 dagene for å finne dager med innhold
             for (let i = 0; i < 30; i++) {
                 const currentDay = new Date();
                 currentDay.setDate(today.getDate() + i);
@@ -365,7 +365,6 @@
                 const hasPersonalEvents = globalEventsCache[dateKey] && globalEventsCache[dateKey].length > 0;
                 const hasHoliday = globalHolidaysCache[dateKey];
 
-                // Hvis dagen hverken har avtaler eller er helligdag, hopper vi glatt over den!
                 if (!hasPersonalEvents && !hasHoliday) {
                     continue;
                 }
@@ -414,7 +413,6 @@
                 container.appendChild(daySection);
             }
 
-            // Hvis det mot formodning er 0 avtaler på 30 dager, viser vi en ren infotekst
             if (totalDaysRendered === 0) {
                 const noEvContainer = document.createElement('div');
                 noEvContainer.className = 'no-events-container';
@@ -433,7 +431,7 @@
                 const start = new Date();
                 start.setHours(0,0,0,0);
                 const end = new Date();
-                end.setDate(end.getDate() + 31); // Henter data for 31 dager frem i tid
+                end.setDate(end.getDate() + 31);
 
                 const personalRequest = gapi.client.calendar.events.list({
                     'calendarId': CALENDAR_ID,
@@ -479,6 +477,27 @@
             });
         }
 
+        // --- TIMER FOR INAKTIVITET (3 MINUTTER) ---
+        function resetInactivityTimer() {
+            clearTimeout(inactivityTimeout);
+            inactivityTimeout = setTimeout(function() {
+                // Skroller rolig og fint tilbake til toppen av listen
+                const container = document.getElementById('right-panel-scroll') || document.getElementById('event-container');
+                if (container) {
+                    container.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+            }, 180000); // 3 minutter i millisekunder
+        }
+
+        // Lytter etter berøringer på hele skjermen
+        function setupInactivityListeners() {
+            window.addEventListener('scroll', resetInactivityTimer, true);
+            window.addEventListener('touchstart', resetInactivityTimer, true);
+            window.addEventListener('touchmove', resetInactivityTimer, true);
+            window.addEventListener('mousedown', resetInactivityTimer, true);
+            resetInactivityTimer();
+        }
+
         async function requestWakeLock() {
             try {
                 if ('wakeLock' in navigator) {
@@ -499,6 +518,7 @@
             buildClockUI();
             updateClockAndLayout();
             renderCalendarList();
+            setupInactivityListeners();
             
             setInterval(updateClockAndLayout, 1000);
 
