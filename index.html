@@ -132,13 +132,16 @@
             color: #f8fafc;
         }
 
-        /* --- HØYRE PANEL: AVTALER (VERTIKAL LISTE) --- */
+        /* --- HØYRE PANEL: AVTALER (MED VERTICAL MAGNET / SNAP) --- */
         .right-panel {
             height: 100%;
             overflow-y: auto;
             scrollbar-width: none;
             padding-bottom: 80px; 
             pointer-events: auto !important;
+            
+            /* AKTIVERER VERTIKAL MAGNETISK SKROLLING (Låser seg loddrett) */
+            scroll-snap-type: y mandatory;
         }
         .right-panel::-webkit-scrollbar { 
             display: none; 
@@ -150,6 +153,10 @@
             padding: 10px 0;
             border-radius: 12px;
             transition: background 0.5s ease, padding 0.5s ease;
+            
+            /* SIER AT TOPPEN AV HVER DAG ER ET MAGNETISK STOPP-PUNKT */
+            scroll-snap-align: start;
+            scroll-margin-top: 10px; /* Gir litt fin luft over det magnetiske stoppet */
         }
 
         /* STYLING FOR DAGENS DATO (FREMHEVET) */
@@ -157,6 +164,7 @@
             background-color: #f1f5f9; 
             padding: 20px;
             border: 1px solid #cbd5e1;
+            scroll-margin-top: 20px; /* Tilpasset det tykkere kortet */
         }
         .night-mode .day-section.today-highlight {
             background-color: #1e293b; 
@@ -311,6 +319,7 @@
             .date-text { font-size: 26px; }
 
             .right-panel {
+                scroll-snap-type: none; /* Kobler ut magneten på små mobilskjermer */
                 height: auto;
                 overflow: visible;
                 padding-bottom: 120px; 
@@ -560,14 +569,20 @@
             }
         }
 
+        // RETTING FOR VERTIKAL SNAPPING: Skroller nøyaktig ett fullt dags-avsnitt nedover
         function scrollCalendarDown() {
             resetInactivityTimer();
+            const panel = document.getElementById('event-container');
             const isPortrait = window.matchMedia("(max-width: 900px) or (orientation: portrait)").matches;
+            
+            // Finner høyden på det første dags-elementet i lista for å gjøre et perfekt "magnet-hopp"
+            const firstDaySection = document.querySelector('.day-section');
+            const stepHeight = firstDaySection ? firstDaySection.clientHeight + 25 : 250;
+
             if (isPortrait) {
-                window.scrollBy({ top: 350, behavior: 'smooth' });
+                window.scrollBy({ top: stepHeight, behavior: 'smooth' });
             } else {
-                const panel = document.getElementById('event-container');
-                panel.scrollBy({ top: 250, behavior: 'smooth' });
+                panel.scrollBy({ top: stepHeight, behavior: 'smooth' });
             }
         }
 
@@ -681,21 +696,15 @@
             } catch (err) {}
         }
 
-        /* KRITISK RETTING: Slipper brukeren inn uansett om Fullscreen API tillates eller ikke */
         function startApp() {
-            // 1. Fjern start-knappen umiddelbart
             document.getElementById('start-overlay').style.display = 'none';
             
-            // 2. Gjør et forsøk på fullskjerm (men fortsett om det feiler)
             try {
                 const docElm = document.documentElement;
                 if (docElm.requestFullscreen) { docElm.requestFullscreen(); }
                 else if (docElm.webkitRequestFullscreen) { docElm.webkitRequestFullscreen(); }
-            } catch (e) {
-                console.log("Nettleseren blokkerte fullskjerm-API. Fully Kiosk håndterer dette i stedet.");
-            }
+            } catch (e) {}
 
-            // 3. Fyr opp resten av systemet
             requestWakeLock();
             buildClockUI();
             updateClockAndLayout();
