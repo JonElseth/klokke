@@ -19,7 +19,6 @@
         }
 
         body {
-            background-color: #ffffff;
             height: 100vh;
             width: 100vw;
             margin: 0;
@@ -32,6 +31,16 @@
             transition: background 1.5s ease, color 1.5s ease;
         }
 
+        /* --- TEMAER FLYTTET TIL BODY SÅ MARGENE SKIFTER FARGE --- */
+        body.day-mode { 
+            background: #ffffff; 
+            color: #1e293b; 
+        }
+        body.night-mode { 
+            background: #0f172a; 
+            color: #f8fafc; 
+        }
+
         /* --- RESPONSIVT LAYOUT MED GRID --- */
         .main-layout {
             display: grid;
@@ -40,16 +49,6 @@
             height: 100%;
             width: 100%;
             position: relative;
-        }
-
-        /* --- TEMAER --- */
-        .day-mode { 
-            background: #ffffff; 
-            color: #1e293b; 
-        }
-        .night-mode { 
-            background: #0f172a; 
-            color: #f8fafc; 
         }
 
         /* --- VENSTRE HALVDEL: KLOKKER OG DATO --- */
@@ -323,7 +322,6 @@
                 padding-bottom: 20px;
                 height: auto;
             }
-            .night-mode .left-panel { border-bottom-color: rgba(255,255,255,0.08); }
 
             .analog-clock-svg {
                 width: 260px;
@@ -379,9 +377,7 @@
         }
     </style>
 </head>
-<body>
-
-    <div id="start-overlay">
+<body class="day-mode"> <div id="start-overlay">
         <button class="start-btn" onclick="startApp()">Vis klokke & kalender</button>
     </div>
 
@@ -492,8 +488,9 @@
             const yearNum = now.getFullYear();
             document.getElementById('date-text').textContent = `${dayName} ${dayNum}. ${monthName} ${yearNum}`;
 
+            // JON: RETTET HER - NÅ OPPDATERES KLASSEN DIREKTE PÅ DET YTTERSTE ELEMENTET (DOCUMENT.BODY)
             const isNight = h >= 22 || h < 7;
-            document.getElementById('layout-box').className = `main-layout ${isNight ? 'night-mode' : 'day-mode'}`;
+            document.body.className = isNight ? "night-mode" : "day-mode";
             
             let periodText = "Det er natt";
             let periodClass = "period-natt";
