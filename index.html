@@ -499,10 +499,14 @@
             const yearNum = now.getFullYear();
             document.getElementById('date-text').textContent = `${dayName} ${dayNum}. ${monthName} ${yearNum}`;
 
+            // --- JON: SJEKKER MIDNATT (NÅR SEKUND, MINUTT OG TIME ER 0) ---
+            if (h === 0 && m === 0 && s === 0) {
+                renderCalendarList(); // Tegner listen på nytt øyeblikkelig for å flytte "I dag"-merket
+            }
+
             const isNight = h >= 22 || h < 7;
             document.body.className = isNight ? "night-mode" : "day-mode";
             
-            // Justerer systemets temafarge dynamisk for overlinjen i Android
             document.getElementById('theme-meta').setAttribute('content', isNight ? '#0f172a' : '#ffffff');
             
             let periodText = "Det er natt";
@@ -726,7 +730,6 @@
         function startApp() {
             document.getElementById('start-overlay').style.display = 'none';
             
-            // BER NETTLESEREN OM EKTE FULLSKJERM (Skjuler systemlinjer og klokke i Android)
             try {
                 const docElm = document.documentElement;
                 if (docElm.requestFullscreen) { docElm.requestFullscreen(); }
