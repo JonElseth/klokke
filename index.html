@@ -70,7 +70,6 @@
         }
         .day-mode .today-card .no-events {
             color: rgba(255, 255, 255, 0.7) !important;
-            border: none;
         }
         .day-mode .event-item { background: #f2f2f7; border: 1px solid #d1d1d6; color: #111111; }
         .day-mode .today-card .event-item { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); color: #ffffff; }
@@ -78,6 +77,10 @@
         .day-mode .scroll-indicator { color: #cc4400; background: rgba(255,255,255,0.95); border: 2px solid #cc4400; }
         .day-mode #side-scroll-hint { background: #004499; color: white; }
         .day-mode #home-btn { background: #333333; color: white; }
+        
+        /* NYE KNAPPE-FARGER FOR DAGMODUS */
+        .day-mode .expand-btn { background: #e1f5fe; color: #0288d1; border: 1px solid #b3e5fc; }
+        .day-mode .expand-btn.active-less { background: #e0e0e0; color: #616161; border: 1px solid #ccc; }
 
         .night-mode { 
             background: linear-gradient(135deg, #0b0f19 0%, #17273a 100%); 
@@ -117,7 +120,6 @@
         }
         .night-mode .today-card .no-events {
             color: #8e8e93 !important;
-            border: none;
         }
         .night-mode .event-item { background: #2c2c2e; border: 1px solid #3a3a3c; color: #ffffff; }
         .night-mode .today-card .event-item { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15); color: #ffffff; }
@@ -125,6 +127,10 @@
         .night-mode .scroll-indicator { color: #ff9f0a; background: rgba(44,44,46,0.95); border: 2px solid #ff9f0a; }
         .night-mode #side-scroll-hint { background: #0a84ff; color: white; }
         .night-mode #home-btn { background: #2c2c2e; color: white; border: 2px solid rgba(255,255,255,0.2); }
+        
+        /* NYE KNAPPE-FARGER FOR NATTMODUS */
+        .night-mode .expand-btn { background: #1c3d5a; color: #38bdf8; border: 1px solid #0369a1; }
+        .night-mode .expand-btn.active-less { background: #3f3f46; color: #a1a1aa; border: 1px solid #27272a; }
 
         /* --- STARTKNAPPEN FOR OPPSTART --- */
         #start-overlay {
@@ -281,7 +287,6 @@
             line-height: 1.3;
             font-weight: 700; 
             border-left: 8px solid #e65100; 
-            transition: max-height 0.3s ease;
         }
 
         .yesterday-card .event-item {
@@ -289,17 +294,23 @@
             border-left: 8px solid #777777;
         }
 
-        /* KLIKKBAR AVTALE-STYLING (FOR DAGER UTENOM I DAG) */
         .clickable-event {
             cursor: pointer;
             pointer-events: auto !important;
         }
-        
-        .truncated-dots {
-            border-bottom: 2px dotted rgba(230, 81, 0, 0.6);
-        }
-        .night-mode .truncated-dots {
-            border-bottom: 2px dotted rgba(255, 159, 10, 0.6);
+
+        /* STYLING FOR DEN NYE TYDELIGE "VIS MER"-ETIKETTEN */
+        .expand-btn {
+            display: inline-block;
+            margin-left: 6px;
+            padding: 2px 10px;
+            font-size: 1.1vw;
+            font-weight: 800;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            line-height: 1.2;
+            vertical-align: middle;
         }
 
         .event-time {
@@ -439,7 +450,7 @@
         
         let wakeLock = null;
         let returnTimeout = null;
-        let globalEventsCache = {}; // Lagrer hele tekstene for ekspansjon
+        let globalEventsCache = {}; 
         
         const scrollContainer = document.getElementById('scroll-container');
         const sideHint = document.getElementById('side-scroll-hint');
@@ -466,30 +477,31 @@
                 list.scrollTo({ top: 0, behavior: 'smooth' });
             });
             
-            // Tilbakestill eventuelle ekspanderte tekster til kuttet modus igjen
             generateCalendarGrid(globalEventsCache);
-            
             resetReturnTimer();
         }
 
+        // STYRER DET NYE KNAPPEBASERTE UTBRETTSSYSTEMET
         function toggleEventText(element, fullText, isTruncatedInitially) {
             resetReturnTimer();
-            if (!isTruncatedInitially) return; // Hvis teksten var kort i utgangspunktet gjør vi ingenting
+            if (!isTruncatedInitially) return; 
             
             const isExpanded = element.getAttribute('data-expanded') === 'true';
             const textSpan = element.querySelector('.event-summary-text');
+            const btnSpan = element.querySelector('.expand-btn');
             
             if (!isExpanded) {
-                textSpan.textContent = fullText;
-                textSpan.className = "event-summary-text"; // Fjern den stiplede linjen under prikkene
+                textSpan.textContent = fullText + " ";
+                btnSpan.textContent = "Vis mindre";
+                btnSpan.className = "expand-btn active-less";
                 element.setAttribute('data-expanded', 'true');
             } else {
-                textSpan.textContent = fullText.substring(0, 50);
-                textSpan.innerHTML += ' <span class="truncated-dots">...</span>';
+                textSpan.textContent = fullText.substring(0, 50) + "... ";
+                btnSpan.textContent = "Vis mer";
+                btnSpan.className = "expand-btn";
                 element.setAttribute('data-expanded', 'false');
             }
             
-            // Sjekk om pilen i bunnen må dukke opp på nytt siden teksten endret størrelse
             const listEl = element.closest('.event-list');
             if (listEl) {
                 const dayString = listEl.id.replace('list-', '');
@@ -698,26 +710,32 @@
                         
                         const fullText = ev.summary || '';
                         
-                        // SJEKKER OM DET ER "I DAG". Hvis IKKE, kutter vi teksten.
+                        // HVIS AVTALEN ER FOR EN FREMTIDIG DAG OG OVER 50 TEGN:
                         if (!isToday && fullText.length > 50) {
-                            summarySpan.textContent = fullText.substring(0, 50);
-                            summarySpan.innerHTML += ' <span class="truncated-dots">...</span>';
+                            summarySpan.textContent = fullText.substring(0, 50) + "... ";
+                            li.appendChild(summarySpan);
+
+                            // MONTERER DEN NYE, TYDELIGE "VIS MER"-KNAPPEN
+                            const btnSpan = document.createElement('span');
+                            btnSpan.className = 'expand-btn';
+                            btnSpan.textContent = "Vis mer";
+                            li.appendChild(btnSpan);
+
                             li.className += ' clickable-event';
-                            
-                            // Legg til klikkfunksjonalitet
                             li.setAttribute('data-expanded', 'false');
+                            
                             li.onclick = (e) => {
                                 e.stopPropagation();
                                 toggleEventText(li, fullText, true);
                             };
                         } else {
                             summarySpan.textContent = fullText;
+                            li.appendChild(summarySpan);
                             if (!isToday) {
-                                li.onclick = () => resetReturnTimer(); // Kun tidsstrikk-reset på korte avtaler
+                                li.onclick = () => resetReturnTimer();
                             }
                         }
                         
-                        li.appendChild(summarySpan);
                         listEl.appendChild(li);
                     });
                 }
@@ -772,7 +790,7 @@
                     eventsByDay[dateKey].push(event);
                 });
 
-                globalEventsCache = eventsByDay; // Lagre i global cache for tilbakestilling
+                globalEventsCache = eventsByDay; 
                 generateCalendarGrid(eventsByDay);
             }).catch(err => {
                 console.log("Feil: ", err);
