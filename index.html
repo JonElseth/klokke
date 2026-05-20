@@ -140,9 +140,23 @@
         .day-section {
             width: 100%;
             margin-bottom: 25px;
+            padding: 10px 0;
+            border-radius: 12px;
+            transition: background 0.5s ease, padding 0.5s ease;
         }
 
-        /* Stiplet skillelinje */
+        /* --- STYLING FOR DAGENS DATO (FREMHEVET) --- */
+        .day-section.today-highlight {
+            background-color: #f1f5f9; /* Mild, gråblå tone for dagtid */
+            padding: 20px;
+            border: 1px solid #cbd5e1;
+        }
+        .night-mode .day-section.today-highlight {
+            background-color: #1e293b; /* Mørkere kontrast for nattestid */
+            border: 1px solid #334155;
+        }
+
+        /* Stiplet skillelinje - skjules hvis det er siste element eller rett før en fremhevet boks */
         .day-section:not(:last-child)::after {
             content: "";
             display: block;
@@ -153,6 +167,11 @@
         .night-mode .day-section:not(:last-child)::after { 
             border-color: #334155; 
         }
+        
+        /* Fjern stiplet linje inni selve den fremhevede boksen */
+        .day-section.today-highlight::after {
+            display: none !important;
+        }
 
         .day-title {
             font-family: 'Poppins', sans-serif;
@@ -160,6 +179,21 @@
             font-weight: 700;
             margin-bottom: 15px;
             text-transform: capitalize;
+            display: flex;
+            align-items: center;
+        }
+
+        /* Lite tekstmerke for å gjøre "I dag" ekstra tydelig */
+        .today-badge {
+            font-size: 18px;
+            background: #ef4444;
+            color: white;
+            padding: 2px 12px;
+            border-radius: 6px;
+            margin-left: 15px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .holiday-text {
@@ -355,6 +389,7 @@
             container.innerHTML = '';
             
             const today = new Date();
+            const todayKey = today.toISOString().split('T')[0];
             let totalDaysRendered = 0;
 
             for (let i = 0; i < 30; i++) {
@@ -373,6 +408,11 @@
 
                 const daySection = document.createElement('div');
                 daySection.className = 'day-section';
+                
+                // Sjekk om dette er i dag, og legg til fremhevingsklassen
+                if (dateKey === todayKey) {
+                    daySection.className += ' today-highlight';
+                }
 
                 const dayName = ukeDager[currentDay.getDay()];
                 const dateNum = currentDay.getDate();
@@ -381,6 +421,12 @@
                 const title = document.createElement('div');
                 title.className = 'day-title';
                 title.textContent = `${dayName} ${dateNum}. ${monthName}:`;
+                
+                // Legg på et lite rødt flagg hvis det er i dag
+                if (dateKey === todayKey) {
+                    title.innerHTML += '<span class="today-badge">I dag</span>';
+                }
+                
                 daySection.appendChild(title);
 
                 if (hasHoliday) {
@@ -477,19 +523,16 @@
             });
         }
 
-        // --- TIMER FOR INAKTIVITET (3 MINUTTER) ---
         function resetInactivityTimer() {
             clearTimeout(inactivityTimeout);
             inactivityTimeout = setTimeout(function() {
-                // Skroller rolig og fint tilbake til toppen av listen
-                const container = document.getElementById('right-panel-scroll') || document.getElementById('event-container');
+                const container = document.getElementById('event-container');
                 if (container) {
                     container.scrollTo({ top: 0, behavior: 'smooth' });
                 }
-            }, 180000); // 3 minutter i millisekunder
+            }, 180000); 
         }
 
-        // Lytter etter berøringer på hele skjermen
         function setupInactivityListeners() {
             window.addEventListener('scroll', resetInactivityTimer, true);
             window.addEventListener('touchstart', resetInactivityTimer, true);
