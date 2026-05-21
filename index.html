@@ -151,18 +151,19 @@
         }
 
         /* --- HØYRE PANEL: AVTALER --- */
+        /* JON: Fjernet scroll-snap-type helt herfra for å stoppe magnet-funksjonen */
         .right-panel {
             height: 100%;
             overflow-y: auto;
             scrollbar-width: none;
             padding-bottom: 100px; 
             pointer-events: auto !important;
-            scroll-snap-type: y mandatory;
         }
         .right-panel::-webkit-scrollbar { 
             display: none; 
         }
 
+        /* JON: Fjernet scroll-snap-align og scroll-margin-top */
         .day-section {
             width: 100%;
             margin-bottom: 4px; 
@@ -171,8 +172,6 @@
             border: 1px solid transparent; 
             background-color: transparent;
             transition: background 0.5s ease, border 0.5s ease;
-            scroll-snap-align: start;
-            scroll-margin-top: 20px; 
         }
 
         .day-section.today-highlight {
@@ -293,7 +292,7 @@
             50% { transform: scale(1.06) translateY(6px); }
         }
 
-        /* --- AUTOMATISK PORTRETTMODUS (MOBILTELEFONER) --- */
+        /* --- AUTOMATISK PORTRETTMODUS --- */
         @media (max-width: 900px) or (orientation: portrait) {
             body {
                 padding: 50px 45px 40px 45px;
@@ -333,8 +332,8 @@
             }
             .period-text { font-size: 28px; }
 
+            /* JON: Fjernet scroll-snap-type herfra også */
             .right-panel {
-                scroll-snap-type: none; 
                 height: auto;
                 overflow: visible;
                 padding-bottom: 120px; 
@@ -346,7 +345,6 @@
                 right: 50px;  
             }
 
-            /* JON: SKJULER STARTKNAPPEN HVIS SKJERMEN ER MINDRE ENN 900PX (MOBILTELEFON) */
             #start-overlay {
                 display: none !important;
             }
@@ -597,18 +595,16 @@
             }
         }
 
+        // JON: Scroll-knappen bruker nå standard jevn rulling (uten å snappe til dager)
         function scrollCalendarDown() {
             resetInactivityTimer();
             const panel = document.getElementById('event-container');
             const isPortrait = window.matchMedia("(max-width: 900px) or (orientation: portrait)").matches;
             
-            const firstDaySection = document.querySelector('.day-section');
-            const stepHeight = firstDaySection ? firstDaySection.clientHeight + 25 : 250;
-
             if (isPortrait) {
-                window.scrollBy({ top: stepHeight, behavior: 'smooth' });
+                window.scrollBy({ top: 250, behavior: 'smooth' });
             } else {
-                panel.scrollBy({ top: stepHeight, behavior: 'smooth' });
+                panel.scrollBy({ top: 250, behavior: 'smooth' });
             }
         }
 
@@ -750,7 +746,6 @@
         window.addEventListener('DOMContentLoaded', () => {
             const isMobile = window.matchMedia("(max-width: 900px) or (orientation: portrait)").matches;
             if (isMobile) {
-                // På mobil skipper vi knappen og kjører alt i gang umiddelbart
                 document.getElementById('start-overlay').style.display = 'none';
                 buildClockUI();
                 updateClockAndLayout();
