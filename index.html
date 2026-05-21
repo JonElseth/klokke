@@ -245,51 +245,6 @@
         }
         .night-mode .event-time { color: #f87171; }
 
-        /* --- GUL SKROLLEKNAPP --- */
-        .scroll-hint-btn {
-            position: absolute;
-            bottom: 45px; 
-            right: 45px;  
-            width: 85px;
-            height: 85px;
-            background: #ffde00; 
-            border: 4px solid #ffffff; 
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.18);
-            z-index: 9999;
-            cursor: pointer;
-            pointer-events: auto !important; 
-            transition: opacity 0.4s ease, transform 0.4s ease;
-            animation: miniPulseBounce 2.5s infinite;
-        }
-        
-        .night-mode .scroll-hint-btn {
-            background: #eab308; 
-            border-color: #0f172a;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-        
-        .scroll-arrow-svg {
-            width: 50px;
-            height: 50px;
-        }
-
-        .scroll-arrow-path {
-            fill: none;
-            stroke: #d00000; 
-            stroke-width: 5.5; 
-            stroke-linecap: round; 
-            stroke-linejoin: round; 
-        }
-
-        @keyframes miniPulseBounce {
-            0%, 100% { transform: scale(1) translateY(0); }
-            50% { transform: scale(1.06) translateY(6px); }
-        }
-
         /* --- AUTOMATISK PORTRETTMODUS --- */
         @media (max-width: 900px) or (orientation: portrait) {
             body {
@@ -334,12 +289,6 @@
                 height: auto;
                 overflow: visible;
                 padding-bottom: 120px; 
-            }
-
-            .scroll-hint-btn {
-                position: fixed;
-                bottom: 50px; 
-                right: 50px;  
             }
 
             #start-overlay {
@@ -406,12 +355,6 @@
 
         <div class="right-panel" id="event-container">
             </div>
-
-        <div class="scroll-hint-btn" id="scroll-hint-element" onclick="scrollCalendarDown()">
-            <svg class="scroll-arrow-svg" viewBox="0 0 24 24">
-                <path class="scroll-arrow-path" d="M 12 4 L 12 18 M 6 12 L 12 18 L 18 12"/>
-            </svg>
-        </div>
 
     </div>
 
@@ -519,7 +462,6 @@
             const todayKey = today.toISOString().split('T')[0];
             let totalDaysRendered = 0;
 
-            // JON: Endret fra 30 dager til 185 dager (~6 måneder) i loopen
             for (let i = 0; i < 185; i++) {
                 const currentDay = new Date();
                 currentDay.setDate(today.getDate() + i);
@@ -593,34 +535,6 @@
             }
         }
 
-        function scrollCalendarDown() {
-            resetInactivityTimer();
-            const panel = document.getElementById('event-container');
-            const isPortrait = window.matchMedia("(max-width: 900px) or (orientation: portrait)").matches;
-            
-            if (isPortrait) {
-                window.scrollBy({ top: 250, behavior: 'smooth' });
-            } else {
-                panel.scrollBy({ top: 250, behavior: 'smooth' });
-            }
-        }
-
-        function handleScrollVisibility() {
-            const panel = document.getElementById('event-container');
-            const hint = document.getElementById('scroll-hint-element');
-            const currentScroll = panel.scrollTop;
-
-            if (currentScroll > 150) {
-                hint.style.opacity = '0';
-                hint.style.transform = 'scale(0.5) translateY(15px)';
-                hint.style.pointerEvents = 'none';
-            } else {
-                hint.style.opacity = '1';
-                hint.style.transform = 'scale(1) translateY(0)';
-                hint.style.pointerEvents = 'auto';
-            }
-        }
-
         function fetchCalendarData() {
             if (API_KEY === 'DIN_GOOGLE_API_KEY') return;
 
@@ -631,7 +545,6 @@
                 const start = new Date();
                 start.setHours(0,0,0,0);
                 const end = new Date();
-                // JON: Endret her fra +31 dager til +185 dager for å hente et halvt år med data
                 end.setDate(end.getDate() + 185);
 
                 const personalRequest = gapi.client.calendar.events.list({
@@ -693,14 +606,8 @@
 
         function setupInactivityListeners() {
             const panel = document.getElementById('event-container');
-            panel.addEventListener('scroll', () => {
-                resetInactivityTimer();
-                handleScrollVisibility();
-            });
-            window.addEventListener('scroll', () => {
-                resetInactivityTimer();
-                handleScrollVisibility();
-            });
+            panel.addEventListener('scroll', resetInactivityTimer);
+            window.addEventListener('scroll', resetInactivityTimer);
             window.addEventListener('touchstart', resetInactivityTimer, true);
             window.addEventListener('touchmove', resetInactivityTimer, true);
             window.addEventListener('mousedown', resetInactivityTimer, true);
