@@ -248,24 +248,25 @@
         .night-mode .event-time { color: #f87171; }
 
         /* --- JON: STIL FOR NAVNEMERKER (BADGES) --- */
+        /* Justert padding (mer i bunn) og line-height for perfekt sentrering */
         .badge-navn {
             display: inline-block;
-            padding: 2px 10px;
+            padding: 4px 10px 6px 10px; 
             border-radius: 6px;
             font-weight: 700;
-            color: #ffffff !important; /* Alltid hvit tekst på boksene */
+            color: #ffffff !important; 
             margin-right: 4px;
-            line-height: 1;
+            line-height: 1.2; 
             font-size: 20px;
             vertical-align: middle;
         }
 
-        /* Dagsmodus farger (friske og tydelige) */
-        .badge-mamma { background-color: #16a34a; }        /* Grønn */
-        .badge-pappa { background-color: #d97706; }        /* Gul/Rav (mørk nok for hvit tekst) */
-        .badge-begge { background-color: #0891b2; }        /* Turkis/Cyan */
+        /* Dagsmodus farger */
+        .badge-mamma { background-color: #16a34a; }        
+        .badge-pappa { background-color: #d97706; }        
+        .badge-begge { background-color: #0891b2; }        
 
-        /* Nattmodus farger (dempede for mørk skjerm) */
+        /* Nattmodus farger */
         .night-mode .badge-mamma { background-color: #166534; }
         .night-mode .badge-pappa { background-color: #9a3412; }
         .night-mode .badge-begge { background-color: #155e75; }
@@ -397,20 +398,14 @@
         let wakeLock = null;
         let inactivityTimeout = null;
 
-        // JON: Hjelpefunksjon som sjekker etter navnene og gjør dem om til fargede merkelapper
         function formatEventSummary(summary) {
             if (!summary) return '';
             
             let html = summary;
             
-            // Sjekker etter "Mamma & pappa:" eller "Mamma og pappa:" (både med og uten stor P)
             html = html.replace(/Mamma\s*&\s*[pP]appa:/g, '<span class="badge-navn badge-begge">Mamma & pappa:</span>');
             html = html.replace(/Mamma\s+og\s+[pP]appa:/g, '<span class="badge-navn badge-begge">Mamma & pappa:</span>');
-            
-            // Sjekker etter frittstående "Mamma:"
             html = html.replace(/Mamma:/g, '<span class="badge-navn badge-mamma">Mamma:</span>');
-            
-            // Sjekker etter frittstående "Pappa:"
             html = html.replace(/Pappa:/g, '<span class="badge-navn badge-pappa">Pappa:</span>');
             
             return html;
@@ -561,7 +556,6 @@
                             timeStr = d.toLocaleTimeString('no-NO', {hour: '2-digit', minute:'2-digit', timeZone: 'Europe/Oslo'}).replace(':', '.');
                         }
 
-                        // JON: Her kjører vi teksten gjennom formateringsfunksjonen før den skrives ut
                         const formatedText = formatEventSummary(ev.summary);
 
                         li.innerHTML = `<span class="event-time">${timeStr}:</span>${formatedText}`;
@@ -693,7 +687,6 @@
             } catch(gErr) {}
         }
 
-        // --- AUTOMATISK OPPSTART HVIS DET ER EN MOBILTELEFON ---
         window.addEventListener('DOMContentLoaded', () => {
             const isMobile = window.matchMedia("(max-width: 900px) or (orientation: portrait)").matches;
             if (isMobile) {
