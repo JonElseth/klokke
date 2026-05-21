@@ -2,19 +2,11 @@
 <html lang="no">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     
     <meta name="robots" content="noindex, nofollow">
     
     <title>Digital og Analog Seniorkalender</title>
-    
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="theme-color" content="#ffffff" id="theme-meta">
-    
-    <link rel="shortcut icon" href="https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/calendar_today/default/48px.svg">
-    <link rel="manifest" href='data:application/json,{"name":"Seniorkalender","short_name":"Kalender","start_url":".","display":"standalone","orientation":"landscape","background_color":"#ffffff","theme_color":"#ffffff"}'>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -167,11 +159,10 @@
             display: none; 
         }
 
-        /* JON: Strammet opp marger og padding for å fjerne det store rød-markerte tomrommet */
         .day-section {
             width: 100%;
-            margin-bottom: 4px; /* Minimal margin i bunn av selve boksen */
-            padding: 0px 20px 20px 20px; /* Fjernet topp-padding så vanlige dager rykker opp */
+            margin-bottom: 4px; 
+            padding: 0px 20px 20px 20px; 
             border-radius: 12px;
             border: 1px solid transparent; 
             background-color: transparent;
@@ -180,12 +171,11 @@
             scroll-margin-top: 20px; 
         }
 
-        /* For i dag beholder vi paddingen rundt hele for at den grå boksen skal se bra ut */
         .day-section.today-highlight {
             padding: 20px; 
             background-color: #f1f5f9; 
             border: 1px solid #cbd5e1;
-            margin-bottom: 24px; /* Gir nøyaktig samme avstand nedover som den grønne sonen din */
+            margin-bottom: 24px; 
         }
         
         .night-mode .day-section.today-highlight {
@@ -503,8 +493,6 @@
 
             const isNight = h >= 22 || h < 7;
             document.body.className = isNight ? "night-mode" : "day-mode";
-            
-            document.getElementById('theme-meta').setAttribute('content', isNight ? '#0f172a' : '#ffffff');
             
             let periodText = "Det er natt";
             let periodClass = "period-natt";
