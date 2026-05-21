@@ -50,7 +50,7 @@
             color: #f8fafc; 
         }
 
-        /* --- RESPONSIVT LAYOUT MED GRID - JON: ØKT TIL 50% BREDDE FOR VENSTRESIDEN --- */
+        /* --- RESPONSIVT LAYOUT MED GRID --- */
         .main-layout {
             display: grid;
             grid-template-columns: 50% 1fr;
@@ -74,7 +74,7 @@
             border-right: 1px solid rgba(255,255,255,0.08);
         }
 
-        /* Analog Klokke (Landskap) - Nå har den plass til å utfolde seg */
+        /* Analog Klokke (Landskap) */
         .analog-clock-svg {
             width: 390px;
             height: 390px;
@@ -167,33 +167,38 @@
             display: none; 
         }
 
+        /* JON: HER ER TRIKSET. Alle dager har nå nøyaktig samme padding og ramme-oppsett, men usynlig. */
         .day-section {
             width: 100%;
-            margin-bottom: 25px;
-            padding: 10px 0;
+            margin-bottom: 15px;
+            padding: 20px; 
             border-radius: 12px;
-            transition: background 0.5s ease, padding 0.5s ease;
+            border: 1px solid transparent; 
+            background-color: transparent;
+            transition: background 0.5s ease, border 0.5s ease;
             scroll-snap-align: start;
-            scroll-margin-top: 10px; 
+            scroll-margin-top: 15px; 
         }
 
+        /* Når det er i dag, slår vi bare på fargene. Tekstposisjonen forblir urørt! */
         .day-section.today-highlight {
             background-color: #f1f5f9; 
-            padding: 20px;
             border: 1px solid #cbd5e1;
-            scroll-margin-top: 20px; 
         }
         .night-mode .day-section.today-highlight {
             background-color: #1e293b; 
             border: 1px solid #334155;
         }
 
+        /* Stiplet linje mellom dager som IKKE er i dag */
         .day-section:not(:last-child)::after {
             content: "";
             display: block;
             width: 100%;
             border-bottom: 2px dashed #cbd5e1;
             margin-top: 25px;
+            margin-left: -20px; /* Kompenserer for paddingen så linjen strekker seg helt ut */
+            padding-right: 40px;
         }
         .night-mode .day-section:not(:last-child)::after { 
             border-color: #334155; 
