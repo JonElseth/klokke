@@ -264,11 +264,11 @@
         }
         .night-mode .event-time { color: #f87171; }
 
-        /* --- GUL SKROLLEKNAPP --- */
+        /* --- GUL SKROLLEKNAPP - JON: FLYTTET 5MM (20PX) OPP OG INN I LANDSKAP --- */
         .scroll-hint-btn {
             position: absolute;
-            bottom: 25px;
-            right: 25px;
+            bottom: 45px; /* Økt fra 25px for å flytte knappen 5mm opp */
+            right: 45px;  /* Økt fra 25px for å flytte knappen 5mm til venstre */
             width: 85px;
             height: 85px;
             background: #ffde00; 
@@ -309,10 +309,9 @@
             50% { transform: scale(1.06) translateY(6px); }
         }
 
-        /* --- JON: KORRIGERT AUTOMATISK PORTRETTMODUS --- */
+        /* --- AUTOMATISK PORTRETTMODUS --- */
         @media (max-width: 900px) or (orientation: portrait) {
             body {
-                /* JON: Økt fra 20px til 45px på sidene for å holde trygg avstand til plastrammen */
                 padding: 50px 45px 40px 45px;
                 overflow-y: auto; 
             }
@@ -320,7 +319,6 @@
             .main-layout {
                 grid-template-columns: 1fr; 
                 grid-template-rows: auto 1fr;
-                /* JON: Økt gap fra 30px til 45px for å skape et finere skille loddrett */
                 gap: 45px;
                 height: auto;
                 overflow: visible;
@@ -333,7 +331,6 @@
                 padding-bottom: 25px;
                 height: auto;
             }
-            .night-mode .left-panel { border-bottom-color: rgba(255,255,255,0.08); }
 
             .analog-clock-svg {
                 width: 260px;
@@ -343,7 +340,7 @@
             .digital-time { font-size: 14vw; }
             .date-text { 
                 font-size: 26px;
-                margin-bottom: 20px; /* Litt mer luft ned til den rosa periodeteken */
+                margin-bottom: 20px; 
             }
             .period-text { font-size: 28px; }
 
@@ -354,10 +351,11 @@
                 padding-bottom: 120px; 
             }
 
+            /* JON: FLYTTET KNAPPEN 5MM OPP OG INN OGSÅ FOR PORTRETTMODUS */
             .scroll-hint-btn {
                 position: fixed;
-                bottom: 30px;
-                right: 30px;
+                bottom: 50px; /* Økt fra 30px */
+                right: 50px;  /* Økt fra 30px */
             }
         }
 
@@ -639,7 +637,6 @@
             }
         }
 
-        // --- HENTING AV GOOGLE CALENDAR DATA ---
         function fetchCalendarData() {
             if (API_KEY === 'DIN_GOOGLE_API_KEY') return;
 
