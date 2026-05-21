@@ -151,7 +151,6 @@
         }
 
         /* --- HØYRE PANEL: AVTALER --- */
-        /* JON: Fjernet scroll-snap-type helt herfra for å stoppe magnet-funksjonen */
         .right-panel {
             height: 100%;
             overflow-y: auto;
@@ -163,7 +162,6 @@
             display: none; 
         }
 
-        /* JON: Fjernet scroll-snap-align og scroll-margin-top */
         .day-section {
             width: 100%;
             margin-bottom: 4px; 
@@ -332,7 +330,6 @@
             }
             .period-text { font-size: 28px; }
 
-            /* JON: Fjernet scroll-snap-type herfra også */
             .right-panel {
                 height: auto;
                 overflow: visible;
@@ -522,7 +519,8 @@
             const todayKey = today.toISOString().split('T')[0];
             let totalDaysRendered = 0;
 
-            for (let i = 0; i < 30; i++) {
+            // JON: Endret fra 30 dager til 185 dager (~6 måneder) i loopen
+            for (let i = 0; i < 185; i++) {
                 const currentDay = new Date();
                 currentDay.setDate(today.getDate() + i);
                 const dateKey = currentDay.toISOString().split('T')[0];
@@ -590,12 +588,11 @@
             if (totalDaysRendered === 0) {
                 const noEvContainer = document.createElement('div');
                 noEvContainer.className = 'no-events-container';
-                noEvContainer.innerHTML = '<div class="no-events-text">Ingen planer de neste 30 dagene</div>';
+                noEvContainer.innerHTML = '<div class="no-events-text">Ingen planer de neste 6 månedene</div>';
                 container.appendChild(noEvContainer);
             }
         }
 
-        // JON: Scroll-knappen bruker nå standard jevn rulling (uten å snappe til dager)
         function scrollCalendarDown() {
             resetInactivityTimer();
             const panel = document.getElementById('event-container');
@@ -634,7 +631,8 @@
                 const start = new Date();
                 start.setHours(0,0,0,0);
                 const end = new Date();
-                end.setDate(end.getDate() + 31);
+                // JON: Endret her fra +31 dager til +185 dager for å hente et halvt år med data
+                end.setDate(end.getDate() + 185);
 
                 const personalRequest = gapi.client.calendar.events.list({
                     'calendarId': CALENDAR_ID,
