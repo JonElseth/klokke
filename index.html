@@ -74,11 +74,11 @@
             border-right: 1px solid rgba(255,255,255,0.08);
         }
 
-        /* Analog Klokke */
+        /* Analog Klokke (Landskap) */
         .analog-clock-svg {
-            width: 340px;
-            height: 340px;
-            max-width: 95%;
+            width: 380px;
+            height: 380px;
+            max-width: 98%;
         }
         
         .clock-face { fill: none; }
@@ -102,7 +102,7 @@
         .night-mode .tick-minute { stroke: #94a3b8; }
         .night-mode .tick-hour, .night-mode .clock-number, .night-mode .hand-hour, .night-mode .hand-minute { fill: #f8fafc; stroke: #f8fafc; }
 
-        /* Digital ur */
+        /* Digital ur (Landskap) */
         .digital-time {
             font-family: 'Poppins', sans-serif;
             font-size: 9.5vw;
@@ -264,11 +264,11 @@
         }
         .night-mode .event-time { color: #f87171; }
 
-        /* --- GUL SKROLLEKNAPP - JON: FLYTTET 5MM (20PX) OPP OG INN I LANDSKAP --- */
+        /* --- GUL SKROLLEKNAPP --- */
         .scroll-hint-btn {
             position: absolute;
-            bottom: 45px; /* Økt fra 25px for å flytte knappen 5mm opp */
-            right: 45px;  /* Økt fra 25px for å flytte knappen 5mm til venstre */
+            bottom: 45px; 
+            right: 45px;  
             width: 85px;
             height: 85px;
             background: #ffde00; 
@@ -332,12 +332,19 @@
                 height: auto;
             }
 
+            /* Den analoge klokken er 340px i portrett */
             .analog-clock-svg {
-                width: 260px;
-                height: 260px;
+                width: 340px;
+                height: 340px;
             }
 
-            .digital-time { font-size: 14vw; }
+            /* JON: NÅ TILBAKESTILT TIL OPPRINNELIG FET STØRRELSE (14VW) PÅ HØYKANT */
+            .digital-time { 
+                font-size: 14vw; 
+                letter-spacing: -4px;
+                margin: 5px 0;
+            }
+            
             .date-text { 
                 font-size: 26px;
                 margin-bottom: 20px; 
@@ -351,11 +358,10 @@
                 padding-bottom: 120px; 
             }
 
-            /* JON: FLYTTET KNAPPEN 5MM OPP OG INN OGSÅ FOR PORTRETTMODUS */
             .scroll-hint-btn {
                 position: fixed;
-                bottom: 50px; /* Økt fra 30px */
-                right: 50px;  /* Økt fra 30px */
+                bottom: 50px; 
+                right: 50px;  
             }
         }
 
@@ -390,7 +396,7 @@
         }
     </style>
 </head>
-<body class="day-mode">
+<body>
 
     <div id="start-overlay">
         <button class="start-btn" onclick="startApp()">Vis klokke & kalender</button>
