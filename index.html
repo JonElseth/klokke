@@ -167,20 +167,19 @@
             display: none; 
         }
 
-        /* JON: HER ER TRIKSET. Alle dager har nå nøyaktig samme padding og ramme-oppsett, men usynlig. */
+        /* JON: Redusert margin-bottom fra 15px til 5px, og endret padding for tettere layout */
         .day-section {
             width: 100%;
-            margin-bottom: 15px;
-            padding: 20px; 
+            margin-bottom: 5px;
+            padding: 14px 20px; 
             border-radius: 12px;
             border: 1px solid transparent; 
             background-color: transparent;
             transition: background 0.5s ease, border 0.5s ease;
             scroll-snap-align: start;
-            scroll-margin-top: 15px; 
+            scroll-margin-top: 5px; 
         }
 
-        /* Når det er i dag, slår vi bare på fargene. Tekstposisjonen forblir urørt! */
         .day-section.today-highlight {
             background-color: #f1f5f9; 
             border: 1px solid #cbd5e1;
@@ -190,29 +189,13 @@
             border: 1px solid #334155;
         }
 
-        /* Stiplet linje mellom dager som IKKE er i dag */
-        .day-section:not(:last-child)::after {
-            content: "";
-            display: block;
-            width: 100%;
-            border-bottom: 2px dashed #cbd5e1;
-            margin-top: 25px;
-            margin-left: -20px; /* Kompenserer for paddingen så linjen strekker seg helt ut */
-            padding-right: 40px;
-        }
-        .night-mode .day-section:not(:last-child)::after { 
-            border-color: #334155; 
-        }
-        
-        .day-section.today-highlight::after {
-            display: none !important;
-        }
+        /* JON: Den stiplede linjen (.day-section::after) er fjernet helt herfra */
 
         .day-title {
             font-family: 'Poppins', sans-serif;
             font-size: 26px;
             font-weight: 700;
-            margin-bottom: 15px;
+            margin-bottom: 10px; /* Redusert litt for tettere flyt */
             text-transform: capitalize;
             display: flex;
             align-items: center;
@@ -235,8 +218,8 @@
             color: #ef4444;
             font-weight: 700;
             font-style: italic;
-            margin-top: -10px;
-            margin-bottom: 15px;
+            margin-top: -6px;
+            margin-bottom: 10px;
             text-transform: uppercase;
         }
 
@@ -247,7 +230,7 @@
 
         .event-item {
             font-size: 22px;
-            margin-bottom: 12px;
+            margin-bottom: 10px; /* Redusert litt for tettere flyt */
             line-height: 1.3;
             position: relative;
             font-weight: 400;
@@ -399,7 +382,7 @@
         }
     </style>
 </head>
-<body>
+<body class="day-mode">
 
     <div id="start-overlay">
         <button class="start-btn" onclick="startApp()">Vis klokke & kalender</button>
