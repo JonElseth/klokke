@@ -162,26 +162,32 @@
             display: none; 
         }
 
+        /* Standard boks for kommende dager (fått tynn ramme nå) */
         .day-section {
             width: 100%;
-            margin-bottom: 4px; 
-            padding: 0px 20px 20px 20px; 
+            margin-bottom: 16px; 
+            padding: 20px; 
             border-radius: 12px;
-            border: 1px solid transparent; 
+            border: 1px solid #e2e8f0; 
             background-color: transparent;
             transition: background 0.5s ease, border 0.5s ease;
         }
+        
+        .night-mode .day-section {
+            border: 1px solid #334155; 
+        }
 
+        /* Kraftigere markering for i dag */
         .day-section.today-highlight {
             padding: 20px; 
             background-color: #f1f5f9; 
-            border: 1px solid #cbd5e1;
+            border: 2px solid #cbd5e1;
             margin-bottom: 24px; 
         }
         
         .night-mode .day-section.today-highlight {
             background-color: #1e293b; 
-            border: 1px solid #334155;
+            border: 2px solid #475569;
         }
 
         .day-title {
