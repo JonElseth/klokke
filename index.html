@@ -35,7 +35,7 @@
             overflow: hidden;
             user-select: none;
             
-            /* SIKKERHETSSONE FOR DET FYSISKE DEKSELET */
+            /* SIKKERHETSSONE FOR DET FYSISKE DEKSELET (LANDSKAP) */
             padding: 79px 60px 74px 60px; 
             transition: background 1.5s ease, color 1.5s ease;
         }
@@ -309,17 +309,19 @@
             50% { transform: scale(1.06) translateY(6px); }
         }
 
-        /* --- AUTOMATISK PORTRETTMODUS --- */
+        /* --- JON: KORRIGERT AUTOMATISK PORTRETTMODUS --- */
         @media (max-width: 900px) or (orientation: portrait) {
             body {
-                padding: 40px 20px;
+                /* JON: Økt fra 20px til 45px på sidene for å holde trygg avstand til plastrammen */
+                padding: 50px 45px 40px 45px;
                 overflow-y: auto; 
             }
             
             .main-layout {
                 grid-template-columns: 1fr; 
                 grid-template-rows: auto 1fr;
-                gap: 30px;
+                /* JON: Økt gap fra 30px til 45px for å skape et finere skille loddrett */
+                gap: 45px;
                 height: auto;
                 overflow: visible;
             }
@@ -328,9 +330,10 @@
                 border-right: none;
                 border-bottom: 1px solid rgba(0,0,0,0.08);
                 padding-right: 0;
-                padding-bottom: 20px;
+                padding-bottom: 25px;
                 height: auto;
             }
+            .night-mode .left-panel { border-bottom-color: rgba(255,255,255,0.08); }
 
             .analog-clock-svg {
                 width: 260px;
@@ -338,7 +341,10 @@
             }
 
             .digital-time { font-size: 14vw; }
-            .date-text { font-size: 26px; }
+            .date-text { 
+                font-size: 26px;
+                margin-bottom: 20px; /* Litt mer luft ned til den rosa periodeteken */
+            }
             .period-text { font-size: 28px; }
 
             .right-panel {
@@ -499,9 +505,8 @@
             const yearNum = now.getFullYear();
             document.getElementById('date-text').textContent = `${dayName} ${dayNum}. ${monthName} ${yearNum}`;
 
-            // --- JON: SJEKKER MIDNATT (NÅR SEKUND, MINUTT OG TIME ER 0) ---
             if (h === 0 && m === 0 && s === 0) {
-                renderCalendarList(); // Tegner listen på nytt øyeblikkelig for å flytte "I dag"-merket
+                renderCalendarList(); 
             }
 
             const isNight = h >= 22 || h < 7;
@@ -634,6 +639,7 @@
             }
         }
 
+        // --- HENTING AV GOOGLE CALENDAR DATA ---
         function fetchCalendarData() {
             if (API_KEY === 'DIN_GOOGLE_API_KEY') return;
 
