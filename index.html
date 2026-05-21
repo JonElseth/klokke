@@ -57,17 +57,14 @@
         }
 
         /* --- VENSTRE HALVDEL: KLOKKER OG DATO --- */
+        /* JON: Fjernet border-right og justert padding for en helt ren overgang i midten */
         .left-panel {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: space-between;
             height: 100%;
-            border-right: 1px solid rgba(0,0,0,0.08);
-            padding-right: 20px;
-        }
-        .night-mode .left-panel {
-            border-right: 1px solid rgba(255,255,255,0.08);
+            padding-right: 10px;
         }
 
         /* Analog Klokke (Landskap) */
@@ -162,7 +159,7 @@
             display: none; 
         }
 
-        /* Standard boks for kommende dager (fått tynn ramme nå) */
+        /* Boks for kommende dager */
         .day-section {
             width: 100%;
             margin-bottom: 16px; 
@@ -266,9 +263,9 @@
                 overflow: visible;
             }
 
+            /* JON: Fjernet border-bottom på høykant også */
             .left-panel {
-                border-right: none;
-                border-bottom: 1px solid rgba(0,0,0,0.08);
+                border-bottom: none;
                 padding-right: 0;
                 padding-bottom: 25px;
                 height: auto;
