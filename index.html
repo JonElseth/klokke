@@ -190,7 +190,11 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
         }
 
+        /* Tittel-linjen bruker nå Flexbox for ren side-ved-side-distribusjon */
         .day-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             font-family: 'Poppins', sans-serif;
             font-size: 28px;
             font-weight: 700;
@@ -199,11 +203,8 @@
             width: 100%;
         }
 
-        /* Stor "I dag"-merkelapp stabilt plassert øverst til høyre */
+        /* Stor "I dag"-merkelapp på linje med teksten */
         .today-badge {
-            position: absolute;
-            top: 20px;
-            right: 20px;
             font-size: 24px; 
             background: #ef4444;
             color: white;
@@ -213,8 +214,8 @@
             text-transform: uppercase;
             letter-spacing: 1.5px;
             line-height: 1.2;
-            z-index: 10;
             box-shadow: 0 4px 10px rgba(239, 68, 68, 0.2); 
+            white-space: nowrap; /* Hindrer at knappen brekker i to */
         }
 
         .holiday-text {
@@ -232,13 +233,14 @@
             padding-left: 25px;
         }
 
+        /* Fjernet padding-right helt slik at teksten kan bruke hele bredden av boksen */
         .event-item {
             font-size: 22px;
             margin-bottom: 12px; 
             line-height: 1.4;
             position: relative;
             font-weight: 400;
-            padding-right: 140px; 
+            padding-right: 0; 
         }
 
         .event-item::before {
@@ -502,15 +504,14 @@
                 
                 const title = document.createElement('div');
                 title.className = 'day-title';
-                title.textContent = `${dayName} ${dateNum}. ${monthName}:`;
-                daySection.appendChild(title);
-
+                
+                // JON: Her bygger vi strukturen slik at tittel-teksten og knappen ligger i samme Flex-container
+                let titleHTML = `<span>${dayName} ${dateNum}. ${monthName}:</span>`;
                 if (dateKey === todayKey) {
-                    const badge = document.createElement('span');
-                    badge.className = 'today-badge';
-                    badge.textContent = 'I dag';
-                    daySection.appendChild(badge);
+                    titleHTML += '<span class="today-badge">I dag</span>';
                 }
+                title.innerHTML = titleHTML;
+                daySection.appendChild(title);
 
                 if (hasHoliday) {
                     const holDiv = document.createElement('div');
