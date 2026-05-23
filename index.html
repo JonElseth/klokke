@@ -432,6 +432,12 @@
             const yearNum = now.getFullYear();
             document.getElementById('date-text').textContent = `${dayName} ${dayNum}. ${monthName} ${yearNum}`;
 
+            // JON: Siden oppdateres automatisk klokken 03:00:00 hver natt for å tvinge inn ny kode fra GitHub
+            if (h === 3 && m === 0 && s === 0) {
+                window.location.reload(true);
+                return;
+            }
+
             if (h === 0 && m === 0 && s === 0) {
                 renderCalendarList(); 
             }
@@ -651,9 +657,7 @@
             } catch (err) {}
         }
 
-        // --- DIREKTE AUTOMATISK OPPSTART ---
         window.addEventListener('DOMContentLoaded', () => {
-            // Skjuler overlay-boksen fullstendig uansett skjermstørrelse
             const overlay = document.getElementById('start-overlay');
             if(overlay) overlay.style.display = 'none';
 
