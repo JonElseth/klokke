@@ -175,11 +175,11 @@
             border: 1px solid #334155; 
         }
 
-        /* JON: Korrigert markering for I DAG uten den brede venstrestolpen */
+        /* Markering for I DAG */
         .day-section.today-highlight {
             padding: 24px; 
             background-color: #ffffff; 
-            border: 2px solid #ef4444; /* Kun den tynne, faste røde rammen rundt hele */
+            border: 2px solid #ef4444; 
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05); 
             margin-bottom: 30px; 
         }
@@ -199,21 +199,22 @@
             width: 100%;
         }
 
-        /* Merkelappen plassert stabilt øverst til høyre i boksen */
+        /* JON: Gjort "I dag"-merket vesentlig større, med mer luft og kraftigere skrift */
         .today-badge {
             position: absolute;
-            top: 24px;
-            right: 24px;
-            font-size: 18px;
+            top: 20px;
+            right: 20px;
+            font-size: 24px; /* Økt fra 18px til 24px */
             background: #ef4444;
             color: white;
-            padding: 4px 16px;
-            border-radius: 8px;
+            padding: 6px 24px; /* Økt luft på innsiden for et mer solid uttrykk */
+            border-radius: 10px;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 1.5px;
             line-height: 1.2;
             z-index: 10;
+            box-shadow: 0 4px 10px rgba(239, 68, 68, 0.2); /* Lagt til en svak rød glød */
         }
 
         .holiday-text {
@@ -231,13 +232,14 @@
             padding-left: 25px;
         }
 
+        /* Økt sikkerhetsavstanden til høyre så lange tekster ikke krasjer med det større merket */
         .event-item {
             font-size: 22px;
             margin-bottom: 12px; 
             line-height: 1.4;
             position: relative;
             font-weight: 400;
-            padding-right: 100px; 
+            padding-right: 140px; /* Økt fra 100px for å gi plass til større merke */
         }
 
         .event-item::before {
@@ -413,7 +415,7 @@
                 txt.setAttribute("x", x); txt.setAttribute("y", y);
                 txt.classList.add("clock-number");
                 txt.textContent = i;
-                numsG.appendChild(txt);
+                numbersG.appendChild(txt);
             }
         }
 
