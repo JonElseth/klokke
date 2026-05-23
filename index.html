@@ -190,7 +190,7 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
         }
 
-        /* Tittel-linjen bruker nå Flexbox for ren side-ved-side-distribusjon */
+        /* Tittel-linjen bruker Flexbox for ren distribusjon */
         .day-title {
             display: flex;
             justify-content: space-between;
@@ -215,7 +215,7 @@
             letter-spacing: 1.5px;
             line-height: 1.2;
             box-shadow: 0 4px 10px rgba(239, 68, 68, 0.2); 
-            white-space: nowrap; /* Hindrer at knappen brekker i to */
+            white-space: nowrap; 
         }
 
         .holiday-text {
@@ -233,7 +233,6 @@
             padding-left: 25px;
         }
 
-        /* Fjernet padding-right helt slik at teksten kan bruke hele bredden av boksen */
         .event-item {
             font-size: 22px;
             margin-bottom: 12px; 
@@ -372,14 +371,11 @@
 
         function formatEventSummary(summary) {
             if (!summary) return '';
-            
             let html = summary;
-            
             html = html.replace(/Mamma\s*&\s*[pP]appa:/g, '<span class="badge-navn badge-begge">Mamma & pappa:</span>');
             html = html.replace(/Mamma\s+og\s+[pP]appa:/g, '<span class="badge-navn badge-begge">Mamma & pappa:</span>');
             html = html.replace(/Mamma:/g, '<span class="badge-navn badge-mamma">Mamma:</span>');
             html = html.replace(/Pappa:/g, '<span class="badge-navn badge-pappa">Pappa:</span>');
-            
             return html;
         }
 
@@ -474,13 +470,13 @@
             container.innerHTML = '';
             
             const today = new Date();
-            const todayKey = today.toISOString().split('T')[0];
+            const todayKey = today.toLocaleDateString('sv-SE', {timeZone: 'Europe/Oslo'});
             let totalDaysRendered = 0;
 
             for (let i = 0; i < 185; i++) {
                 const currentDay = new Date();
                 currentDay.setDate(today.getDate() + i);
-                const dateKey = currentDay.toISOString().split('T')[0];
+                const dateKey = currentDay.toLocaleDateString('sv-SE', {timeZone: 'Europe/Oslo'});
 
                 const hasPersonalEvents = globalEventsCache[dateKey] && globalEventsCache[dateKey].length > 0;
                 const hasHoliday = globalHolidaysCache[dateKey];
@@ -505,7 +501,6 @@
                 const title = document.createElement('div');
                 title.className = 'day-title';
                 
-                // JON: Her bygger vi strukturen slik at tittel-teksten og knappen ligger i samme Flex-container
                 let titleHTML = `<span>${dayName} ${dateNum}. ${monthName}:</span>`;
                 if (dateKey === todayKey) {
                     titleHTML += '<span class="today-badge">I dag</span>';
@@ -589,25 +584,28 @@
                 
                 personalEvents.forEach(event => {
                     if (event.start.date) {
-                        let current = new Date(event.start.date);
-                        const end = new Date(event.end.date);
+                        const startParts = event.start.date.split('-');
+                        const endParts = event.end.date.split('-');
+                        
+                        let current = new Date(startParts[0], startParts[1] - 1, startParts[2]);
+                        const end = new Date(endParts[0], endParts[1] - 1, endParts[2]);
                         
                         while (current < end) {
-                            const key = current.toISOString().split('T')[0];
+                            const key = current.toLocaleDateString('sv-SE', {timeZone: 'Europe/Oslo'});
                             if (!tempEvents[key]) { tempEvents[key] = []; }
                             tempEvents[key].push(event);
                             current.setDate(current.getDate() + 1);
                         }
                     } else if (event.start.dateTime) {
                         let current = new Date(event.start.dateTime);
-                        const end = new Date(event.end.dateTime);
+                        let startKey = current.toLocaleDateString('sv-SE', {timeZone: 'Europe/Oslo'});
                         
-                        let currentKey = current.toLocaleDateString('sv-SE', {timeZone: 'Europe/Oslo'});
-                        const endKey = end.toLocaleDateString('sv-SE', {timeZone: 'Europe/Oslo'});
+                        let end = new Date(event.end.dateTime);
+                        let endKey = end.toLocaleDateString('sv-SE', {timeZone: 'Europe/Oslo'});
                         
-                        if (currentKey === endKey) {
-                            if (!tempEvents[currentKey]) { tempEvents[currentKey] = []; }
-                            tempEvents[currentKey].push(event);
+                        if (startKey === endKey) {
+                            if (!tempEvents[startKey]) { tempEvents[startKey] = []; }
+                            tempEvents[startKey].push(event);
                         } else {
                             let iter = new Date(current.getFullYear(), current.getMonth(), current.getDate());
                             let stop = new Date(end.getFullYear(), end.getMonth(), end.getDate());
@@ -625,8 +623,11 @@
 
                 const tempHolidays = {};
                 holidayEvents.forEach(h => {
-                    const s = h.start.date || h.start.dateTime;
-                    const key = s.split('T')[0];
+                    // JON: Låser også helligdag-strenget til lokal tolkning i stedet for UTC-splitting
+                    let dateStr = h.start.date || h.start.dateTime.split('T')[0];
+                    let parts = dateStr.split('-');
+                    let d = new Date(parts[0], parts[1] - 1, parts[2]);
+                    let key = d.toLocaleDateString('sv-SE', {timeZone: 'Europe/Oslo'});
                     tempHolidays[key] = h.summary;
                 });
                 globalHolidaysCache = tempHolidays;
@@ -670,9 +671,6 @@
         }
 
         window.addEventListener('DOMContentLoaded', () => {
-            const overlay = document.getElementById('start-overlay');
-            if(overlay) overlay.style.display = 'none';
-
             requestWakeLock();
             buildClockUI();
             updateClockAndLayout();
