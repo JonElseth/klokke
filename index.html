@@ -38,7 +38,7 @@
 
         /* --- TEMAER --- */
         body.day-mode { 
-            background: #ffffff; 
+            background: #f1f5f9; /* Gjort bakgrunnen ørlite gråere for å gi bedre kontrast til hvite bokser */
             color: #1e293b; 
         }
         body.night-mode { 
@@ -133,7 +133,7 @@
         
         .period-morgen { color: #e11d48; background: #ffe4e6; }       
         .period-formiddag { color: #ea580c; background: #ffedd5; }    
-        .period-ettermiddag { color: #991b1b; background: #f1f5f9; }  
+        .period-ettermiddag { color: #991b1b; background: #e2e8f0; }  
         .period-kveld { color: #be123c; background: #ffe4e6; }        
         
         .night-mode .period-text { 
@@ -158,14 +158,16 @@
             display: none; 
         }
 
-        /* Boks for kommende dager */
+        /* Standard boks for kommende dager (Gjort mer diskret) */
         .day-section {
             width: 100%;
-            margin-bottom: 16px; 
-            padding: 20px; 
-            border-radius: 12px;
-            border: 1px solid #e2e8f0; 
+            margin-bottom: 20px; 
+            padding: 24px; 
+            border-radius: 16px;
+            border: 1px solid #cbd5e1; 
             background-color: transparent;
+            position: relative;
+            overflow: hidden;
             transition: background 0.5s ease, border 0.5s ease;
         }
         
@@ -173,39 +175,48 @@
             border: 1px solid #334155; 
         }
 
-        /* Kraftigere markering for i dag */
+        /* JON: Ekstremt kraftig markering for I DAG */
         .day-section.today-highlight {
-            padding: 20px; 
-            background-color: #f1f5f9; 
-            border: 2px solid #cbd5e1;
-            margin-bottom: 24px; 
+            padding: 24px; 
+            background-color: #ffffff; /* Helhvit boks i dagsmodus som popper ut */
+            border: 2px solid #ef4444;  /* Rød ramme rundt hele boksen */
+            border-left: 8px solid #ef4444; /* Ekstra tykk rød stolpe på venstresiden */
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05); /* Litt skygge for dybde */
+            margin-bottom: 30px; 
         }
         
+        /* I dag-boks tilpasset mørkemodus */
         .night-mode .day-section.today-highlight {
             background-color: #1e293b; 
-            border: 2px solid #475569;
+            border: 2px solid #ef4444;
+            border-left: 8px solid #ef4444;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
         }
 
         .day-title {
             font-family: 'Poppins', sans-serif;
-            font-size: 26px;
+            font-size: 28px;
             font-weight: 700;
-            margin-bottom: 10px; 
+            margin-bottom: 14px; 
             text-transform: capitalize;
             display: flex;
             align-items: center;
+            justify-content: space-between; /* Sørger for at merkelappen skyves helt til høyre */
+            width: 100%;
         }
 
+        /* JON: Ny, stor og tydelig merkelapp plassert til høyre */
         .today-badge {
-            font-size: 16px;
+            font-size: 18px;
             background: #ef4444;
             color: white;
-            padding: 2px 12px;
-            border-radius: 6px;
-            margin-left: 15px;
+            padding: 4px 16px;
+            border-radius: 8px;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 1px;
+            display: inline-block;
+            line-height: 1.2;
         }
 
         .holiday-text {
@@ -213,8 +224,8 @@
             color: #ef4444;
             font-weight: 700;
             font-style: italic;
-            margin-top: -6px;
-            margin-bottom: 10px;
+            margin-top: -8px;
+            margin-bottom: 14px;
             text-transform: uppercase;
         }
 
@@ -225,7 +236,7 @@
 
         .event-item {
             font-size: 22px;
-            margin-bottom: 10px; 
+            margin-bottom: 12px; 
             line-height: 1.4;
             position: relative;
             font-weight: 400;
@@ -432,7 +443,6 @@
             const yearNum = now.getFullYear();
             document.getElementById('date-text').textContent = `${dayName} ${dayNum}. ${monthName} ${yearNum}`;
 
-            // JON: Siden oppdateres automatisk klokken 03:00:00 hver natt for å tvinge inn ny kode fra GitHub
             if (h === 3 && m === 0 && s === 0) {
                 window.location.reload(true);
                 return;
@@ -491,13 +501,15 @@
                 const dateNum = currentDay.getDate();
                 const monthName = maaneder[currentDay.getMonth()].toLowerCase();
                 
+                // JON: Endret oppsettet slik at tittelen kan huse merkelappen helt til høyre på samme linje
                 const title = document.createElement('div');
                 title.className = 'day-title';
-                title.textContent = `${dayName} ${dateNum}. ${monthName}:`;
                 
+                let titleText = `<span>${dayName} ${dateNum}. ${monthName}:</span>`;
                 if (dateKey === todayKey) {
-                    title.innerHTML += '<span class="today-badge">I dag</span>';
+                    titleText += '<span class="today-badge">I dag</span>';
                 }
+                title.innerHTML = titleText;
                 
                 daySection.appendChild(title);
 
