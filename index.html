@@ -199,22 +199,22 @@
             width: 100%;
         }
 
-        /* JON: Gjort "I dag"-merket vesentlig større, med mer luft og kraftigere skrift */
+        /* Stor "I dag"-merkelapp stabilt plassert øverst til høyre */
         .today-badge {
             position: absolute;
             top: 20px;
             right: 20px;
-            font-size: 24px; /* Økt fra 18px til 24px */
+            font-size: 24px; 
             background: #ef4444;
             color: white;
-            padding: 6px 24px; /* Økt luft på innsiden for et mer solid uttrykk */
+            padding: 6px 24px; 
             border-radius: 10px;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 1.5px;
             line-height: 1.2;
             z-index: 10;
-            box-shadow: 0 4px 10px rgba(239, 68, 68, 0.2); /* Lagt til en svak rød glød */
+            box-shadow: 0 4px 10px rgba(239, 68, 68, 0.2); 
         }
 
         .holiday-text {
@@ -232,14 +232,13 @@
             padding-left: 25px;
         }
 
-        /* Økt sikkerhetsavstanden til høyre så lange tekster ikke krasjer med det større merket */
         .event-item {
             font-size: 22px;
             margin-bottom: 12px; 
             line-height: 1.4;
             position: relative;
             font-weight: 400;
-            padding-right: 140px; /* Økt fra 100px for å gi plass til større merke */
+            padding-right: 140px; 
         }
 
         .event-item::before {
@@ -415,7 +414,7 @@
                 txt.setAttribute("x", x); txt.setAttribute("y", y);
                 txt.classList.add("clock-number");
                 txt.textContent = i;
-                numbersG.appendChild(txt);
+                numsG.appendChild(txt);
             }
         }
 
