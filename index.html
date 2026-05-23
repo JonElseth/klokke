@@ -38,7 +38,7 @@
 
         /* --- TEMAER --- */
         body.day-mode { 
-            background: #f1f5f9; /* Gjort bakgrunnen ørlite gråere for å gi bedre kontrast til hvite bokser */
+            background: #f1f5f9; /* Gir fin kontrast til den hvite "I dag"-boksen */
             color: #1e293b; 
         }
         body.night-mode { 
@@ -158,7 +158,7 @@
             display: none; 
         }
 
-        /* Standard boks for kommende dager (Gjort mer diskret) */
+        /* Standard boks for kommende dager */
         .day-section {
             width: 100%;
             margin-bottom: 20px; 
@@ -166,7 +166,7 @@
             border-radius: 16px;
             border: 1px solid #cbd5e1; 
             background-color: transparent;
-            position: relative;
+            position: relative; /* Kritisk for at absolutt plassering skal fungere */
             overflow: hidden;
             transition: background 0.5s ease, border 0.5s ease;
         }
@@ -175,17 +175,16 @@
             border: 1px solid #334155; 
         }
 
-        /* JON: Ekstremt kraftig markering for I DAG */
+        /* Markering for I DAG */
         .day-section.today-highlight {
             padding: 24px; 
-            background-color: #ffffff; /* Helhvit boks i dagsmodus som popper ut */
-            border: 2px solid #ef4444;  /* Rød ramme rundt hele boksen */
-            border-left: 8px solid #ef4444; /* Ekstra tykk rød stolpe på venstresiden */
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05); /* Litt skygge for dybde */
+            background-color: #ffffff; 
+            border: 2px solid #ef4444;  
+            border-left: 8px solid #ef4444; 
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05); 
             margin-bottom: 30px; 
         }
         
-        /* I dag-boks tilpasset mørkemodus */
         .night-mode .day-section.today-highlight {
             background-color: #1e293b; 
             border: 2px solid #ef4444;
@@ -199,14 +198,14 @@
             font-weight: 700;
             margin-bottom: 14px; 
             text-transform: capitalize;
-            display: flex;
-            align-items: center;
-            justify-content: space-between; /* Sørger for at merkelappen skyves helt til høyre */
             width: 100%;
         }
 
-        /* JON: Ny, stor og tydelig merkelapp plassert til høyre */
+        /* JON: Absolutt plassering øverst til høyre i boksen – dytter aldri på teksten */
         .today-badge {
+            position: absolute;
+            top: 24px;
+            right: 24px;
             font-size: 18px;
             background: #ef4444;
             color: white;
@@ -215,8 +214,8 @@
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 1px;
-            display: inline-block;
             line-height: 1.2;
+            z-index: 10;
         }
 
         .holiday-text {
@@ -234,12 +233,14 @@
             padding-left: 25px;
         }
 
+        /* Sikrer at lange tekster ikke krasjer inn bak merkelappen */
         .event-item {
             font-size: 22px;
             margin-bottom: 12px; 
             line-height: 1.4;
             position: relative;
             font-weight: 400;
+            padding-right: 100px; 
         }
 
         .event-item::before {
@@ -501,17 +502,18 @@
                 const dateNum = currentDay.getDate();
                 const monthName = maaneder[currentDay.getMonth()].toLowerCase();
                 
-                // JON: Endret oppsettet slik at tittelen kan huse merkelappen helt til høyre på samme linje
                 const title = document.createElement('div');
                 title.className = 'day-title';
-                
-                let titleText = `<span>${dayName} ${dateNum}. ${monthName}:</span>`;
-                if (dateKey === todayKey) {
-                    titleText += '<span class="today-badge">I dag</span>';
-                }
-                title.innerHTML = titleText;
-                
+                title.textContent = `${dayName} ${dateNum}. ${monthName}:`;
                 daySection.appendChild(title);
+
+                // JON: Her legger vi merkelappen som et frittstående element direkte i boksen
+                if (dateKey === todayKey) {
+                    const badge = document.createElement('span');
+                    badge.className = 'today-badge';
+                    badge.textContent = 'I dag';
+                    daySection.appendChild(badge);
+                }
 
                 if (hasHoliday) {
                     const holDiv = document.createElement('div');
