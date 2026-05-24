@@ -449,16 +449,18 @@
                 renderCalendarList(); 
             }
 
-            const isNight = h >= 22 || h < 7;
-            document.body.className = isNight ? "night-mode" : "day-mode";
+            // DIMME-LOGIKK: Beholder fargeskifte klokken 22.00 for behagelig nattbelysning
+            const isNightModeActive = h >= 22 || h < 7;
+            document.body.className = isNightModeActive ? "night-mode" : "day-mode";
             
+            // TEKST-LOGIKK: Synkronisert med Meteorologisk institutts standarder
             let periodText = "Det er natt";
             let periodClass = "period-natt";
             
-            if (h >= 7 && h < 10) { periodText = "Det er morgen"; periodClass = "period-morgen"; }
-            else if (h >= 10 && h < 12) { periodText = "Det er formiddag"; periodClass = "period-formiddag"; }
+            if (h >= 6 && h < 9) { periodText = "Det er morgen"; periodClass = "period-morgen"; }
+            else if (h >= 9 && h < 12) { periodText = "Det er formiddag"; periodClass = "period-formiddag"; }
             else if (h >= 12 && h < 18) { periodText = "Det er ettermiddag"; periodClass = "period-ettermiddag"; }
-            else if (h >= 18 && h < 22) { periodText = "Det er kveld"; periodClass = "period-kveld"; }
+            else if (h >= 18 && h < 24) { periodText = "Det er kveld"; periodClass = "period-kveld"; }
             
             const periodEl = document.getElementById('period-text');
             periodEl.textContent = periodText;
@@ -623,7 +625,6 @@
 
                 const tempHolidays = {};
                 holidayEvents.forEach(h => {
-                    // JON: Låser også helligdag-strenget til lokal tolkning i stedet for UTC-splitting
                     let dateStr = h.start.date || h.start.dateTime.split('T')[0];
                     let parts = dateStr.split('-');
                     let d = new Date(parts[0], parts[1] - 1, parts[2]);
