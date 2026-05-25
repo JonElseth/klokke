@@ -163,25 +163,25 @@
             color: var(--text-main);
         }
 
-        /* --- VENSTRE SIDE: NY STRUKTUR FOR RUTINER --- */
         .info-day-title {
             font-family: 'Poppins', sans-serif;
             font-size: 1.5rem;
             font-weight: 400;
             margin-bottom: 12px;
-            padding-left: 40px; /* Enkel tabulator for ukedag-tekst */
+            padding-left: 40px; 
             text-transform: lowercase;
         }
 
+        /* Redusert gap fra 10px til 4px for å minske luften vertikalt */
         .info-content {
             display: flex;
             flex-direction: column;
-            gap: 10px; 
+            gap: 4px; 
             font-family: 'Lato', sans-serif;
             font-size: 1.25rem;
             line-height: 1.8;
             color: var(--text-main);
-            padding-left: 80px; /* Dobbelt tabulator for selve rutinene */
+            padding-left: 80px; 
         }
 
         .info-item {
@@ -193,7 +193,7 @@
             font-weight: 400;
         }
 
-        /* --- HØYRE SIDE: KALENDERVISNING --- */
+        /* --- KALENDERVISNING --- */
         .day-section {
             width: 100%;
             margin-bottom: 35px; 
@@ -209,7 +209,7 @@
             font-size: 1.5rem;
             font-weight: 400;
             margin-bottom: 12px; 
-            padding-left: 40px; /* Enkel tabulator */
+            padding-left: 40px; 
         }
 
         .today-badge {
@@ -236,7 +236,7 @@
 
         .event-list {
             list-style: none;
-            padding-left: 80px; /* Dobbelt tabulator */
+            padding-left: 80px; 
         }
 
         .event-item {
@@ -340,7 +340,6 @@
         const ukeDager = ["Søndag", "Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag", "Lørdag"];
         const maaneder = ["Januar", "Februar", "Mars", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Desember"];
 
-        // Tekstene har nå kun dagsnavnet som overskrift
         const infoHverdag = {
             overskrift: "mandag - fredag",
             tekst: "<div class='info-item'>•  <span class='info-time'>07.30:</span> Frokost</div><div class='info-item'>•  <span class='info-time'>08.00:</span> Ta medisiner</div><div class='info-item'>•  <span class='info-time'>09.00:</span> Tur med hunden</div><div class='info-item'>•  <span class='info-time'>11.30:</span> Lunsj</div><div class='info-item'>•  <span class='info-time'>14.00:</span> Sjekke e-post og meldinger</div><div class='info-item'>•  <span class='info-time'>15.30:</span> Middag</div><div class='info-item'>•  <span class='info-time'>19.30:</span> Gå tur med hunden</div><div class='info-item'>•  <span class='info-time'>20.30:</span> Kveldsmat</div>"
