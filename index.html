@@ -191,7 +191,6 @@
             line-height: 1.4;
         }
 
-        /* Endret: Økt skriftvekt til 700 for maksimal tydelighet i hverdagsrutinene */
         .info-time {
             color: var(--clock-accent);
             font-weight: 700;
@@ -264,7 +263,6 @@
             flex: 1;
         }
 
-        /* Endret: Økt skriftvekt til 700 for maksimal tydelighet i kalenderhendelsene */
         .event-time {
             color: var(--clock-accent); 
             font-weight: 700;
@@ -534,7 +532,20 @@
                         const list = document.createElement('div');
                         list.className = 'event-list';
 
-                        globalEventsCache[dateKey].forEach(ev => {
+                        /* Endret: Forbedret sorteringslogikk. Sorterer primært kronologisk etter klokkeslett, 
+                           men tvinger alle heldagshendelser (mangler dateTime) til å havne nederst på dagen. */
+                        const sorterteHendelser = [...globalEventsCache[dateKey]].sort((a, b) => {
+                            const aIsAllDay = !a.start.dateTime;
+                            const bIsAllDay = !b.start.dateTime;
+                            
+                            if (aIsAllDay && !bIsAllDay) return 1;
+                            if (!aIsAllDay && bIsAllDay) return -1;
+                            if (aIsAllDay && bIsAllDay) return 0;
+                            
+                            return new Date(a.start.dateTime).getTime() - new Date(b.start.dateTime).getTime();
+                        });
+
+                        sorterteHendelser.forEach(ev => {
                             const li = document.createElement('div');
                             li.className = 'event-item';
 
