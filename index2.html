@@ -235,7 +235,6 @@
             padding-left: 40px;
         }
 
-        /* Omstrukturert til en ren flex-container som matcher venstre side */
         .event-list {
             display: flex;
             flex-direction: column;
@@ -243,7 +242,6 @@
             padding-left: 80px; 
         }
 
-        /* Gjort helt lik .info-item for identisk tekst- og kulepunktsplassering */
         .event-item {
             font-family: 'Lato', sans-serif;
             font-size: 1.25rem;
@@ -251,6 +249,13 @@
             color: var(--text-main);
             display: flex;
             align-items: flex-start;
+        }
+
+        /* Rettet: Egen klasse for kulepunktet for å tvinge eksakt lik avstand som venstre side */
+        .event-bullet {
+            flex-shrink: 0;
+            margin-right: 9px; /* Fast avstand som sikrer perfekt visuell harmoni */
+            line-height: 1.4;
         }
 
         .event-text-container {
@@ -596,7 +601,6 @@
                 }
 
                 if (hasPersonalEvents) {
-                    // Konstruert som ren div-liste i scriptet for å fjerne ulik padding
                     const list = document.createElement('div');
                     list.className = 'event-list';
 
@@ -612,8 +616,8 @@
 
                         const formatedText = formatEventSummary(ev.summary);
                         
-                        // Kulepunktet skrives nå som ren tekst med identisk avstand som venstre side
-                        li.innerHTML = `•  <div class="event-text-container"><span class="event-time">${timeStr}:</span> ${formatedText}</div>`;
+                        // Rettet: Kulepunktet ligger nå i en separat <span class="event-bullet"> uten manuelle tekst-mellomrom
+                        li.innerHTML = `<span class="event-bullet">•</span><div class="event-text-container"><span class="event-time">${timeStr}:</span> ${formatedText}</div>`;
                         list.appendChild(li);
                     });
                     daySection.appendChild(list);
