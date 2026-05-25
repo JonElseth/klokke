@@ -172,6 +172,12 @@
             padding-left: 40px; 
         }
 
+        /* Rød og fet tidsangivelse for venstre side */
+        .info-time {
+            color: var(--clock-accent);
+            font-weight: 700;
+        }
+
         /* --- KALENDERVISNING --- */
         .day-section {
             width: 100%;
@@ -218,7 +224,6 @@
             padding-left: 80px; 
         }
 
-        /* Korrigert for å forhindre feil linjebryting på linje 2 */
         .event-item {
             display: flex;
             align-items: flex-start;
@@ -238,9 +243,10 @@
             flex: 1;
         }
 
+        /* Gjort rød og bold for både klokkeslett og "Hele dagen" */
         .event-time {
-            color: var(--text-main); 
-            font-weight: 400;
+            color: var(--clock-accent); 
+            font-weight: 700;
             margin-right: 5px;
         }
 
@@ -319,19 +325,20 @@
         const ukeDager = ["Søndag", "Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag", "Lørdag"];
         const maaneder = ["Januar", "Februar", "Mars", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Desember"];
 
+        // Lagt inn HTML-tagger rundt tidspunktene for å gjøre dem røde og fete på venstre side
         const infoHverdag = {
             overskrift: "Rutiner ukedager:",
-            tekst: "•  07.30: Frokost\n•  08.00: Ta medisiner\n•  09.00: Tur med hunden\n•  11.30: Lunsj\n•  14.00: Sjekke e-post og meldinger\n•  15.30: Middag\n•  19.30: Gå tur med hunden\n•  20.30: Kveldsmat"
+            tekst: "•  <span class='info-time'>07.30:</span> Frokost\n•  <span class='info-time'>08.00:</span> Ta medisiner\n•  <span class='info-time'>09.00:</span> Tur med hunden\n•  <span class='info-time'>11.30:</span> Lunsj\n•  <span class='info-time'>14.00:</span> Sjekke e-post og meldinger\n•  <span class='info-time'>15.30:</span> Middag\n•  <span class='info-time'>19.30:</span> Gå tur med hunden\n•  <span class='info-time'>20.30:</span> Kveldsmat"
         };
 
         const infoLoerdag = {
             overskrift: "Rutiner lørdag:",
-            tekst: "•  09.00: Rolig frokost og kaffe\n•  10.00: Medisiner\n•  11.30: Tur med hunden\n•  13.00: Lunsj\n•  16.00: Middag\n•  19.30: Kveldstur med hunden\n•  21.00: Lørdagskos og TV"
+            tekst: "•  <span class='info-time'>09.00:</span> Rolig frokost og kaffe\n•  <span class='info-time'>10.00:</span> Medisiner\n•  <span class='info-time'>11.30:</span> Tur med hunden\n•  <span class='info-time'>13.00:</span> Lunsj\n•  <span class='info-time'>16.00:</span> Middag\n•  <span class='info-time'>19.30:</span> Kveldstur med hunden\n•  <span class='info-time'>21.00:</span> Lørdagskos og TV"
         };
 
         const infoSoendag = {
             overskrift: "Rutiner søndag:",
-            tekst: "•  09.00: Rolig søndagsfrokost\n•  10.00: Medisiner\n•  12.00: Gå en lengre tur\n•  14.00: Lunsj\n•  17.00: Middag\n•  20.00: Kveldsmat\n•  22.00: Forberede ny uke"
+            tekst: "•  <span class='info-time'>09.00:</span> Rolig søndagsfrokost\n•  <span class='info-time'>10.00:</span> Medisiner\n•  <span class='info-time'>12.00:</span> Gå en lengre tur\n•  <span class='info-time'>14.00:</span> Lunsj\n•  <span class='info-time'>17.00:</span> Middag\n•  <span class='info-time'>20.00:</span> Kveldsmat\n•  <span class='info-time'>22.00:</span> Forberede ny uke"
         };
 
         let globalEventsCache = {}; 
@@ -421,13 +428,13 @@
             const dayOfWeek = now.getDay(); 
             if (dayOfWeek === 6) {
                 document.getElementById('info-heading').innerText = infoLoerdag.overskrift;
-                document.getElementById('info-text').innerText = infoLoerdag.tekst;
+                document.getElementById('info-text').innerHTML = infoLoerdag.tekst; // Endret til innerHTML for å tolke span-tagger
             } else if (dayOfWeek === 0) {
                 document.getElementById('info-heading').innerText = infoSoendag.overskrift;
-                document.getElementById('info-text').innerText = infoSoendag.tekst;
+                document.getElementById('info-text').innerHTML = infoSoendag.tekst; // Endret til innerHTML for å tolke span-tagger
             } else {
                 document.getElementById('info-heading').innerText = infoHverdag.overskrift;
-                document.getElementById('info-text').innerText = infoHverdag.tekst;
+                document.getElementById('info-text').innerHTML = infoHverdag.tekst; // Endret til innerHTML for å tolke span-tagger
             }
         }
 
@@ -504,7 +511,6 @@
 
                         const formatedText = formatEventSummary(ev.summary);
                         
-                        // Delt inn i kuleretegn og en ren tekstbeholder for ryddig linjeinnrykk på linje 2
                         li.innerHTML = `
                             <span class="event-bullet">•</span>
                             <div class="event-text-container">
