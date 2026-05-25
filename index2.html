@@ -71,29 +71,31 @@
             display: none; 
         }
 
-        /* --- HEADER / TOPPLINJE (Toppjustert innhold) --- */
+        /* --- HEADER / TOPPLINJE (Rettet for perfekt flukting) --- */
         header {
-            height: 160px;
+            height: 120px; /* Låst til eksakt samme høyde som klokkene */
             display: flex;
-            align-items: flex-start; /* Endret fra center til flex-start for å kunne toppjustere datostrengen */
+            align-items: flex-start; /* Låser alt innhold til den absolutte topplinjen */
             justify-content: space-between; 
             background-color: var(--bg-color);
             transition: background 1s ease;
-            padding-bottom: 20px;
+            margin-bottom: 40px; /* Skaper luft ned til hovedinnholdet */
             flex-shrink: 0;
         }
 
-        /* Samler analog og digital klokke toppjustert */
+        /* Samler analog og digital klokke helt på linje øverst */
         .header-clocks-left {
             display: flex;
             align-items: flex-start;
-            gap: 25px;
+            gap: 20px;
             flex-shrink: 0;
+            height: 120px;
         }
 
         .analog-clock-svg {
             width: 120px;
             height: 120px;
+            display: block;
         }
         
         .clock-face { fill: none; }
@@ -111,25 +113,26 @@
         .hand { stroke-linecap: round; }
         .hand-hour { stroke: var(--clock-face); stroke-width: 5.5; }
         .hand-minute { stroke: var(--clock-face); stroke-width: 4; }
-        .hand-second { stroke: var(--clock-accent); stroke-width: 1.3; }
         .center-dot { fill: var(--clock-accent); }
 
-        /* Gjort eksakt like høy som den analoge klokken uten sekunder */
+        /* Digital klokke finjustert til eksakt sirkelhøyde uten sekunder */
         .digital-clock-big {
-            font-size: 6.8rem; /* Justert størrelse slik at teksthøyden matcher sirkelen nøyaktig */
+            font-size: 120px; /* Matche sirkelen nøyaktig i piksler */
             font-weight: 400;
-            letter-spacing: -3px;
-            line-height: 0.82; /* Låser linjehøyden stramt til toppen av bokstavene */
+            letter-spacing: -5px;
+            line-height: 0.88; /* Justert for å eliminere usynlig luft over fonten */
+            display: block;
+            height: 120px;
         }
 
-        /* Høyrejustert og toppjustert datofelt på linje med toppen av klokkene */
+        /* Høyrejustert og toppjustert datofelt som flukter med klokketoppen */
         .header-date-right {
             text-align: right;
-            font-size: 2.2rem; 
-            font-weight: 500;  
+            font-size: 2.2rem; /* Nøyaktig samme størrelse som "Rutiner:" */
+            font-weight: 500;  /* Nøyaktig samme skriftvekt som "Rutiner:" */
             color: var(--text-main);
-            line-height: 1.0; /* Sørger for at teksten flukter helt med øvre kant */
-            padding-top: 4px;  /* Bitteliten optisk justering for å linje perfekt med klokketeksten */
+            line-height: 1.1; /* Trekker teksten helt opp til øvre kant */
+            padding-top: 5px;  /* Millimeterjustering for perfekt visuell balanse */
         }
 
         /* --- HOVEDOMRÅDE --- */
@@ -310,11 +313,13 @@
                 justify-content: center;
                 align-items: center;
                 width: 100%;
+                height: auto;
             }
 
             .digital-clock-big {
                 font-size: 4.5rem;
                 line-height: 1.0;
+                height: auto;
             }
 
             .header-date-right {
@@ -487,14 +492,12 @@
             const m = now.getMinutes();
             const h = now.getHours();
 
-            // Analog viser synkronisering uten sekundviser
             document.getElementById('minute-hand').setAttribute('transform', `rotate(${m * 6} 50 50)`);
             document.getElementById('hour-hand').setAttribute('transform', `rotate(${(h % 12) * 30 + m * 0.5} 50 50)`);
 
             let hoursStr = String(h).padStart(2, '0');
             let minutesStr = String(m).padStart(2, '0');
             
-            // Endret til å fjerne sekunder fra den digitale klokken
             document.getElementById('digital-clock').textContent = `${hoursStr}:${minutesStr}`;
 
             if (h >= 7 && h < 22) {
@@ -514,7 +517,7 @@
             const monthName = maaneder[now.getMonth()].toLowerCase();
             const yearNum = now.getFullYear();
 
-            // Lagt inn komma etter periodeteksten («Det er ettermiddag, mandag...»)
+            // Rettet oppbygging av den høyrejusterte tekststrengen med komma
             document.getElementById('complete-date-string').textContent = `Det er ${periodText}, ${dayName} ${dayNum}. ${monthName} ${yearNum}`;
 
             if (h === 3 && m === 0 && now.getSeconds() === 0) {
