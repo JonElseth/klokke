@@ -74,9 +74,9 @@
             display: none; 
         }
 
-        /* --- HEADER / TOPPLINJE (Optimalisert for kun digital visning) --- */
+        /* --- HEADER / TOPPLINJE --- */
         header {
-            height: 110px; /* Redusert noe etter at analog sirkel ble fjernet */
+            height: 110px; 
             display: flex;
             justify-content: space-between; 
             background-color: var(--bg-color);
@@ -86,7 +86,6 @@
             flex-shrink: 0;
         }
 
-        /* Venstrejustert digital klokke direkte i startposisjon */
         .header-clocks-left {
             display: flex;
             align-items: flex-end; 
@@ -95,8 +94,8 @@
         }
 
         .digital-clock-big {
-            font-size: 142px; /* Svakt nedjustert for å fjerne ekstrem ruving når den står alene */
-            font-weight: 500;  /* Økt til 500 for maksimal tydelighet og kontrast */
+            font-size: 142px; 
+            font-weight: 500;  
             letter-spacing: -5px;
             line-height: 0.72; 
             display: inline-block;
@@ -160,18 +159,18 @@
 
         /* --- OVERKRIFTER --- */
         .info-title, .calendar-title {
-            font-size: 2.2rem;
+            font-size: 2.4rem; /* Økt svakt fra 2.2rem for å balansere ny tekststørrelse */
             font-weight: 500;
-            margin-bottom: 10px; 
+            margin-bottom: 14px; 
             color: var(--text-main);
         }
 
         /* --- VENSTRE SIDE: STRUKTUR FOR RUTINER --- */
         .info-day-title {
             font-family: 'Poppins', sans-serif;
-            font-size: 1.5rem;
+            font-size: 1.75rem; /* Økt fra 1.5rem for bedre synlighet */
             font-weight: 400;
-            margin-bottom: 12px;
+            margin-bottom: 14px;
             padding-left: 40px; 
             text-transform: lowercase;
         }
@@ -179,9 +178,9 @@
         .info-content {
             display: flex;
             flex-direction: column;
-            gap: 4px; 
+            gap: 6px; /* Økt klaring mellom elementene */
             font-family: 'Lato', sans-serif;
-            font-size: 1.25rem;
+            font-size: 1.55rem; /* Økt fra 1.25rem for kognitiv optimalisering */
             color: var(--text-main);
             padding-left: 80px; 
         }
@@ -195,14 +194,14 @@
 
         .info-bullet {
             flex-shrink: 0;
-            margin-right: 9px;
+            margin-right: 10px;
             line-height: 1.4;
         }
 
         .info-time {
             color: var(--clock-accent);
             font-weight: 400;
-            margin-right: 5px;
+            margin-right: 6px;
         }
 
         /* --- HØYRE SIDE: KALENDERVISNING --- */
@@ -218,17 +217,17 @@
             align-items: center;
             gap: 15px;
             font-family: 'Poppins', sans-serif;
-            font-size: 1.5rem;
+            font-size: 1.75rem; /* Økt fra 1.5rem for bedre synlighet */
             font-weight: 400;
-            margin-bottom: 12px; 
+            margin-bottom: 14px; 
             padding-left: 40px; 
         }
 
         .today-badge {
-            font-size: 14px; 
+            font-size: 15px; 
             background: var(--clock-accent);
             color: white;
-            padding: 2px 12px; 
+            padding: 3px 14px; 
             border-radius: 6px;
             font-weight: 700;
             text-transform: uppercase;
@@ -236,12 +235,12 @@
         }
 
         .holiday-text {
-            font-size: 1.1rem;
+            font-size: 1.25rem; /* Økt fra 1.1rem */
             color: var(--clock-accent);
             font-weight: 400;
             font-style: normal;
             margin-top: -8px;
-            margin-bottom: 12px;
+            margin-bottom: 14px;
             text-transform: uppercase;
             padding-left: 40px;
         }
@@ -255,7 +254,7 @@
 
         .event-item {
             font-family: 'Lato', sans-serif;
-            font-size: 1.25rem;
+            font-size: 1.55rem; /* Økt fra 1.25rem for kognitiv optimalisering */
             line-height: 1.4;
             color: var(--text-main);
             display: flex;
@@ -264,7 +263,7 @@
 
         .event-bullet {
             flex-shrink: 0;
-            margin-right: 9px; 
+            margin-right: 10px; 
             line-height: 1.4;
         }
 
@@ -275,19 +274,19 @@
         .event-time {
             color: var(--clock-accent); 
             font-weight: 400;
-            margin-right: 5px;
+            margin-right: 6px;
         }
 
         /* --- NAVNEMERKER (BADGES) --- */
         .badge-navn {
             display: inline-block;
-            padding: 2px 8px 4px 8px; 
+            padding: 2px 10px 4px 10px; 
             border-radius: 6px;
             font-weight: 700;
             color: #ffffff !important; 
             margin-right: 6px;
             line-height: 1.2; 
-            font-size: 16px; 
+            font-size: 18px; /* Økt i tråd med teksten for øvrig */
             vertical-align: middle;
         }
 
@@ -301,7 +300,7 @@
 
         .no-events-text {
             font-family: 'Lato', sans-serif;
-            font-size: 1.25rem;
+            font-size: 1.55rem;
             color: var(--text-muted);
             padding-left: 40px;
         }
@@ -470,7 +469,7 @@
 
             const nå = new Date();
             const dagensNøkkel = nå.toLocaleDateString('sv-SE', {timeZone: 'Europe/Oslo'});
-            const dagensKalenderHendelser = globalEventsCache[dateNøkkel = dagensNøkkel] || [];
+            const dagensKalenderHendelser = globalEventsCache[dagensNøkkel] || [];
             
             let nesteAvtale = null;
 
@@ -518,7 +517,7 @@
             if (h >= 6 && h < 9) periodText = "morgen";
             else if (h >= 9 && h < 12) periodText = "formiddag";
             else if (h >= 12 && h < 18) periodText = "ettermiddag";
-            else if (h >= 18 && h < 24) periodText = "kveld";
+            else if (h >= 18 && h < 23) periodText = "kveld"; // Definert som natt fra kl 23:00
             
             const dayName = ukeDager[now.getDay()].toLowerCase();
             const dayNum = now.getDate();
