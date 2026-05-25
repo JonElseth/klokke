@@ -250,7 +250,7 @@
             line-height: 1.4;
             color: var(--text-main);
             display: flex;
-            align-start: flex-start;
+            align-items: flex-start;
         }
 
         .event-bullet {
@@ -396,15 +396,13 @@
                 const nå = new Date();
                 const gjeldendeTime = nå.getHours();
                 const dagensNøkkel = nå.toLocaleDateString('sv-SE', {timeZone: 'Europe/Oslo'});
-                
-                // Rettet skrivefeil i variabelaksess
                 const dagensKalenderHendelser = globalEventsCache[dagensNøkkel] || [];
                 
                 let nesteAvtale = null;
 
                 const sorterteHendelser = dagensKalenderHendelser
                     .filter(ev => ev.start && ev.start.dateTime)
-                    .sort((a, b) => new Date(a.start.dateTime) - new Date(b.start.dateTime));
+                    .sort((a, b) => new Date(a.start.dateTime).getTime() - new Date(b.start.dateTime).getTime());
 
                 for (let ev of sorterteHendelser) {
                     const startTidspunkt = new Date(ev.start.dateTime);
@@ -447,60 +445,7 @@
 
                 statusEl.innerHTML = boksHTML;
             } catch (feil) {
-                console.error("Feil i statusberegning:", feil);
                 statusEl.innerHTML = `Nå er klokken <span class="status-box-highlight">${hoursStr}:${minutesStr}</span>.`;
-            }
-        }
-
-        function updateClockAndLayout() {
-            const now = new Date();
-            const m = now.getMinutes();
-            const h = now.getHours();
-
-            let hoursStr = String(h).padStart(2, '0');
-            let minutesStr = String(m).padStart(2, '0');
-            
-            document.getElementById('digital-clock').textContent = `${hoursStr}:${minutesStr}`;
-
-            if (h >= 7 && h < 22) {
-                document.body.classList.remove('night-mode');
-            } else {
-                document.body.classList.add('night-mode');
-            }
-
-            let periodText = "natt";
-            if (h >= 6 && h < 9) periodText = "morgen";
-            else if (h >= 9 && h < 12) periodText = "formiddag";
-            else if (h >= 12 && h < 18) periodText = "ettermiddag";
-            else if (h >= 18 && h < 23) periodText = "kveld";
-            
-            const dayName = ukeDager[now.getDay()].toLowerCase();
-            const dayNum = now.getDate();
-            const monthName = maaneder[now.getMonth()].toLowerCase();
-            const yearNum = now.getFullYear();
-
-            document.getElementById('complete-date-string').textContent = `Det er ${periodText}, ${dayName} ${dayNum}. ${monthName} ${yearNum}`;
-
-            oppdaterLiveStatusBoks(hoursStr, minutesStr);
-
-            if (h === 3 && m === 0 && now.getSeconds() === 0) {
-                window.location.reload(true);
-                return;
-            }
-            if (h === 0 && m === 0 && now.getSeconds() === 0) {
-                renderCalendarList(); 
-            }
-
-            const dayOfWeek = now.getDay(); 
-            if (dayOfWeek === 6) {
-                document.getElementById('info-day-heading').innerText = "lørdag";
-                document.getElementById('info-text').innerHTML = genererRutineHTML(fasteRutinerLoerdag);
-            } else if (dayOfWeek === 0) {
-                document.getElementById('info-day-heading').innerText = "søndag";
-                document.getElementById('info-text').innerHTML = genererRutineHTML(fasteRutinerSoendag);
-            } else {
-                document.getElementById('info-day-heading').innerText = "mandag - fredag";
-                document.getElementById('info-text').innerHTML = genererRutineHTML(fasteRutinerHverdag);
             }
         }
 
@@ -514,44 +459,46 @@
         }
 
         function renderCalendarList() {
-            const container = document.getElementById('calendar-list');
-            container.innerHTML = '';
-            
-            const today = new Date();
-            const todayKey = today.toLocaleDateString('sv-SE', {timeZone: 'Europe/Oslo'});
-            let totalDaysRendered = 0;
-
-            for (let i = 0; i < 185; i++) {
-                const currentDay = new Date();
-                currentDay.setDate(today.getDate() + i);
-                const dateKey = currentDay.toLocaleDateString('sv-SE', {timeZone: 'Europe/Oslo'});
-
-                const hasPersonalEvents = globalEventsCache[dateKey] && globalEventsCache[dateKey].length > 0;
-                const hasHoliday = globalHolidaysCache[dateKey];
-
-                if (!hasPersonalEvents && !hasHoliday) {
-                    continue;
-                }
-
-                totalDaysRendered++;
-
-                const daySection = document.createElement('div');
-                daySection.className = 'day-section';
-
-                const dayName = ukeDager[currentDay.getDay()];
-                const dateNum = currentDay.getDate();
-                const monthName = maaneder[currentDay.getMonth()].toLowerCase();
-                const yearNum = currentDay.getFullYear();
+            try {
+                const container = document.getElementById('calendar-list');
+                if (!container) return;
+                container.innerHTML = '';
                 
-                const title = document.createElement('div');
-                title.className = 'day-title';
-                
-                let titleHTML = `<span>${dayName.toLowerCase()} ${dateNum}. ${monthName} ${yearNum}</span>`;
-                if (dateKey === todayKey) {
-                    titleHTML += '<span class="today-badge">I dag</span>';
-                }
-                title.innerHTML = titleHTML;
-                daySection.appendChild(title);
+                const today = new Date();
+                const todayKey = today.toLocaleDateString('sv-SE', {timeZone: 'Europe/Oslo'});
+                let totalDaysRendered = 0;
+
+                for (let i = 0; i < 185; i++) {
+                    const currentDay = new Date();
+                    currentDay.setDate(today.getDate() + i);
+                    const dateKey = currentDay.toLocaleDateString('sv-SE', {timeZone: 'Europe/Oslo'});
+
+                    const hasPersonalEvents = globalEventsCache[dateKey] && globalEventsCache[dateKey].length > 0;
+                    const hasHoliday = globalHolidaysCache[dateKey];
+
+                    if (!hasPersonalEvents && !hasHoliday) {
+                        continue;
+                    }
+
+                    totalDaysRendered++;
+
+                    const daySection = document.createElement('div');
+                    daySection.className = 'day-section';
+
+                    const dayName = ukeDager[currentDay.getDay()];
+                    const dateNum = currentDay.getDate();
+                    const monthName = maaneder[currentDay.getMonth()].toLowerCase();
+                    const yearNum = currentDay.getFullYear();
+                    
+                    const title = document.createElement('div');
+                    title.className = 'day-title';
+                    
+                    let titleHTML = `<span>${dayName.toLowerCase()} ${dateNum}. ${monthName} ${yearNum}</span>`;
+                    if (dateKey === todayKey) {
+                        titleHTML += '<span class="today-badge">I dag</span>';
+                    }
+                    title.innerHTML = titleHTML;
+                    daySection.appendChild(title);
 
                 if (hasHoliday) {
                     const holDiv = document.createElement('div');
@@ -575,21 +522,81 @@
                         }
 
                         const formatedText = formatEventSummary(ev.summary);
-                        
                         li.innerHTML = `<span class="event-bullet">•</span><div class="event-text-container"><span class="event-time">${timeStr}:</span> ${formatedText}</div>`;
                         list.appendChild(li);
                     });
                     daySection.appendChild(list);
                 }
-                container.appendChild(daySection);
+                    container.appendChild(daySection);
+                }
+
+                if (totalDaysRendered === 0) {
+                    container.innerHTML = '<div class="no-events-text">Ingen planer de neste 6 månedene</div>';
+                }
+            } catch (e) {
+                console.error("Feil ved rendring av kalenderliste:", e);
+            }
+        }
+
+        function updateClockAndLayout() {
+            const now = new Date();
+            const m = now.getMinutes();
+            const h = now.getHours();
+
+            let hoursStr = String(h).padStart(2, '0');
+            let minutesStr = String(m).padStart(2, '0');
+            
+            const clockEl = document.getElementById('digital-clock');
+            if (clockEl) clockEl.textContent = `${hoursStr}:${minutesStr}`;
+
+            if (h >= 7 && h < 22) {
+                document.body.classList.remove('night-mode');
+            } else {
+                document.body.classList.add('night-mode');
             }
 
-            if (totalDaysRendered === 0) {
-                container.innerHTML = '<div class="no-events-text">Ingen planer de neste 6 månedene</div>';
+            let periodText = "natt";
+            if (h >= 6 && h < 9) periodText = "morgen";
+            else if (h >= 9 && h < 12) periodText = "formiddag";
+            else if (h >= 12 && h < 18) periodText = "ettermiddag";
+            else if (h >= 18 && h < 23) periodText = "kveld";
+            
+            const dayName = ukeDager[now.getDay()].toLowerCase();
+            const dayNum = now.getDate();
+            const monthName = maaneder[now.getMonth()].toLowerCase();
+            const yearNum = now.getFullYear();
+
+            const dateStrEl = document.getElementById('complete-date-string');
+            if (dateStrEl) dateStrEl.textContent = `Det er ${periodText}, ${dayName} ${dayNum}. ${monthName} ${yearNum}`;
+
+            oppdaterLiveStatusBoks(hoursStr, minutesStr);
+
+            if (h === 3 && m === 0 && now.getSeconds() === 0) {
+                window.location.reload(true);
+                return;
+            }
+
+            const dayOfWeek = now.getDay(); 
+            const headingEl = document.getElementById('info-day-heading');
+            const textEl = document.getElementById('info-text');
+            
+            if (headingEl && textEl) {
+                if (dayOfWeek === 6) {
+                    headingEl.innerText = "lørdag";
+                    textEl.innerHTML = genererRutineHTML(fasteRutinerLoerdag);
+                } else if (dayOfWeek === 0) {
+                    headingEl.innerText = "søndag";
+                    textEl.innerHTML = genererRutineHTML(fasteRutinerSoendag);
+                } else {
+                    headingEl.innerText = "mandag - fredag";
+                    textEl.innerHTML = genererRutineHTML(fasteRutinerHverdag);
+                }
             }
         }
 
         function fetchCalendarData() {
+            if (typeof gapi === 'undefined' || !gapi.client || !gapi.client.calendar) return;
+
             const start = new Date();
             start.setHours(0,0,0,0);
             const end = new Date();
@@ -611,11 +618,12 @@
             });
 
             Promise.all([personalRequest, holidayRequest]).then(function(responses) {
-                const personalEvents = responses[0].result.items;
-                const holidayEvents = responses[1].result.items;
+                const personalEvents = responses[0].result.items || [];
+                const holidayEvents = responses[1].result.items || [];
 
                 const tempEvents = {};
                 personalEvents.forEach(event => {
+                    if (!event.start) return;
                     if (event.start.date) {
                         const startParts = event.start.date.split('-');
                         const endParts = event.end.date.split('-');
@@ -653,6 +661,7 @@
 
                 const tempHolidays = {};
                 holidayEvents.forEach(h => {
+                    if (!h.start) return;
                     let dateStr = h.start.date || h.start.dateTime.split('T')[0];
                     let parts = dateStr.split('-');
                     let d = new Date(parts[0], parts[1] - 1, parts[2]);
@@ -666,8 +675,7 @@
                 const transientNow = new Date();
                 oppdaterLiveStatusBoks(String(transientNow.getHours()).padStart(2, '0'), String(transientNow.getMinutes()).padStart(2, '0'));
             }).catch(err => {
-                console.log("Feil ved henting av kalender:", err);
-                document.getElementById('calendar-list').innerText = "Kunne ikke oppdatere hendelser.";
+                console.error("Feil ved henting av kalenderdata:", err);
             });
         }
 
@@ -702,7 +710,8 @@
                 fetchCalendarData();
                 setInterval(fetchCalendarData, 300000); 
             }).catch(err => {
-                document.getElementById('calendar-list').innerText = "Feil ved initialisering av API-klient.";
+                const listEl = document.getElementById('calendar-list');
+                if (listEl) listEl.innerText = "Kunne ikke initialisere Google API.";
             });
         }
 
@@ -715,7 +724,8 @@
             if (typeof gapi !== 'undefined') {
                 gapi.load('client', initGapiClient);
             } else {
-                document.getElementById('calendar-list').innerText = "Google API-skript ble ikke lastet.";
+                const listEl = document.getElementById('calendar-list');
+                if (listEl) listEl.innerText = "Google API-skript ble ikke lastet.";
             }
         });
 
