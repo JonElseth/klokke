@@ -125,12 +125,13 @@
             margin-bottom: -4px; 
         }
 
+        /* Endret: Redusert font-size fra 2.2rem til 1.6rem for å matche den nye infoboksen nøyaktig */
         .header-date-right {
             position: absolute;
             top: 0;
             right: 0;
             text-align: right;
-            font-size: 2.2rem; 
+            font-size: 1.6rem; /* Samme størrelse som innholdet i status-box */
             font-weight: 500;  
             color: var(--text-main);
             line-height: 1.0; 
@@ -536,20 +537,16 @@
             });
         }
 
-        // Rettet: Statusboksen kalkulerer nå KUN basert på Google Kalender-feeden
         function oppdaterLiveStatusBoks(hoursStr, minutesStr) {
             const statusEl = document.getElementById('live-status-bar');
             if (!statusEl) return;
 
             const nå = new Date();
             const dagensNøkkel = nå.toLocaleDateString('sv-SE', {timeZone: 'Europe/Oslo'});
-            
-            // Henter dagens registrerte hendelser spesifikt fra Google-kalendercachen
             const dagensKalenderHendelser = globalEventsCache[dagensNøkkel] || [];
             
             let nesteAvtale = null;
 
-            // Sorterer kronologisk og filtrerer ut heldagshendelser for å finne neste tidfestede punkt
             const sorterteHendelser = dagensKalenderHendelser
                 .filter(ev => ev.start && ev.start.dateTime)
                 .sort((a, b) => new Date(a.start.dateTime) - new Date(b.start.dateTime));
@@ -606,7 +603,6 @@
 
             document.getElementById('complete-date-string').textContent = `Det er ${periodText}, ${dayName} ${dayNum}. ${monthName} ${yearNum}`;
 
-            // Oppdaterer statuslinjen kontinuerlig
             oppdaterLiveStatusBoks(hoursStr, minutesStr);
 
             if (h === 3 && m === 0 && now.getSeconds() === 0) {
@@ -790,7 +786,6 @@
 
                 renderCalendarList();
                 
-                // Fornyer boksen med en gang nye data ligger i cachen
                 const transientNow = new Date();
                 oppdaterLiveStatusBoks(String(transientNow.getHours()).padStart(2, '0'), String(transientNow.getMinutes()).padStart(2, '0'));
             }).catch(err => {
