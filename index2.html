@@ -71,22 +71,22 @@
             display: none; 
         }
 
-        /* --- HEADER / TOPPLINJE (Rettet for perfekt flukting) --- */
+        /* --- HEADER / TOPPLINJE (Omstrukturert for perfekt linjeflyt) --- */
         header {
-            height: 120px; /* Låst til eksakt samme høyde som klokkene */
+            height: 120px; 
             display: flex;
-            align-items: flex-start; /* Låser alt innhold til den absolutte topplinjen */
             justify-content: space-between; 
             background-color: var(--bg-color);
             transition: background 1s ease;
-            margin-bottom: 40px; /* Skaper luft ned til hovedinnholdet */
+            margin-bottom: 40px; 
+            position: relative; /* Tillater absolutt posisjonering av datoen i toppkant */
             flex-shrink: 0;
         }
 
-        /* Samler analog og digital klokke helt på linje øverst */
+        /* Samler analog og digital klokke slik at de hviler på nøyaktig samme bunnlinje */
         .header-clocks-left {
             display: flex;
-            align-items: flex-start;
+            align-items: baseline; /* Låser teksten og sirkelen til felles bunnlinje */
             gap: 20px;
             flex-shrink: 0;
             height: 120px;
@@ -96,6 +96,7 @@
             width: 120px;
             height: 120px;
             display: block;
+            align-self: flex-end; /* Sørger for at sirkelen hviler stødig på bunnen */
         }
         
         .clock-face { fill: none; }
@@ -115,24 +116,25 @@
         .hand-minute { stroke: var(--clock-face); stroke-width: 4; }
         .center-dot { fill: var(--clock-accent); }
 
-        /* Digital klokke finjustert til eksakt sirkelhøyde uten sekunder */
+        /* Digital klokke skalert opp og justert for å eliminere ulik font-geometri */
         .digital-clock-big {
-            font-size: 120px; /* Matche sirkelen nøyaktig i piksler */
+            font-size: 138px; /* Økt fra 120px for å gi identisk fysisk høyde som sirkelen på skrivebordsflaten */
             font-weight: 400;
-            letter-spacing: -5px;
-            line-height: 0.88; /* Justert for å eliminere usynlig luft over fonten */
-            display: block;
-            height: 120px;
+            letter-spacing: -6px;
+            line-height: 0.76; /* Drar teksten ned slik at bokstavtoppene flukter med sirkeltoppen */
+            display: inline-block;
         }
 
-        /* Høyrejustert og toppjustert datofelt som flukter med klokketoppen */
+        /* Låst helt til øvre høyre kant av header-flaten */
         .header-date-right {
+            position: absolute;
+            top: 0;
+            right: 0;
             text-align: right;
             font-size: 2.2rem; /* Nøyaktig samme størrelse som "Rutiner:" */
             font-weight: 500;  /* Nøyaktig samme skriftvekt som "Rutiner:" */
             color: var(--text-main);
-            line-height: 1.1; /* Trekker teksten helt opp til øvre kant */
-            padding-top: 5px;  /* Millimeterjustering for perfekt visuell balanse */
+            line-height: 1.0; 
         }
 
         /* --- HOVEDOMRÅDE --- */
@@ -320,13 +322,14 @@
                 font-size: 4.5rem;
                 line-height: 1.0;
                 height: auto;
+                letter-spacing: -2px;
             }
 
             .header-date-right {
+                position: static;
                 text-align: center;
                 width: 100%;
                 font-size: 1.6rem;
-                padding-top: 0;
             }
 
             main {
@@ -517,7 +520,7 @@
             const monthName = maaneder[now.getMonth()].toLowerCase();
             const yearNum = now.getFullYear();
 
-            // Rettet oppbygging av den høyrejusterte tekststrengen med komma
+            // Sørger for kommaet etter perioden og at alt ligger på rett linje øverst
             document.getElementById('complete-date-string').textContent = `Det er ${periodText}, ${dayName} ${dayNum}. ${monthName} ${yearNum}`;
 
             if (h === 3 && m === 0 && now.getSeconds() === 0) {
