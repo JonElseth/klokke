@@ -123,7 +123,7 @@
             font-family: 'Lato', sans-serif;
         }
 
-        /* --- HOVEDOMRÅDE (Ny fordeling: 40% / 60%) --- */
+        /* --- HOVEDOMRÅDE (40% / 60%) --- */
         main {
             flex: 1;
             display: flex;
@@ -132,17 +132,18 @@
 
         .column {
             height: 100%;
-            padding: 40px 60px 100px 60px;
+            /* Redusert topp-padding fra 40px til 10px for å flytte innholdet opp */
+            padding: 10px 60px 100px 60px;
         }
 
         .left-column {
-            width: 40%; /* Endret fra 30% til 40% */
+            width: 40%;
             overflow: hidden; 
             background-color: var(--bg-color);
         }
 
         .right-column {
-            width: 60%; /* Endret fra 70% til 60% */
+            width: 60%;
             background-color: var(--bg-color);
             overflow-y: auto;
             scrollbar-width: none;
@@ -156,28 +157,27 @@
         .info-title, .calendar-title {
             font-size: 2.2rem;
             font-weight: 700;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
             color: var(--text-main);
         }
 
-        /* Tabulator innrykk på hele dagsplan-innholdet */
+        /* Redusert fontstørrelse på rutinene fra 1.5rem til 1.25rem */
         .info-content {
             font-family: 'Lato', sans-serif;
-            font-size: 1.5rem;
+            font-size: 1.25rem;
             line-height: 2.2;
             white-space: pre-line;
             color: var(--text-main);
-            padding-left: 40px; /* Tabulator-effekt under overskriften */
+            padding-left: 40px; 
         }
 
-        /* --- KALENDERVISNING (Med tabulator-innrykk) --- */
+        /* --- KALENDERVISNING --- */
         .day-section {
             width: 100%;
-            margin-bottom: 40px; 
+            margin-bottom: 35px; 
             background-color: transparent;
         }
 
-        /* Enkel tabulator på dato-overskriften */
         .day-title {
             display: flex;
             justify-content: flex-start;
@@ -186,8 +186,8 @@
             font-family: 'Poppins', sans-serif;
             font-size: 1.5rem;
             font-weight: 700;
-            margin-bottom: 15px; 
-            padding-left: 40px; /* Tabulator under "Dette skjer:" */
+            margin-bottom: 12px; 
+            padding-left: 40px; 
         }
 
         .today-badge {
@@ -202,26 +202,26 @@
         }
 
         .holiday-text {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             color: var(--clock-accent);
             font-weight: 700;
             font-style: italic;
-            margin-top: -10px;
-            margin-bottom: 15px;
+            margin-top: -8px;
+            margin-bottom: 12px;
             text-transform: uppercase;
             padding-left: 40px;
         }
 
-        /* Ytterligere tabulator på selve avtalene (Dobbelt innrykk) */
         .event-list {
             list-style: none;
-            padding-left: 80px; /* Ekstra innrykk for trappetrinns-effekt */
+            padding-left: 80px; 
         }
 
+        /* Redusert fontstørrelse på avtalene fra 1.5rem til 1.25rem */
         .event-item {
             font-family: 'Lato', sans-serif;
-            font-size: 1.5rem;
-            margin-bottom: 12px; 
+            font-size: 1.25rem;
+            margin-bottom: 10px; 
             line-height: 2;
             position: relative;
             font-weight: 400;
@@ -243,7 +243,7 @@
             color: #ffffff !important; 
             margin-right: 6px;
             line-height: 1.2; 
-            font-size: 18px;
+            font-size: 16px; /* Justert litt ned for å matche mindre skrift */
             vertical-align: middle;
         }
 
@@ -257,7 +257,7 @@
 
         .no-events-text {
             font-family: 'Lato', sans-serif;
-            font-size: 1.5rem;
+            font-size: 1.25rem;
             color: var(--text-muted);
             padding-left: 40px;
         }
