@@ -18,13 +18,11 @@
     <style>
         /* --- DESIGNVARIABLER FOR TEMASKIFTE --- */
         :root {
-            /* Dagmodus (07:00 - 22:00) */
+            /* Dagmodus (07:00 - 22:00) - Helt lik bakgrunnsfarge overalt */
             --bg-color: #f1f5f9;
-            --panel-bg: #ffffff;
             --text-main: #1e293b;
             --text-muted: #64748b;
             --accent-color: #0066cc;
-            --grid-line: #cbd5e1;
             --clock-accent: #ef4444;
             --clock-ticks: #334155;
             --clock-face: #1e293b;
@@ -32,13 +30,11 @@
         }
 
         body.night-mode {
-            /* Nattmodus (22:00 - 07:00) */
+            /* Nattmodus (22:00 - 07:00) - Helt lik bakgrunnsfarge overalt */
             --bg-color: #0f172a;
-            --panel-bg: #1e293b;
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
             --accent-color: #38bdf8;
-            --grid-line: #334155;
             --clock-accent: #ef4444;
             --clock-ticks: #94a3b8;
             --clock-face: #f8fafc;
@@ -64,44 +60,24 @@
             transition: background 1s ease, color 1s ease;
         }
 
-        /* --- HEADER / TOPPLINJE --- */
+        /* --- HEADER / TOPPLINJE (Linjer fjernet, flyttet til venstre) --- */
         header {
             height: 160px;
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            justify-content: flex-start;
             padding: 0 60px;
-            border-bottom: 1px solid var(--grid-line);
-            background-color: var(--panel-bg);
-            transition: background 1s ease, border-color 1s ease;
+            background-color: var(--bg-color); /* Lik farge som resten */
+            transition: background 1s ease;
+            gap: 30px;
         }
 
         .header-left {
-            flex: 1;
-            min-width: 320px;
-        }
-
-        .digital-clock {
-            font-size: 3.5rem;
-            font-weight: 700;
-            letter-spacing: -2px;
-            line-height: 1;
-        }
-
-        .date-string {
-            font-size: 1.3rem;
-            color: var(--text-muted);
-            margin-top: 5px;
-            font-family: 'Lato', sans-serif;
-            text-transform: capitalize;
-        }
-
-        .header-center {
             flex: 0 0 auto;
             display: flex;
             justify-content: center;
             align-items: center;
-            width: 160px;
+            width: 120px;
         }
 
         /* Analog Klokke SVG-styling */
@@ -130,17 +106,25 @@
 
         .header-right {
             flex: 1;
-            text-align: right;
-            min-width: 320px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
         .day-status {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: var(--text-muted);
+            font-size: 3.5rem;
+            font-weight: 400;
+            color: var(--text-main);
+            line-height: 1.1;
         }
 
-        /* --- HOVEDOMRÅDE --- */
+        .date-string {
+            font-size: 1.4rem;
+            color: var(--text-muted);
+            font-family: 'Lato', sans-serif;
+        }
+
+        /* --- HOVEDOMRÅDE (30% / 70% Fordeling, ingen skillelinjer) --- */
         main {
             flex: 1;
             display: flex;
@@ -148,19 +132,18 @@
         }
 
         .column {
-            flex: 1;
             height: 100%;
             padding: 40px 60px 100px 60px;
-            transition: background 1s ease, border-color 1s ease;
         }
 
         .left-column {
-            border-right: 1px solid var(--grid-line);
-            background-color: var(--panel-bg);
-            overflow: hidden; /* Fjernet scrollefelt fullstendig på venstre side */
+            width: 30%; /* 30 prosent bredde */
+            overflow: hidden; 
+            background-color: var(--bg-color);
         }
 
         .right-column {
+            width: 70%; /* 70 prosent bredde */
             background-color: var(--bg-color);
             overflow-y: auto;
             scrollbar-width: none;
@@ -170,31 +153,27 @@
             display: none;
         }
 
-        /* --- OVERKRIFTER (Minimalistiske uten linje over/under) --- */
+        /* --- OVERKRIFTER --- */
         .info-title, .calendar-title {
-            font-size: 2rem;
+            font-size: 2.2rem;
             font-weight: 700;
-            margin-bottom: 25px;
+            margin-bottom: 30px;
             color: var(--text-main);
-            padding-bottom: 0;
-            border-bottom: none; /* Fjernet linje */
         }
 
         .info-content {
             font-family: 'Lato', sans-serif;
             font-size: 1.5rem;
-            line-height: 2;
+            line-height: 2.2;
             white-space: pre-line;
             color: var(--text-main);
         }
 
-        /* --- KALENDERVISNING (Lik venstre side, uten rammer) --- */
+        /* --- KALENDERVISNING (Helt uten rammer og kortstrukturer) --- */
         .day-section {
             width: 100%;
-            margin-bottom: 35px; 
-            padding: 0; /* Fjernet padding for å ligne på venstre felt */
-            border-radius: 0;
-            border: none; /* Fjernet ramme */
+            margin-bottom: 40px; 
+            padding: 0; 
             background-color: transparent;
         }
 
@@ -207,7 +186,6 @@
             font-size: 1.5rem;
             font-weight: 700;
             margin-bottom: 15px; 
-            text-transform: capitalize;
         }
 
         .today-badge {
@@ -233,13 +211,13 @@
 
         .event-list {
             list-style: none;
-            padding-left: 0; /* Justert for å matche stilen til venstre panel */
+            padding-left: 0; 
         }
 
         .event-item {
             font-family: 'Lato', sans-serif;
             font-size: 1.5rem;
-            margin-bottom: 10px; 
+            margin-bottom: 12px; 
             line-height: 2;
             position: relative;
             font-weight: 400;
@@ -247,7 +225,7 @@
         }
 
         .event-time {
-            color: var(--text-main); /* Gjort lik venstre side */
+            color: var(--text-main); 
             font-weight: 400;
             margin-right: 5px;
         }
@@ -284,11 +262,6 @@
 
     <header>
         <div class="header-left">
-            <div class="digital-clock" id="digital-clock">00:00</div>
-            <div class="date-string" id="date-text">Laster dato...</div>
-        </div>
-        
-        <div class="header-center">
             <svg class="analog-clock-svg" viewBox="0 0 100 100" id="analog-clock">
                 <circle cx="50" cy="50" r="48" class="clock-face" />
                 <g id="ticks"></g>
@@ -302,6 +275,7 @@
         
         <div class="header-right">
             <div class="day-status" id="period-text">Det er...</div>
+            <div class="date-string" id="date-text">Laster dato...</div>
         </div>
     </header>
 
@@ -407,26 +381,26 @@
             document.getElementById('minute-hand').setAttribute('transform', `rotate(${m * 6 + s * 0.1} 50 50)`);
             document.getElementById('hour-hand').setAttribute('transform', `rotate(${(h % 12) * 30 + m * 0.5} 50 50)`);
 
-            // 2. Digital Klokke
+            // 2. Digital Klokke og Dato-streng i ny kombinasjon
             let hoursStr = String(h).padStart(2, '0');
             let minutesStr = String(m).padStart(2, '0');
-            document.getElementById('digital-clock').textContent = `${hoursStr}:${minutesStr}`;
-
-            // 3. Fullstendig Dato-streng
-            const dayName = ukeDager[now.getDay()];
+            let secondsStr = String(s).padStart(2, '0');
+            
+            const dayName = ukeDager[now.getDay()].toLowerCase();
             const dayNum = now.getDate();
             const monthName = maaneder[now.getMonth()].toLowerCase();
             const yearNum = now.getFullYear();
-            document.getElementById('date-text').textContent = `${dayName} ${dayNum}. ${monthName} ${yearNum}`;
+            
+            document.getElementById('date-text').textContent = `${hoursStr}:${minutesStr}:${secondsStr} - ${dayName} ${dayNum}. ${monthName} ${yearNum}`;
 
-            // 4. DAG- og NATTMODUS (Lyst mellom 07:00 og 22:00)
+            // 3. DAG- og NATTMODUS (Lyst mellom 07:00 og 22:00)
             if (h >= 7 && h < 22) {
                 document.body.classList.remove('night-mode');
             } else {
                 document.body.classList.add('night-mode');
             }
 
-            // 5. Døgnperiode
+            // 4. Døgnperiode
             let periodText = "Det er natt";
             if (h >= 6 && h < 9) periodText = "Det er morgen";
             else if (h >= 9 && h < 12) periodText = "Det er formiddag";
@@ -434,7 +408,7 @@
             else if (h >= 18 && h < 24) periodText = "Det er kveld";
             document.getElementById('period-text').textContent = periodText;
 
-            // 6. Midnatt og Sikkerhetsoppdatering (Reload kl. 03:00)
+            // 5. Midnatt og Sikkerhetsoppdatering (Reload kl. 03:00)
             if (h === 3 && m === 0 && s === 0) {
                 window.location.reload(true);
                 return;
@@ -443,8 +417,8 @@
                 renderCalendarList(); 
             }
 
-            // 7. Tre-delt permanent info basert på ukedag, lørdag eller søndag
-            const dayOfWeek = now.getDay(); // 0 = Søndag, 6 = Lørdag
+            // 6. Tre-delt permanent info basert på ukedag, lørdag eller søndag
+            const dayOfWeek = now.getDay(); 
             if (dayOfWeek === 6) {
                 document.getElementById('info-heading').innerText = infoLoerdag.overskrift;
                 document.getElementById('info-text').innerText = infoLoerdag.tekst;
