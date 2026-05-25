@@ -57,11 +57,12 @@
             display: flex;
             flex-direction: column;
             
+            /* Tillater vertikal rulling av hele siden */
             overflow-y: auto;
             overflow-x: hidden;
             scrollbar-width: none; 
             
-            /* SIKKERHETSSONE FOR DET FYSISKE DEKSELET (LANDSKAP) */
+            /* SIKKERHETSSONE FOR DET FYSISKE DEKSELET */
             padding: 79px 60px 74px 60px; 
             transition: background 1s ease, color 1s ease;
         }
@@ -75,20 +76,19 @@
             height: 160px;
             display: flex;
             align-items: center;
-            justify-content: flex-start;
+            justify-content: space-between; /* Skubber innholdet til hver sin kant */
             background-color: var(--bg-color);
             transition: background 1s ease;
-            gap: 30px;
             padding-bottom: 20px;
             flex-shrink: 0;
         }
 
-        .header-left {
-            flex: 0 0 auto;
+        /* Samler analog og digital klokke helt til venstre */
+        .header-clocks-left {
             display: flex;
-            justify-content: center;
             align-items: center;
-            width: 120px;
+            gap: 25px;
+            flex-shrink: 0;
         }
 
         .analog-clock-svg {
@@ -114,24 +114,21 @@
         .hand-second { stroke: var(--clock-accent); stroke-width: 1.3; }
         .center-dot { fill: var(--clock-accent); }
 
-        .header-right {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-
-        .day-status {
-            font-size: 3.5rem;
+        /* Stor digital klokke plassert ved siden av den analoge */
+        .digital-clock-big {
+            font-size: 5.5rem; /* Gjort like høy som den analoge klokken */
             font-weight: 400;
-            color: var(--text-main);
-            line-height: 1.1;
+            letter-spacing: -2px;
+            line-height: 1;
         }
 
-        .date-string {
-            font-size: 1.4rem;
-            color: var(--text-muted);
-            font-family: 'Lato', sans-serif;
+        /* Høyrejustert datofelt på samme linje */
+        .header-date-right {
+            text-align: right;
+            font-size: 2.2rem; /* Nøyaktig samme størrelse som "Rutiner:" */
+            font-weight: 500;  /* Nøyaktig samme skriftvekt som "Rutiner:" */
+            color: var(--text-main);
+            line-height: 1.2;
         }
 
         /* --- HOVEDOMRÅDE --- */
@@ -293,47 +290,46 @@
             padding-left: 40px;
         }
 
-        /* ***************************************************************
-         * AUTOMATISK MOBIL- OG PORTRETTILPASNING (MEDIA QUERIES)
-         *************************************************************** */
+        /* Responsiv mobil- layout */
         @media (max-width: 900px) or (orientation: portrait) {
             body {
-                /* Fjerner deksel-padding på mobil for å spare plass */
                 padding: 30px 20px 40px 20px; 
             }
 
             header {
-                flex-direction: column; /* Stabler klokke og tekst vertikalt */
+                flex-direction: column; 
                 height: auto;
                 gap: 15px;
                 text-align: center;
                 margin-bottom: 20px;
-            }
-
-            .header-left {
-                width: 100%; /* Sørger for at klokken sentreres */
-            }
-
-            .header-right {
                 align-items: center;
+            }
+
+            .header-clocks-left {
+                justify-content: center;
                 width: 100%;
             }
 
-            .day-status {
-                font-size: 2.5rem; /* Litt mindre tekst på mobilskjerm */
+            .digital-clock-big {
+                font-size: 4rem;
+            }
+
+            .header-date-right {
+                text-align: center;
+                width: 100%;
+                font-size: 1.6rem;
             }
 
             main {
-                flex-direction: column; /* Stabler kolonnene vertikalt */
+                flex-direction: column; 
                 gap: 40px;
             }
 
             .left-column {
-                width: 100%; /* Tar full bredde på mobil */
+                width: 100%; 
                 padding-right: 0;
             }
 
-            /* Trapper ned tabulator-innrykkene på mobil for å unngå trang tekst */
             .info-day-title, .day-title, .holiday-text, .no-events-text {
                 padding-left: 20px; 
             }
@@ -343,7 +339,7 @@
             }
             
             .info-item {
-                white-space: normal; /* Tillater tekstbryting på rutinene hvis mobilskjermen er ekstremt smal */
+                white-space: normal; 
             }
         }
     </style>
@@ -351,7 +347,7 @@
 <body>
 
     <header>
-        <div class="header-left">
+        <div class="header-clocks-left">
             <svg class="analog-clock-svg" viewBox="0 0 100 100" id="analog-clock">
                 <circle cx="50" cy="50" r="48" class="clock-face" />
                 <g id="ticks"></g>
@@ -361,11 +357,11 @@
                 <line id="second-hand" class="hand hand-second" x1="50" y1="50" x2="50" y2="12" />
                 <circle cx="50" cy="50" r="2.5" class="center-dot" />
             </svg>
+            <div class="digital-clock-big" id="digital-clock">00:00:00</div>
         </div>
         
-        <div class="header-right">
-            <div class="day-status" id="period-text">Det er...</div>
-            <div class="date-string" id="date-text">Laster dato...</div>
+        <div class="header-date-right" id="complete-date-string">
+            Laster dato...
         </div>
     </header>
 
@@ -497,12 +493,8 @@
             let minutesStr = String(m).padStart(2, '0');
             let secondsStr = String(s).padStart(2, '0');
             
-            const dayName = ukeDager[now.getDay()].toLowerCase();
-            const dayNum = now.getDate();
-            const monthName = maaneder[now.getMonth()].toLowerCase();
-            const yearNum = now.getFullYear();
-            
-            document.getElementById('date-text').textContent = `${hoursStr}:${minutesStr}:${secondsStr} - ${dayName} ${dayNum}. ${monthName} ${yearNum}`;
+            // Oppdaterer den store digitale klokken
+            document.getElementById('digital-clock').textContent = `${hoursStr}:${minutesStr}:${secondsStr}`;
 
             if (h >= 7 && h < 22) {
                 document.body.classList.remove('night-mode');
@@ -510,12 +502,19 @@
                 document.body.classList.add('night-mode');
             }
 
-            let periodText = "Det er natt";
-            if (h >= 6 && h < 9) periodText = "Det er morgen";
-            else if (h >= 9 && h < 12) periodText = "Det er formiddag";
-            else if (h >= 12 && h < 18) periodText = "Det er ettermiddag";
-            else if (h >= 18 && h < 24) periodText = "Det er kveld";
-            document.getElementById('period-text').textContent = periodText;
+            let periodText = "natt";
+            if (h >= 6 && h < 9) periodText = "morgen";
+            else if (h >= 9 && h < 12) periodText = "formiddag";
+            else if (h >= 12 && h < 18) periodText = "ettermiddag";
+            else if (h >= 18 && h < 24) periodText = "kveld";
+            
+            const dayName = ukeDager[now.getDay()].toLowerCase();
+            const dayNum = now.getDate();
+            const monthName = maaneder[now.getMonth()].toLowerCase();
+            const yearNum = now.getFullYear();
+
+            // Oppbygning av den høyrejusterte tekststrengen
+            document.getElementById('complete-date-string').textContent = `Det er ${periodText} ${dayName} ${dayNum}. ${monthName} ${yearNum}`;
 
             if (h === 3 && m === 0 && s === 0) {
                 window.location.reload(true);
@@ -553,6 +552,7 @@
             container.innerHTML = '';
             
             const today = new Date();
+            const todayKey = today.toLocaleDateString('sv-SE', {timeZone: 'Europe/Oslo'});
             let totalDaysRendered = 0;
 
             for (let i = 0; i < 185; i++) {
@@ -581,7 +581,7 @@
                 title.className = 'day-title';
                 
                 let titleHTML = `<span>${dayName.toLowerCase()} ${dateNum}. ${monthName} ${yearNum}</span>`;
-                if (dateKey === today.toLocaleDateString('sv-SE', {timeZone: 'Europe/Oslo'})) {
+                if (dateKey === todayKey) {
                     titleHTML += '<span class="today-badge">I dag</span>';
                 }
                 title.innerHTML = titleHTML;
