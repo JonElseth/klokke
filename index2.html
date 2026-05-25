@@ -14,7 +14,21 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
     
     <style>
+        /* Standardtemaer (Definert som variabler for raskt skifte) */
         :root {
+            /* Dagmodus (07:00 - 22:00) */
+            --bg-color: #f4f6f9;
+            --panel-bg: #ffffff;
+            --text-main: #1a1f26;
+            --text-muted: #626d7a;
+            --accent-color: #0066cc;
+            --highlight-pappa: #d9381e;
+            --grid-line: #d0d7de;
+            --clock-border: #1a1f26;
+        }
+
+        /* Klasse som legges på body ved nattmodus (22:00 - 07:00) */
+        body.night-mode {
             --bg-color: #0d1117;
             --panel-bg: #161b22;
             --text-main: #f0f6fc;
@@ -22,6 +36,7 @@
             --accent-color: #58a6ff;
             --highlight-pappa: #ff7b72;
             --grid-line: #30363d;
+            --clock-border: #f0f6fc;
         }
 
         * {
@@ -40,6 +55,7 @@
             user-select: none;
             display: flex;
             flex-direction: column;
+            transition: background-color 0.5s ease, color 0.5s ease;
         }
 
         /* HEADER / TOPPLINJE */
@@ -50,11 +66,13 @@
             justify-content: space-between;
             padding: 0 50px;
             border-bottom: 1px solid var(--grid-line);
-            background-color: var(--bg-color);
+            background-color: var(--panel-bg);
+            transition: background-color 0.5s ease, border-color 0.5s ease;
         }
 
         .header-left {
             flex: 1;
+            min-width: 300px;
         }
 
         .digital-clock {
@@ -77,15 +95,17 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            width: 150px;
         }
 
         /* Minimalistisk Analog Klokke */
         .analog-clock {
             width: 110px;
             height: 110px;
-            border: 2px solid var(--text-main);
+            border: 2px solid var(--clock-border);
             border-radius: 50%;
             position: relative;
+            transition: border-color 0.5s ease;
         }
 
         .analog-clock::after {
@@ -108,12 +128,12 @@
             transform-origin: bottom center;
             background: var(--text-main);
             border-radius: 4px;
+            transition: background-color 0.5s ease;
         }
 
         .hour-hand {
             width: 4px;
             height: 30px;
-            background: var(--text-main);
         }
 
         .minute-hand {
@@ -131,6 +151,7 @@
         .header-right {
             flex: 1;
             text-align: right;
+            min-width: 300px;
         }
 
         .day-status {
@@ -152,20 +173,21 @@
             height: 100%;
             overflow-y: auto;
             padding: 40px 50px;
+            transition: background-color 0.5s ease, border-color 0.5s ease;
         }
 
         .left-column {
             border-right: 1px solid var(--grid-line);
-            background-color: var(--bg-color);
+            background-color: var(--panel-bg);
         }
 
         .right-column {
-            background-color: var(--panel-bg);
-            scrollbar-width: none; /* Skjuler rullefelt i Firefox */
+            background-color: var(--bg-color);
+            scrollbar-width: none;
         }
         
         .right-column::-webkit-scrollbar {
-            display: none; /* Skjuler rullefelt i Chrome/Safari */
+            display: none;
         }
 
         /* STYLING FOR PERMANENT INFO (VENSTRE) */
@@ -198,10 +220,11 @@
 
         .event-card {
             padding: 20px 0;
-            border-bottom: 1px solid rgba(48, 54, 61, 0.5);
+            border-bottom: 1px solid var(--grid-line);
             display: flex;
             flex-direction: column;
             gap: 5px;
+            opacity: 0.9;
         }
 
         .event-card:last-child {
@@ -265,11 +288,10 @@
     <script>
         /****************************************************************
          * CONFIGURATION / KONFIGURASJON
-         * Autentiseringsdetaljer hentet direkte fra index1.html
          ****************************************************************/
-        const API_KEY = 'AIzaSyA_...'; // Integrert fra din kildefil
-        const CLIENT_ID = '1058296720516-...'; // Integrert fra din kildefil
-        const CALENDAR_ID = 'elseth.jon@gmail.com'; // Integrert fra din kildefil
+        const API_KEY = 'AIzaSyA_...'; 
+        const CLIENT_ID = '1058296720516-...'; 
+        const CALENDAR_ID = 'elseth.jon@gmail.com'; 
         
         const DISCOVERY_DOCS = ["https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"];
         const SCOPES = "https://www.googleapis.com/auth/calendar.readonly";
@@ -290,19 +312,27 @@
         let wakeLock = null;
 
         /****************************************************************
-         * KLOKKE OG DATO LOGIKK (MED DØGNSTATUS)
+         * TID, DATO OG FARGETEMA LOGIKK
          ****************************************************************/
         function updateClockAndLayout() {
             const now = new Date();
+            const currentHour = now.getHours();
             
-            // 1. Digital Klokke
-            const hours = String(now.getHours()).padStart(2, '0');
+            // 1. Sjekk for Dag- eller Nattmodus (Lyst mellom 07:00 og 22:00)
+            if (currentHour >= 7 && currentHour < 22) {
+                document.body.classList.remove('night-mode');
+            } else {
+                document.body.classList.add('night-mode');
+            }
+            
+            // 2. Digital Klokke
+            const hours = String(currentHour).padStart(2, '0');
             const minutes = String(now.getMinutes()).padStart(2, '0');
             document.getElementById('txt-digital').innerText = `${hours}:${minutes}`;
 
-            // 2. Analog Klokke
+            // 3. Analog Klokke
             const seconds = now.getSeconds();
-            const hourDegrees = ((now.getHours() % 12) * 30) + (now.getMinutes() * 0.5);
+            const hourDegrees = ((currentHour % 12) * 30) + (now.getMinutes() * 0.5);
             const minuteDegrees = (now.getMinutes() * 6) + (seconds * 0.1);
             const secondDegrees = seconds * 6;
 
@@ -310,13 +340,12 @@
             document.getElementById('hand-minute').style.transform = `translateX(-50%) rotate(${minuteDegrees}deg)`;
             document.getElementById('hand-second').style.transform = `translateX(-50%) rotate(${secondDegrees}deg)`;
 
-            // 3. Fullstendig Dato på norsk
+            // 4. Fullstendig Dato
             const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
             let dateString = now.toLocaleDateString('no-NO', options);
             document.getElementById('txt-date').innerText = dateString;
 
-            // 4. Døgnstatus (Tid på døgnet)
-            const currentHour = now.getHours();
+            // 5. Døgnstatus
             let statusText = "";
             if (currentHour >= 0 && currentHour < 6) {
                 statusText = "I natt";
@@ -329,8 +358,8 @@
             }
             document.getElementById('txt-status').innerText = statusText;
 
-            // 5. Oppdater permanent info basert på ukedag eller helg
-            const dayOfWeek = now.getDay(); // 0 = Søndag, 6 = Lørdag
+            // 6. Oppdater permanent info basert på helg/hverdag
+            const dayOfWeek = now.getDay(); 
             const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
             
             if (isWeekend) {
@@ -419,7 +448,6 @@
                 const summaryText = event.summary || 'Ingen tittel';
                 summaryDiv.innerText = summaryText;
 
-                // Logikk for utheving av spesifikke prefikser (f.eks. Pappa:)
                 if (summaryText.toLowerCase().startsWith('pappa:')) {
                     summaryDiv.className += ' highlight-pappa';
                 }
@@ -431,7 +459,7 @@
         }
 
         /****************************************************************
-         * INAKTIVITET / AUTOMATISK SCROLLBACK (Fra index1.html)
+         * AUTOMATISK SCROLLBACK VED INAKTIVITET
          ****************************************************************/
         function resetInactivityTimer() {
             clearTimeout(inactivityTimer);
@@ -440,7 +468,7 @@
                 if (panel) {
                     panel.scrollTo({ top: 0, behavior: 'smooth' });
                 }
-            }, 180000); // 3 minutter inaktivitet
+            }, 180000); 
         }
 
         function setupInactivityListeners() {
@@ -461,7 +489,7 @@
                     wakeLock = await navigator.wakeLock.request('screen');
                 }
             } catch (err) {
-                console.log("WakeLock feilet.");
+                console.log("WakeLock støttes ikke.");
             }
         }
 
@@ -476,16 +504,16 @@
                 scope: SCOPES,
             }).then(() => {
                 fetchCalendarData();
-                setInterval(fetchCalendarData, 300000); // Hvert 5. minutt
+                setInterval(fetchCalendarData, 300000); 
             }).catch(err => {
-                document.getElementById('calendar-list').innerText = "Feil ved initialisering av Google API.";
+                document.getElementById('calendar-list').innerText = "Feil ved gapi-init.";
             });
         }
 
         window.addEventListener('DOMContentLoaded', () => {
             requestWakeLock();
             updateClockAndLayout();
-            setInterval(updateClockAndLayout, 1000); // Hvert sekund
+            setInterval(updateClockAndLayout, 1000); 
             setupInactivityListeners();
 
             try {
