@@ -155,19 +155,18 @@
             display: none;
         }
 
-        /* --- OVERKRIFTER --- */
+        /* --- OVERKRIFTER (Nedjustert til mer eksklusiv vekt 500) --- */
         .info-title, .calendar-title {
             font-size: 2.2rem;
-            font-weight: 700;
+            font-weight: 500;
             margin-bottom: 25px;
             color: var(--text-main);
         }
 
-        /* Endret fra pre-line til en ryddig flex-kolonne-struktur */
         .info-content {
             display: flex;
             flex-direction: column;
-            gap: 10px; /* Jevnt mellomrom mellom rutinene vertikalt */
+            gap: 10px; 
             font-family: 'Lato', sans-serif;
             font-size: 1.25rem;
             line-height: 1.8;
@@ -175,14 +174,14 @@
             padding-left: 40px; 
         }
 
-        /* Hvert enkelt rutinepunkt låses til én linje, men listen stakkes vertikalt */
         .info-item {
             white-space: nowrap;
         }
 
+        /* Fjernet bold fra rutinene til venstre */
         .info-time {
             color: var(--clock-accent);
-            font-weight: 700;
+            font-weight: 400;
         }
 
         /* --- KALENDERVISNING --- */
@@ -192,6 +191,7 @@
             background-color: transparent;
         }
 
+        /* Nedjustert datotekst til vekt 400 for mer eksklusiv stil */
         .day-title {
             display: flex;
             justify-content: flex-start;
@@ -199,7 +199,7 @@
             gap: 15px;
             font-family: 'Poppins', sans-serif;
             font-size: 1.5rem;
-            font-weight: 700;
+            font-weight: 400;
             margin-bottom: 12px; 
             padding-left: 40px; 
         }
@@ -250,9 +250,10 @@
             flex: 1;
         }
 
+        /* Fjernet bold fra klokkeslett og "Hele dagen" til høyre */
         .event-time {
             color: var(--clock-accent); 
-            font-weight: 700;
+            font-weight: 400;
             margin-right: 5px;
         }
 
@@ -331,7 +332,6 @@
         const ukeDager = ["Søndag", "Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag", "Lørdag"];
         const maaneder = ["Januar", "Februar", "Mars", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Desember"];
 
-        // Lagt inn rette elementklasser her for å rydde opp i horisontal visning
         const infoHverdag = {
             overskrift: "Rutiner ukedager:",
             tekst: "<div class='info-item'>•  <span class='info-time'>07.30:</span> Frokost</div><div class='info-item'>•  <span class='info-time'>08.00:</span> Ta medisiner</div><div class='info-item'>•  <span class='info-time'>09.00:</span> Tur med hunden</div><div class='info-item'>•  <span class='info-time'>11.30:</span> Lunsj</div><div class='info-item'>•  <span class='info-time'>14.00:</span> Sjekke e-post og meldinger</div><div class='info-item'>•  <span class='info-time'>15.30:</span> Middag</div><div class='info-item'>•  <span class='info-time'>19.30:</span> Gå tur med hunden</div><div class='info-item'>•  <span class='info-time'>20.30:</span> Kveldsmat</div>"
