@@ -58,7 +58,7 @@
             display: flex;
             flex-direction: column;
             
-            /* SIKKERHETSSONE INTEGRERT FRA DIN OPPRINNELIGE CODE FOR PLASTRAMMEN */
+            /* SIKKERHETSSONE FOR DET FYSISKE DEKSELET */
             padding: 79px 60px 74px 60px; 
             transition: background 1s ease, color 1s ease;
         }
@@ -174,19 +174,22 @@
             text-transform: lowercase;
         }
 
+        /* Fjernet gap (0px) for maksimal kompakthet på venstre side */
         .info-content {
             display: flex;
             flex-direction: column;
-            gap: 4px; 
+            gap: 0px; 
             font-family: 'Lato', sans-serif;
             font-size: 1.25rem;
-            line-height: 1.8;
             color: var(--text-main);
             padding-left: 80px; 
         }
 
+        /* Redusert line-height fra 1.8 til 1.4 for tettere vertikal avstand */
         .info-item {
             white-space: nowrap;
+            line-height: 1.4;
+            padding: 2px 0;
         }
 
         .info-time {
@@ -340,7 +343,6 @@
             { tid: "08.00", tekst: "Ta medisiner" },
             { tid: "09.00", tekst: "Tur med hunden" },
             { tid: "11.30", tekst: "Lunsj" },
-            { tid: "14.00", tekst: "Sjekke meldinger" },
             { tid: "15.30", tekst: "Middag" },
             { tid: "19.30", tekst: "Gå tur med hunden" },
             { tid: "20.30", tekst: "Kveldsmat" }
@@ -351,7 +353,6 @@
             { tid: "08.00", tekst: "Ta medisiner" },
             { tid: "09.00", tekst: "Tur med hunden" },
             { tid: "12.00", tekst: "Gjerne varm lunsj" },
-            { tid: "14.00", tekst: "Sjekke meldinger" },
             { tid: "15.30", tekst: "Middag" },
             { tid: "19.30", tekst: "Gå tur med hunden" },
             { tid: "20.30", tekst: "Kveldsmat" }
@@ -362,7 +363,6 @@
             { tid: "08.00", tekst: "Ta medisiner" },
             { tid: "09.00", tekst: "Tur med hunden" },
             { tid: "13.00", tekst: "Middag" },
-            { tid: "14.00", tekst: "Sjekke meldinger" },
             { tid: "19.30", tekst: "Gå tur med hunden" },
             { tid: "20.30", tekst: "Kveldsmat" }
         ];
