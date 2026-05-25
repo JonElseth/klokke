@@ -431,7 +431,28 @@
                         let renSummary = nesteAvtale.summary ? nesteAvtale.summary.replace(/^(Mamma\s*&\s*Pappa:|Mamma\s+og\s+Pappa:|Mamma:|Pappa:)\s*/i, '') : '';
                         boksHTML += `Neste avtale er <span class="status-box-highlight">${renSummary}</span> klokken <span class="status-box-highlight">${nesteTid}</span>.`;
                     } else {
-                        boksHTML += `Det er natt, og det er ingen flere avtaler før i morgen.`;
+                        const iMorgen = new Date();
+                        iMorgen.setDate(nå.getDate() + 1);
+                        const morgendagensNøkkel = iMorgen.toLocaleDateString('sv-SE', {timeZone: 'Europe/Oslo'});
+                        const morgendagensHendelser = globalEventsCache[morgendagensNøkkel] || [];
+                        
+                        const førsteIAvtaleIMorgen = morgendagensHendelser
+                            .filter(ev => ev.start && ev.start.dateTime)
+                            .sort((a, b) => new Date(a.start.dateTime).getTime() - new Date(b.start.dateTime).getTime())[0];
+
+                        if (førsteIAvtaleIMorgen) {
+                            const morgenTime = new Date(førsteIAvtaleIMorgen.start.dateTime).getHours();
+                            let periodeTekst = "i morgen";
+                            
+                            if (morgenTime >= 7 && morgenTime < 9) periodeTekst = "i morgen tidlig";
+                            else if (morgenTime >= 9 && morgenTime < 12) periodeTekst = "i morgen formiddag";
+                            else if (morgenTime >= 12 && morgenTime < 18) periodeTekst = "i morgen ettermiddag";
+                            else if (morgenTime >= 18 && morgenTime < 23) periodeTekst = "i morgen kveld";
+                            
+                            boksHTML += `Det er natt, og det er ingen flere avtaler før <span class="status-box-highlight">${periodeTekst}</span>.`;
+                        } else {
+                            boksHTML += `Det er natt, og det er ingen flere avtaler i morgen.`;
+                        }
                     }
                 } else {
                     if (nesteAvtale) {
@@ -500,33 +521,33 @@
                     title.innerHTML = titleHTML;
                     daySection.appendChild(title);
 
-                if (hasHoliday) {
-                    const holDiv = document.createElement('div');
-                    holDiv.className = 'holiday-text';
-                    holDiv.textContent = globalHolidaysCache[dateKey];
-                    daySection.appendChild(holDiv);
-                }
+                    if (hasHoliday) {
+                        const holDiv = document.createElement('div');
+                        holDiv.className = 'holiday-text';
+                        holDiv.textContent = globalHolidaysCache[dateKey];
+                        daySection.appendChild(holDiv);
+                    }
 
-                if (hasPersonalEvents) {
-                    const list = document.createElement('div');
-                    list.className = 'event-list';
+                    if (hasPersonalEvents) {
+                        const list = document.createElement('div');
+                        list.className = 'event-list';
 
-                    globalEventsCache[dateKey].forEach(ev => {
-                        const li = document.createElement('div');
-                        li.className = 'event-item';
+                        globalEventsCache[dateKey].forEach(ev => {
+                            const li = document.createElement('div');
+                            li.className = 'event-item';
 
-                        let timeStr = 'Hele dagen';
-                        if (ev.start.dateTime) {
-                            const d = new Date(ev.start.dateTime);
-                            timeStr = d.toLocaleTimeString('no-NO', {hour: '2-digit', minute:'2-digit', timeZone: 'Europe/Oslo'});
-                        }
+                            let timeStr = 'Hele dagen';
+                            if (ev.start.dateTime) {
+                                const d = new Date(ev.start.dateTime);
+                                timeStr = d.toLocaleTimeString('no-NO', {hour: '2-digit', minute:'2-digit', timeZone: 'Europe/Oslo'});
+                            }
 
-                        const formatedText = formatEventSummary(ev.summary);
-                        li.innerHTML = `<span class="event-bullet">•</span><div class="event-text-container"><span class="event-time">${timeStr}:</span> ${formatedText}</div>`;
-                        list.appendChild(li);
-                    });
-                    daySection.appendChild(list);
-                }
+                            const formatedText = formatEventSummary(ev.summary);
+                            li.innerHTML = `<span class="event-bullet">•</span><div class="event-text-container"><span class="event-time">${timeStr}:</span> ${formatedText}</div>`;
+                            list.appendChild(li);
+                        });
+                        daySection.appendChild(list);
+                    }
                     container.appendChild(daySection);
                 }
 
