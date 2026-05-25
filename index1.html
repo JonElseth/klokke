@@ -10,7 +10,7 @@
     
     <meta name="robots" content="noindex, nofollow">
     
-    <title>Digital og Analog Kalenderskjerm</title>
+    <title>Digital og Analog Seniorkalender</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -30,36 +30,47 @@
             font-family: 'Lato', sans-serif;
             overflow: hidden;
             user-select: none;
-            padding: 20px; 
+            
+            /* SIKKERHETSSONE FOR DET FYSISKE DEKSELET (LANDSKAP) */
+            padding: 79px 60px 74px 60px; 
             transition: background 1.5s ease, color 1.5s ease;
         }
 
-        body.day-mode { background: #f1f5f9; color: #1e293b; }
-        body.night-mode { background: #0f172a; color: #f8fafc; }
+        /* --- TEMAER --- */
+        body.day-mode { 
+            background: #f1f5f9; 
+            color: #1e293b; 
+        }
+        body.night-mode { 
+            background: #0f172a; 
+            color: #f8fafc; 
+        }
 
+        /* --- RESPONSIVT LAYOUT MED GRID --- */
         .main-layout {
             display: grid;
-            grid-template-columns: 35% 1fr;
-            gap: 30px;
+            grid-template-columns: 40% 1fr;
+            gap: 40px;
             height: 100%;
             width: 100%;
             position: relative;
         }
 
+        /* --- VENSTRE HALVDEL: KLOKKER OG DATO --- */
         .left-panel {
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: flex-start;
-            gap: 20px;
+            justify-content: space-between;
             height: 100%;
+            padding-right: 10px;
         }
 
+        /* Analog Klokke (Landskap) */
         .analog-clock-svg {
-            width: 100%;
-            max-width: 340px;
-            height: auto;
-            aspect-ratio: 1 / 1;
+            width: 390px;
+            height: 390px;
+            max-width: 98%;
         }
         
         .clock-face { fill: none; }
@@ -83,25 +94,37 @@
         .night-mode .tick-minute { stroke: #94a3b8; }
         .night-mode .tick-hour, .night-mode .clock-number, .night-mode .hand-hour, .night-mode .hand-minute { fill: #f8fafc; stroke: #f8fafc; }
 
+        /* Digital ur (Landskap) */
         .digital-time {
             font-family: 'Poppins', sans-serif;
-            font-size: 6.5vw;
+            font-size: 9.5vw;
             font-weight: 700;
             line-height: 0.9;
             margin: 5px 0;
-            letter-spacing: -2px;
+            letter-spacing: -4px;
             text-align: center;
         }
 
-        .date-display { text-align: center; width: 100%; }
-        .date-text { font-family: 'Poppins', sans-serif; font-size: 28px; font-weight: 700; margin-bottom: 12px; line-height: 1.1; }
+        .date-display {
+            text-align: center;
+            width: 100%;
+        }
 
+        .date-text {
+            font-family: 'Poppins', sans-serif;
+            font-size: 34px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            line-height: 1.1;
+        }
+
+        /* DØGNPERIODE */
         .period-text {
             font-family: 'Poppins', sans-serif; 
-            font-size: 26px; 
+            font-size: 32px; 
             font-weight: 700;
             background: #e2e8f0; 
-            padding: 8px 30px; 
+            padding: 10px 40px; 
             border-radius: 50px;
             display: inline-block;
             box-shadow: 0 4px 10px rgba(0,0,0,0.05);
@@ -113,92 +136,201 @@
         .period-ettermiddag { color: #991b1b; background: #e2e8f0; }  
         .period-kveld { color: #be123c; background: #ffe4e6; }        
         
-        .night-mode .period-text { background: #1e293b; color: #94a3b8; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
-        .night-mode .period-text.period-natt { color: #38bdf8; background: #1e293b; }
+        .night-mode .period-text { 
+            background: #1e293b; 
+            color: #94a3b8; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        .night-mode .period-text.period-natt {
+            color: #38bdf8; 
+            background: #1e293b;
+        }
 
+        /* --- HØYRE PANEL: AVTALER --- */
         .right-panel {
             height: 100%;
             overflow-y: auto;
             scrollbar-width: none;
-            padding-bottom: 20px; 
+            padding-bottom: 100px; 
             pointer-events: auto !important;
         }
-        .right-panel::-webkit-scrollbar { display: none; }
+        .right-panel::-webkit-scrollbar { 
+            display: none; 
+        }
 
+        /* Standard boks for kommende dager */
         .day-section {
             width: 100%;
-            margin-bottom: 15px; 
-            padding: 20px; 
-            border-radius: 12px;
+            margin-bottom: 20px; 
+            padding: 24px; 
+            border-radius: 16px;
             border: 1px solid #cbd5e1; 
             background-color: transparent;
             position: relative; 
             overflow: hidden;
             transition: background 0.5s ease, border 0.5s ease;
         }
-        .night-mode .day-section { border: 1px solid #334155; }
+        
+        .night-mode .day-section {
+            border: 1px solid #334155; 
+        }
 
+        /* Markering for I DAG */
         .day-section.today-highlight {
-            padding: 20px; 
+            padding: 24px; 
             background-color: #ffffff; 
             border: 2px solid #ef4444; 
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05); 
-            margin-bottom: 20px; 
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05); 
+            margin-bottom: 30px; 
         }
-        .night-mode .day-section.today-highlight { background-color: #1e293b; border: 2px solid #ef4444; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3); }
+        
+        .night-mode .day-section.today-highlight {
+            background-color: #1e293b; 
+            border: 2px solid #ef4444;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
 
+        /* Tittel-linjen bruker Flexbox for ren distribusjon */
         .day-title {
             display: flex;
             justify-content: space-between;
             align-items: center;
             font-family: 'Poppins', sans-serif;
-            font-size: 24px;
+            font-size: 28px;
             font-weight: 700;
-            margin-bottom: 10px; 
+            margin-bottom: 14px; 
             text-transform: capitalize;
             width: 100%;
         }
 
+        /* Stor "I dag"-merkelapp på linje med teksten */
         .today-badge {
-            font-size: 20px; 
+            font-size: 24px; 
             background: #ef4444;
             color: white;
-            padding: 4px 18px; 
-            border-radius: 8px;
+            padding: 6px 24px; 
+            border-radius: 10px;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 1.5px;
             line-height: 1.2;
-            box-shadow: 0 4px 8px rgba(239, 68, 68, 0.2); 
+            box-shadow: 0 4px 10px rgba(239, 68, 68, 0.2); 
             white-space: nowrap; 
         }
 
-        .holiday-text { font-size: 16px; color: #ef4444; font-weight: 700; font-style: italic; margin-top: -6px; margin-bottom: 10px; text-transform: uppercase; }
-        .event-list { list-style: none; padding-left: 20px; }
-        .event-item { font-size: 20px; margin-bottom: 10px; line-height: 1.4; position: relative; font-weight: 400; }
-        .event-item::before { content: "•"; position: absolute; left: -20px; font-size: 24px; line-height: 1; color: #64748b; }
+        .holiday-text {
+            font-size: 18px;
+            color: #ef4444;
+            font-weight: 700;
+            font-style: italic;
+            margin-top: -8px;
+            margin-bottom: 14px;
+            text-transform: uppercase;
+        }
 
-        .event-time { color: #ef4444; font-weight: 700; margin-right: 8px; }
+        .event-list {
+            list-style: none;
+            padding-left: 25px;
+        }
+
+        .event-item {
+            font-size: 22px;
+            margin-bottom: 12px; 
+            line-height: 1.4;
+            position: relative;
+            font-weight: 400;
+            padding-right: 0; 
+        }
+
+        .event-item::before {
+            content: "•";
+            position: absolute;
+            left: -25px;
+            font-size: 28px;
+            line-height: 1;
+            color: #64748b;
+        }
+
+        .event-time {
+            color: #ef4444; 
+            font-weight: 700;
+            margin-right: 10px;
+        }
         .night-mode .event-time { color: #f87171; }
 
-        .no-events-container { padding: 30px; text-align: center; }
-        .no-events-text { font-size: 22px; color: #64748b; font-weight: 700; }
+        /* --- STIL FOR NAVNEMERKER (BADGES) --- */
+        .badge-navn {
+            display: inline-block;
+            padding: 4px 10px 6px 10px; 
+            border-radius: 6px;
+            font-weight: 700;
+            color: #ffffff !important; 
+            margin-right: 4px;
+            line-height: 1.2; 
+            font-size: 20px;
+            vertical-align: middle;
+        }
 
+        /* Dagsmodus farger */
+        .badge-mamma { background-color: #16a34a; }        
+        .badge-pappa { background-color: #d97706; }        
+        .badge-begge { background-color: #0891b2; }        
+
+        /* Nattmodus farger */
+        .night-mode .badge-mamma { background-color: #166534; }
+        .night-mode .badge-pappa { background-color: #9a3412; }
+        .night-mode .badge-begge { background-color: #155e75; }
+
+        /* --- AUTOMATISK PORTRETTMODUS --- */
         @media (max-width: 900px) or (orientation: portrait) {
-            body { padding: 12px; overflow-y: auto; }
-            .main-layout { grid-template-columns: 1fr; grid-template-rows: auto 1fr; gap: 24px; height: auto; overflow: visible; }
-            .left-panel { padding-right: 0; padding-bottom: 12px; height: auto; gap: 15px; }
-            .analog-clock-svg { width: 260px; max-width: 80%; }
-            .digital-time { font-size: 12vw; letter-spacing: -1px; margin: 3px 0; }
-            .date-text { font-size: 24px; margin-bottom: 12px; }
-            .period-text { font-size: 22px; }
-            .right-panel { height: auto; overflow: visible; padding-bottom: 20px; }
+            body {
+                padding: 50px 45px 40px 45px;
+                overflow-y: auto; 
+            }
+            
+            .main-layout {
+                grid-template-columns: 1fr; 
+                grid-template-rows: auto 1fr;
+                gap: 45px;
+                height: auto;
+                overflow: visible;
+            }
+
+            .left-panel {
+                padding-right: 0;
+                padding-bottom: 25px;
+                height: auto;
+            }
+
+            .analog-clock-svg {
+                width: 340px;
+                height: 340px;
+            }
+
+            .digital-time { 
+                font-size: 14vw; 
+                letter-spacing: -4px;
+                margin: 5px 0;
+            }
+            
+            .date-text { 
+                font-size: 26px;
+                margin-bottom: 20px; 
+            }
+            .period-text { font-size: 28px; }
+
+            .right-panel {
+                height: auto;
+                overflow: visible;
+                padding-bottom: 120px; 
+            }
         }
     </style>
 </head>
 <body class="day-mode">
 
     <div class="main-layout" id="layout-box">
+        
         <div class="left-panel">
             <svg class="analog-clock-svg" viewBox="0 0 100 100" id="analog-clock">
                 <circle cx="50" cy="50" r="48" class="clock-face" />
@@ -216,13 +348,17 @@
                 <div class="period-text" id="period-text">Det er...</div>
             </div>
         </div>
-        <div class="right-panel" id="event-container"></div>
+
+        <div class="right-panel" id="event-container">
+            </div>
+
     </div>
 
     <script src="https://apis.google.com/js/api.js"></script>
     <script>
-        const API_KEY = 'AIzaSyAMeiF7aD3eNmSy4YZUN97WT2LWZMYiBT0';
-        const CALENDAR_ID = 'jonelseth@gmail.com'; 
+        // --- GOOGLE API-KONFIGURASJON ---
+        const API_KEY = 'AIzaSyDabiLiH6tR1bonxhjgNqq9PoTSa9wogzE';
+        const CALENDAR_ID = '6836a3463ada75841f11c52afbd588f7467b5c7014a9ac8118e24205f42d301c@group.calendar.google.com'; 
         const HOLIDAY_CALENDAR_ID = 'no.norwegian#holiday@group.v.calendar.google.com'; 
 
         const ukeDager = ["Søndag", "Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag", "Lørdag"];
@@ -233,10 +369,19 @@
         let wakeLock = null;
         let inactivityTimeout = null;
 
+        function formatEventSummary(summary) {
+            if (!summary) return '';
+            let html = summary;
+            html = html.replace(/Mamma\s*&\s*[pP]appa:/g, '<span class="badge-navn badge-begge">Mamma & pappa:</span>');
+            html = html.replace(/Mamma\s+og\s+[pP]appa:/g, '<span class="badge-navn badge-begge">Mamma & pappa:</span>');
+            html = html.replace(/Mamma:/g, '<span class="badge-navn badge-mamma">Mamma:</span>');
+            html = html.replace(/Pappa:/g, '<span class="badge-navn badge-pappa">Pappa:</span>');
+            return html;
+        }
+
         function buildClockUI() {
             const ticksG = document.getElementById('ticks');
             const numsG = document.getElementById('numbers');
-            if(!ticksG || !numsG) return;
             ticksG.innerHTML = '';
             numsG.innerHTML = '';
             
@@ -277,13 +422,9 @@
             const m = now.getMinutes();
             const h = now.getHours();
 
-            const secHand = document.getElementById('second-hand');
-            const minHand = document.getElementById('minute-hand');
-            const hrHand = document.getElementById('hour-hand');
-            
-            if(secHand) secHand.setAttribute('transform', `rotate(${s * 6} 50 50)`);
-            if(minHand) minHand.setAttribute('transform', `rotate(${m * 6 + s * 0.1} 50 50)`);
-            if(hrHand) hrHand.setAttribute('transform', `rotate(${(h % 12) * 30 + m * 0.5} 50 50)`);
+            document.getElementById('second-hand').setAttribute('transform', `rotate(${s * 6} 50 50)`);
+            document.getElementById('minute-hand').setAttribute('transform', `rotate(${m * 6 + s * 0.1} 50 50)`);
+            document.getElementById('hour-hand').setAttribute('transform', `rotate(${(h % 12) * 30 + m * 0.5} 50 50)`);
 
             let hoursStr = String(h).padStart(2, '0');
             let minutesStr = String(m).padStart(2, '0');
@@ -291,17 +432,13 @@
                 hoursStr = now.toLocaleTimeString('no-NO', { hour: '2-digit', hour12: false, timeZone: 'Europe/Oslo' });
                 minutesStr = now.toLocaleTimeString('no-NO', { minute: '2-digit', timeZone: 'Europe/Oslo' }).padStart(2, '0');
             } catch(e) {}
-            
-            const digClock = document.getElementById('digital-clock');
-            if(digClock) digClock.textContent = `${hoursStr}:${minutesStr}`;
+            document.getElementById('digital-clock').textContent = `${hoursStr}:${minutesStr}`;
 
             const dayName = ukeDager[now.getDay()];
             const dayNum = now.getDate();
             const monthName = maaneder[now.getMonth()].toLowerCase();
             const yearNum = now.getFullYear();
-            
-            const dateTxt = document.getElementById('date-text');
-            if(dateTxt) dateTxt.textContent = `${dayName} ${dayNum}. ${monthName} ${yearNum}`;
+            document.getElementById('date-text').textContent = `${dayName} ${dayNum}. ${monthName} ${yearNum}`;
 
             if (h === 3 && m === 0 && s === 0) {
                 window.location.reload(true);
@@ -312,9 +449,11 @@
                 renderCalendarList(); 
             }
 
+            // DIMME-LOGIKK: Beholder fargeskifte klokken 22.00 for behagelig nattbelysning
             const isNightModeActive = h >= 22 || h < 7;
             document.body.className = isNightModeActive ? "night-mode" : "day-mode";
             
+            // TEKST-LOGIKK: Synkronisert med Meteorologisk institutts standarder
             let periodText = "Det er natt";
             let periodClass = "period-natt";
             
@@ -324,15 +463,12 @@
             else if (h >= 18 && h < 24) { periodText = "Det er kveld"; periodClass = "period-kveld"; }
             
             const periodEl = document.getElementById('period-text');
-            if(periodEl) {
-                periodEl.textContent = periodText;
-                periodEl.className = "period-text " + periodClass;
-            }
+            periodEl.textContent = periodText;
+            periodEl.className = "period-text " + periodClass;
         }
 
         function renderCalendarList() {
             const container = document.getElementById('event-container');
-            if(!container) return;
             container.innerHTML = '';
             
             const today = new Date();
@@ -347,13 +483,18 @@
                 const hasPersonalEvents = globalEventsCache[dateKey] && globalEventsCache[dateKey].length > 0;
                 const hasHoliday = globalHolidaysCache[dateKey];
 
-                if (!hasPersonalEvents && !hasHoliday) continue;
+                if (!hasPersonalEvents && !hasHoliday) {
+                    continue;
+                }
 
                 totalDaysRendered++;
 
                 const daySection = document.createElement('div');
                 daySection.className = 'day-section';
-                if (dateKey === todayKey) daySection.className += ' today-highlight';
+                
+                if (dateKey === todayKey) {
+                    daySection.className += ' today-highlight';
+                }
 
                 const dayName = ukeDager[currentDay.getDay()];
                 const dateNum = currentDay.getDate();
@@ -363,7 +504,9 @@
                 title.className = 'day-title';
                 
                 let titleHTML = `<span>${dayName} ${dateNum}. ${monthName}:</span>`;
-                if (dateKey === todayKey) titleHTML += '<span class="today-badge">I dag</span>';
+                if (dateKey === todayKey) {
+                    titleHTML += '<span class="today-badge">I dag</span>';
+                }
                 title.innerHTML = titleHTML;
                 daySection.appendChild(title);
 
@@ -388,16 +531,14 @@
                             timeStr = d.toLocaleTimeString('no-NO', {hour: '2-digit', minute:'2-digit', timeZone: 'Europe/Oslo'}).replace(':', '.');
                         }
 
-                        li.textContent = ` ${ev.summary}`;
-                        let timeSpan = document.createElement('span');
-                        timeSpan.className = 'event-time';
-                        timeSpan.textContent = `${timeStr}:`;
-                        li.insertBefore(timeSpan, li.firstChild);
+                        const formatedText = formatEventSummary(ev.summary);
 
+                        li.innerHTML = `<span class="event-time">${timeStr}:</span>${formatedText}`;
                         list.appendChild(li);
                     });
                     daySection.appendChild(list);
                 }
+
                 container.appendChild(daySection);
             }
 
@@ -412,91 +553,91 @@
         function fetchCalendarData() {
             if (API_KEY === 'DIN_GOOGLE_API_KEY') return;
 
-            try {
-                gapi.client.init({
-                    'apiKey': API_KEY,
-                    'discoveryDocs': ["https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"],
-                }).then(function() {
-                    const start = new Date();
-                    start.setHours(0,0,0,0);
-                    const end = new Date();
-                    end.setDate(end.getDate() + 185);
+            gapi.client.init({
+                'apiKey': API_KEY,
+                'discoveryDocs': ["https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"],
+            }).then(function() {
+                const start = new Date();
+                start.setHours(0,0,0,0);
+                const end = new Date();
+                end.setDate(end.getDate() + 185);
 
-                    const personalRequest = gapi.client.calendar.events.list({
-                        'calendarId': CALENDAR_ID,
-                        'timeMin': start.toISOString(),
-                        'timeMax': end.toISOString(),
-                        'singleEvents': true,
-                        'orderBy': 'startTime'
-                    });
+                const personalRequest = gapi.client.calendar.events.list({
+                    'calendarId': CALENDAR_ID,
+                    'timeMin': start.toISOString(),
+                    'timeMax': end.toISOString(),
+                    'singleEvents': true,
+                    'orderBy': 'startTime'
+                });
 
-                    const holidayRequest = gapi.client.calendar.events.list({
-                        'calendarId': HOLIDAY_CALENDAR_ID,
-                        'timeMin': start.toISOString(),
-                        'timeMax': end.toISOString(),
-                        'singleEvents': true
-                    });
+                const holidayRequest = gapi.client.calendar.events.list({
+                    'calendarId': HOLIDAY_CALENDAR_ID,
+                    'timeMin': start.toISOString(),
+                    'timeMax': end.toISOString(),
+                    'singleEvents': true
+                });
 
-                    return Promise.all([personalRequest, holidayRequest]);
-                }).then(function(responses) {
-                    const personalEvents = responses[0].result.items;
-                    const holidayEvents = responses[1].result.items;
+                return Promise.all([personalRequest, holidayRequest]);
+            }).then(function(responses) {
+                const personalEvents = responses[0].result.items;
+                const holidayEvents = responses[1].result.items;
 
-                    const tempEvents = {};
-                    personalEvents.forEach(event => {
-                        if (event.start.date) {
-                            const startParts = event.start.date.split('-');
-                            const endParts = event.end.date.split('-');
-                            let current = new Date(startParts[0], startParts[1] - 1, startParts[2]);
-                            const end = new Date(endParts[0], endParts[1] - 1, endParts[2]);
-                            while (current < end) {
-                                const key = current.toLocaleDateString('sv-SE', {timeZone: 'Europe/Oslo'});
-                                if (!tempEvents[key]) tempEvents[key] = [];
-                                tempEvents[key].push(event);
-                                current.setDate(current.getDate() + 1);
-                            }
-                        } else if (event.start.dateTime) {
-                            let current = new Date(event.start.dateTime);
-                            let startKey = current.toLocaleDateString('sv-SE', {timeZone: 'Europe/Oslo'});
-                            let end = new Date(event.end.dateTime);
-                            let endKey = end.toLocaleDateString('sv-SE', {timeZone: 'Europe/Oslo'});
+                const tempEvents = {};
+                
+                personalEvents.forEach(event => {
+                    if (event.start.date) {
+                        const startParts = event.start.date.split('-');
+                        const endParts = event.end.date.split('-');
+                        
+                        let current = new Date(startParts[0], startParts[1] - 1, startParts[2]);
+                        const end = new Date(endParts[0], endParts[1] - 1, endParts[2]);
+                        
+                        while (current < end) {
+                            const key = current.toLocaleDateString('sv-SE', {timeZone: 'Europe/Oslo'});
+                            if (!tempEvents[key]) { tempEvents[key] = []; }
+                            tempEvents[key].push(event);
+                            current.setDate(current.getDate() + 1);
+                        }
+                    } else if (event.start.dateTime) {
+                        let current = new Date(event.start.dateTime);
+                        let startKey = current.toLocaleDateString('sv-SE', {timeZone: 'Europe/Oslo'});
+                        
+                        let end = new Date(event.end.dateTime);
+                        let endKey = end.toLocaleDateString('sv-SE', {timeZone: 'Europe/Oslo'});
+                        
+                        if (startKey === endKey) {
+                            if (!tempEvents[startKey]) { tempEvents[startKey] = []; }
+                            tempEvents[startKey].push(event);
+                        } else {
+                            let iter = new Date(current.getFullYear(), current.getMonth(), current.getDate());
+                            let stop = new Date(end.getFullYear(), end.getMonth(), end.getDate());
                             
-                            if (startKey === endKey) {
-                                if (!tempEvents[startKey]) tempEvents[startKey] = [];
-                                tempEvents[startKey].push(event);
-                            } else {
-                                let iter = new Date(current.getFullYear(), current.getMonth(), current.getDate());
-                                let stop = new Date(end.getFullYear(), end.getMonth(), end.getDate());
-                                while (iter <= stop) {
-                                    const key = iter.toLocaleDateString('sv-SE', {timeZone: 'Europe/Oslo'});
-                                    if (!tempEvents[key]) tempEvents[key] = [];
-                                    tempEvents[key].push(event);
-                                    iter.setDate(iter.getDate() + 1);
-                                }
+                            while (iter <= stop) {
+                                const key = iter.toLocaleDateString('sv-SE', {timeZone: 'Europe/Oslo'});
+                                if (!tempEvents[key]) { tempEvents[key] = []; }
+                                tempEvents[key].push(event);
+                                iter.setDate(iter.getDate() + 1);
                             }
                         }
-                    });
-                    globalEventsCache = tempEvents;
-
-                    const tempHolidays = {};
-                    holidayEvents.forEach(h => {
-                        let dateStr = h.start.date || h.start.dateTime.split('T')[0];
-                        let parts = dateStr.split('-');
-                        let d = new Date(parts[0], parts[1] - 1, parts[2]);
-                        let key = d.toLocaleDateString('sv-SE', {timeZone: 'Europe/Oslo'});
-                        tempHolidays[key] = h.summary;
-                    });
-                    globalHolidaysCache = tempHolidays;
-
-                    renderCalendarList();
-                }).catch(err => {
-                    console.log("Feil under henting av kalenderdata:", err);
-                    renderCalendarList();
+                    }
                 });
-            } catch (e) {
-                console.log("Klarte ikke initialisere GAPI client:", e);
+                globalEventsCache = tempEvents;
+
+                const tempHolidays = {};
+                holidayEvents.forEach(h => {
+                    let dateStr = h.start.date || h.start.dateTime.split('T')[0];
+                    let parts = dateStr.split('-');
+                    let d = new Date(parts[0], parts[1] - 1, parts[2]);
+                    let key = d.toLocaleDateString('sv-SE', {timeZone: 'Europe/Oslo'});
+                    tempHolidays[key] = h.summary;
+                });
+                globalHolidaysCache = tempHolidays;
+
                 renderCalendarList();
-            }
+            }).catch(err => {
+                console.log("Feil under henting av kalenderdata:", err);
+                renderCalendarList();
+            });
         }
 
         function resetInactivityTimer() {
@@ -514,7 +655,6 @@
 
         function setupInactivityListeners() {
             const panel = document.getElementById('event-container');
-            if(!panel) return;
             panel.addEventListener('scroll', resetInactivityTimer);
             window.addEventListener('scroll', resetInactivityTimer);
             window.addEventListener('touchstart', resetInactivityTimer, true);
@@ -532,11 +672,11 @@
         }
 
         window.addEventListener('DOMContentLoaded', () => {
+            requestWakeLock();
             buildClockUI();
             updateClockAndLayout();
             renderCalendarList();
             setupInactivityListeners();
-            requestWakeLock();
             
             setInterval(updateClockAndLayout, 1000);
 
@@ -545,9 +685,7 @@
                     fetchCalendarData();
                     setInterval(fetchCalendarData, 300000); 
                 });
-            } catch(e){
-                console.log("Gapi load feilet:", e);
-            }
+            } catch(e){}
         });
     </script>
 </body>
