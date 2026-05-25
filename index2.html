@@ -27,6 +27,8 @@
             --clock-ticks: #334155;
             --clock-face: #1e293b;
             --shadow: rgba(0, 0, 0, 0.05);
+            --box-bg: #ffffff;
+            --box-border: #cbd5e1;
         }
 
         body.night-mode {
@@ -39,6 +41,8 @@
             --clock-ticks: #94a3b8;
             --clock-face: #f8fafc;
             --shadow: rgba(0, 0, 0, 0.3);
+            --box-bg: #1e293b;
+            --box-border: #334155;
         }
 
         * {
@@ -97,12 +101,11 @@
         }
         
         .clock-face { fill: none; }
-        .tick-minute { stroke: var(--clock-ticks); stroke-width: 0.6; }
-        .tick-hour { stroke: var(--clock-face); stroke-width: 2.8; stroke-linecap: round; }
+        .tick-hour { stroke: var(--clock-ticks); stroke-width: 2.8; stroke-linecap: round; }
         .clock-number { 
             font-family: 'Poppins', sans-serif; 
-            font-weight: 700; 
-            font-size: 8.5px; 
+            font-weight: 400; 
+            font-size: 9px; 
             fill: var(--clock-face); 
             text-anchor: middle; 
             dominant-baseline: middle; 
@@ -131,6 +134,27 @@
             font-weight: 500;  
             color: var(--text-main);
             line-height: 1.0; 
+        }
+
+        /* --- DYNAMISK STATUSBOX PÅ TOPPEN --- */
+        .status-box-container {
+            width: 100%;
+            margin-bottom: 40px;
+            padding: 24px;
+            background-color: var(--box-bg);
+            border: 1px solid var(--box-border);
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 400;
+            line-height: 1.5;
+            transition: background 1s ease, border 1s ease, box-shadow 1s ease;
+        }
+
+        .status-box-highlight {
+            color: var(--clock-accent);
+            font-weight: 500;
         }
 
         /* --- HOVEDOMRÅDE --- */
@@ -206,7 +230,7 @@
         /* --- HØYRE SIDE: KALENDERVISNING --- */
         .day-section {
             width: 100%;
-            margin-bottom: 65px; /* Avstand mellom ulike datoer */
+            margin-bottom: 65px; 
             background-color: transparent;
         }
 
@@ -247,7 +271,7 @@
         .event-list {
             display: flex;
             flex-direction: column;
-            gap: 28px; /* Økt betydelig fra 14px for mye større avstand samme dag */
+            gap: 28px; 
             padding-left: 80px; 
         }
 
@@ -342,6 +366,12 @@
                 font-size: 1.6rem;
             }
 
+            .status-box-container {
+                font-size: 1.2rem;
+                padding: 16px;
+                margin-bottom: 25px;
+            }
+
             main {
                 flex-direction: column; 
                 gap: 40px;
@@ -383,6 +413,10 @@
             Laster dato...
         </div>
     </header>
+
+    <div class="status-box-container" id="live-status-bar">
+        Kobler til tidsstatus...
+    </div>
 
     <main>
         <div class="column left-column">
@@ -467,35 +501,77 @@
             ticksG.innerHTML = '';
             numsG.innerHTML = '';
             
-            for (let i = 0; i < 60; i++) {
-                const isHour = i % 5 === 0;
+            const akser = [0, 15, 30, 45];
+            akser.forEach(i => {
                 const angle = (i * 6) * (Math.PI / 180);
-                const r1 = isHour ? 41 : 44;
-                const r2 = 48;
-                const x1 = 50 + r1 * Math.sin(angle);
-                const y1 = 50 - r1 * Math.cos(angle);
-                const x2 = 50 + r2 * Math.sin(angle);
-                const y2 = 50 - r2 * Math.cos(angle);
+                const x1 = 50 + 41 * Math.sin(angle);
+                const y1 = 50 - 41 * Math.cos(angle);
+                const x2 = 50 + 48 * Math.sin(angle);
+                const y2 = 50 - 48 * Math.cos(angle);
                 
                 const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
                 line.setAttribute("x1", x1); line.setAttribute("y1", y1);
                 line.setAttribute("x2", x2); line.setAttribute("y2", y2);
-                line.classList.add(isHour ? "tick-hour" : "tick-minute");
+                line.classList.add("tick-hour");
                 ticksG.appendChild(line);
-            }
+            });
 
-            for (let i = 1; i <= 12; i++) {
-                const angle = (i * 30) * (Math.PI / 180);
-                const r = 33; 
-                const x = 50 + r * Math.sin(angle);
-                const y = 50 - r * Math.cos(angle) + 0.5; 
+            const hovedTall = [
+                { verdi: 12, angle: 0 },
+                { verdi: 3, angle: 90 },
+                { verdi: 6, angle: 180 },
+                { verdi: 9, angle: 270 }
+            ];
+
+            hovedTall.forEach(t => {
+                const rad = t.angle * (Math.PI / 180);
+                const x = 50 + 32 * Math.sin(rad);
+                const y = 50 - 32 * Math.cos(rad) + 0.5;
                 
                 const txt = document.createElementNS("http://www.w3.org/2000/svg", "text");
                 txt.setAttribute("x", x); txt.setAttribute("y", y);
                 txt.classList.add("clock-number");
-                txt.textContent = i;
+                txt.textContent = t.verdi;
                 numsG.appendChild(txt);
+            });
+        }
+
+        // Rettet: Statusboksen kalkulerer nå KUN basert på Google Kalender-feeden
+        function oppdaterLiveStatusBoks(hoursStr, minutesStr) {
+            const statusEl = document.getElementById('live-status-bar');
+            if (!statusEl) return;
+
+            const nå = new Date();
+            const dagensNøkkel = nå.toLocaleDateString('sv-SE', {timeZone: 'Europe/Oslo'});
+            
+            // Henter dagens registrerte hendelser spesifikt fra Google-kalendercachen
+            const dagensKalenderHendelser = globalEventsCache[dagensNøkkel] || [];
+            
+            let nesteAvtale = null;
+
+            // Sorterer kronologisk og filtrerer ut heldagshendelser for å finne neste tidfestede punkt
+            const sorterteHendelser = dagensKalenderHendelser
+                .filter(ev => ev.start && ev.start.dateTime)
+                .sort((a, b) => new Date(a.start.dateTime) - new Date(b.start.dateTime));
+
+            for (let ev of sorterteHendelser) {
+                const startTidspunkt = new Date(ev.start.dateTime);
+                if (startTidspunkt > nå) {
+                    nesteAvtale = ev;
+                    break;
+                }
             }
+
+            let boksHTML = `Nå er klokken <span class="status-box-highlight">${hoursStr}:${minutesStr}</span>`;
+
+            if (nesteAvtale) {
+                const nesteTid = new Date(nesteAvtale.start.dateTime).toLocaleTimeString('no-NO', {hour: '2-digit', minute:'2-digit'});
+                boksHTML += `, neste: <span class="status-box-highlight">${nesteAvtale.summary} kl. ${nesteTid}</span>.`;
+            } else {
+                boksHTML += `, ingen flere avtaler i dag.`;
+            }
+
+            statusEl.innerHTML = boksHTML;
         }
 
         function updateClockAndLayout() {
@@ -529,6 +605,9 @@
             const yearNum = now.getFullYear();
 
             document.getElementById('complete-date-string').textContent = `Det er ${periodText}, ${dayName} ${dayNum}. ${monthName} ${yearNum}`;
+
+            // Oppdaterer statuslinjen kontinuerlig
+            oppdaterLiveStatusBoks(hoursStr, minutesStr);
 
             if (h === 3 && m === 0 && now.getSeconds() === 0) {
                 window.location.reload(true);
@@ -710,6 +789,10 @@
                 globalHolidaysCache = tempHolidays;
 
                 renderCalendarList();
+                
+                // Fornyer boksen med en gang nye data ligger i cachen
+                const transientNow = new Date();
+                oppdaterLiveStatusBoks(String(transientNow.getHours()).padStart(2, '0'), String(transientNow.getMinutes()).padStart(2, '0'));
             }).catch(err => {
                 console.log("Feil ved henting av kalender:", err);
                 document.getElementById('calendar-list').innerText = "Kunne ikke oppdatere hendelser.";
