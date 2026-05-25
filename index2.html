@@ -156,11 +156,11 @@
             background-color: var(--bg-color);
         }
 
-        /* --- OVERKRIFTER --- */
+        /* --- OVERKRIFTER (Krympet margin-bottom for mindre luft under) --- */
         .info-title, .calendar-title {
             font-size: 2.2rem;
             font-weight: 500;
-            margin-bottom: 25px;
+            margin-bottom: 10px; /* Redusert fra 25px for å trekke innholdet opp */
             color: var(--text-main);
         }
 
@@ -174,7 +174,6 @@
             text-transform: lowercase;
         }
 
-        /* Justert gap til 4px og line-height til 1.4 for identisk tetthet med høyre side */
         .info-content {
             display: flex;
             flex-direction: column;
@@ -241,7 +240,6 @@
             padding-left: 80px; 
         }
 
-        /* Redusert margin-bottom til 4px og line-height til 1.4 for mindre luft */
         .event-item {
             display: flex;
             align-items: flex-start;
