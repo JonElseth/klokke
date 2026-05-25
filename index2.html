@@ -57,6 +57,7 @@
             display: flex;
             flex-direction: column;
             
+            /* Tillater vertikal rulling av hele siden */
             overflow-y: auto;
             overflow-x: hidden;
             scrollbar-width: none; 
@@ -82,7 +83,6 @@
             flex-shrink: 0;
         }
 
-        /* Låser bunnlinjen på sirkel og tekst helt likt */
         .header-clocks-left {
             display: flex;
             align-items: flex-end; 
@@ -114,17 +114,15 @@
         .hand-minute { stroke: var(--clock-face); stroke-width: 4; }
         .center-dot { fill: var(--clock-accent); }
 
-        /* Kompenserer for fontens geometri for å oppnå eksakt 120px reell visuell høyde */
         .digital-clock-big {
             font-size: 162px; 
             font-weight: 400;
             letter-spacing: -7px;
             line-height: 0.7; 
             display: inline-block;
-            margin-bottom: -4px; /* Trimmer bort usynlig margin i bunnen av skrifttypen */
+            margin-bottom: -4px; 
         }
 
-        /* Låst til absolutt toppkant */
         .header-date-right {
             position: absolute;
             top: 0;
@@ -146,10 +144,13 @@
             padding-top: 10px;
         }
 
+        /* Lagt til en diskret, stiplet skillelinje på høyre kant */
         .left-column {
             width: max-content; 
             background-color: var(--bg-color);
             padding-right: 60px; 
+            margin-right: 60px; /* Skaper avstand fra linjen til kalenderen start */
+            border-right: 1px dashed var(--text-muted); /* Den diskrete stiplede linjen */
         }
 
         .right-column {
@@ -341,6 +342,8 @@
             .left-column {
                 width: 100%; 
                 padding-right: 0;
+                margin-right: 0;
+                border-right: none; /* Fjerner skillelinjen på mobil siden de stables vertikalt */
             }
 
             .info-day-title, .day-title, .holiday-text, .no-events-text {
@@ -393,11 +396,15 @@
     <script src="https://apis.google.com/js/api.js"></script>
 
     <script>
+        /****************************************************************
+         * 1. REDIGERBARE FASTE RUTINER (PERMANENTE ENDRINGER)
+         ****************************************************************/
         const fasteRutinerHverdag = [
             { tid: "07.30", tekst: "Frokost" },
             { tid: "08.00", tekst: "Ta medisiner" },
             { tid: "09.00", tekst: "Tur med hunden" },
             { tid: "11.30", tekst: "Lunsj" },
+            { tid: "14.00", tekst: "Sjekke meldinger" },
             { tid: "15.30", tekst: "Middag" },
             { tid: "19.30", tekst: "Gå tur med hunden" },
             { tid: "20.30", tekst: "Kveldsmat" }
@@ -408,6 +415,7 @@
             { tid: "08.00", tekst: "Ta medisiner" },
             { tid: "09.00", tekst: "Tur med hunden" },
             { tid: "12.00", tekst: "Gjerne varm lunsj" },
+            { tid: "14.00", tekst: "Sjekke meldinger" },
             { tid: "15.30", tekst: "Middag" },
             { tid: "19.30", tekst: "Gå tur med hunden" },
             { tid: "20.30", tekst: "Kveldsmat" }
@@ -418,10 +426,14 @@
             { tid: "08.00", tekst: "Ta medisiner" },
             { tid: "09.00", tekst: "Tur med hunden" },
             { tid: "13.00", tekst: "Middag" },
+            { tid: "14.00", tekst: "Sjekke meldinger" },
             { tid: "19.30", tekst: "Gå tur med hunden" },
             { tid: "20.30", tekst: "Kveldsmat" }
         ];
 
+        /****************************************************************
+         * 2. GOOGLE API CONFIGURATION / AUTENTISERING
+         ****************************************************************/
         const API_KEY = 'AIzaSyDabiLiH6tR1bonxhjgNqq9PoTSa9wogzE';
         const CALENDAR_ID = '6836a3463ada75841f11c52afbd588f7467b5c7014a9ac8118e24205f42d301c@group.calendar.google.com'; 
         const HOLIDAY_CALENDAR_ID = 'no.norwegian#holiday@group.v.calendar.google.com'; 
@@ -434,6 +446,9 @@
         let wakeLock = null;
         let inactivityTimeout = null;
 
+        /****************************************************************
+         * 3. APPLIKASJONSLOGIKK
+         ****************************************************************/
         function genererRutineHTML(rutineListe) {
             let html = "";
             rutineListe.forEach(item => {
