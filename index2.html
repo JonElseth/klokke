@@ -18,7 +18,6 @@
     <style>
         /* --- DESIGNVARIABLER FOR TEMASKIFTE --- */
         :root {
-            /* Dagmodus (07:00 - 22:00) */
             --bg-color: #f1f5f9;
             --text-main: #1e293b;
             --text-muted: #64748b;
@@ -33,7 +32,6 @@
         }
 
         body.night-mode {
-            /* Nattmodus (22:00 - 07:00) */
             --bg-color: #0f172a;
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
@@ -62,12 +60,9 @@
             user-select: none;
             display: flex;
             flex-direction: column;
-            
             overflow-y: auto;
             overflow-x: hidden;
             scrollbar-width: none; 
-            
-            /* SIKKERHETSSONE FOR DET FYSISKE DEKSELET */
             padding: 79px 60px 74px 60px; 
             transition: background 1s ease, color 1s ease;
         }
@@ -76,7 +71,6 @@
             display: none; 
         }
 
-        /* --- HEADER / TOPPLINJE --- */
         header {
             height: 110px; 
             display: flex;
@@ -115,7 +109,6 @@
             line-height: 1.0; 
         }
 
-        /* --- DYNAMISK STATUSBOX PÅ TOPPEN --- */
         .status-box-container {
             width: 100%;
             margin-bottom: 40px;
@@ -137,7 +130,6 @@
             transition: color 1s ease;
         }
 
-        /* --- HOVEDOMRÅDE --- */
         main {
             flex: 1;
             display: flex;
@@ -160,7 +152,6 @@
             background-color: var(--bg-color);
         }
 
-        /* --- OVERKRIFTER --- */
         .info-title, .calendar-title {
             font-size: 2.4rem; 
             font-weight: 500;
@@ -168,7 +159,6 @@
             color: var(--text-main);
         }
 
-        /* --- VENSTRE SIDE: STRUKTUR FOR RUTINER --- */
         .info-day-title {
             font-family: 'Poppins', sans-serif;
             font-size: 1.75rem; 
@@ -207,7 +197,6 @@
             margin-right: 5px;
         }
 
-        /* --- HØYRE SIDE: KALENDERVISNING --- */
         .day-section {
             width: 100%;
             margin-bottom: 65px; 
@@ -280,7 +269,6 @@
             margin-right: 6px;
         }
 
-        /* --- NAVNEMERKER (BADGES) --- */
         .badge-navn {
             display: inline-block;
             padding: 2px 10px 4px 10px; 
@@ -308,68 +296,17 @@
             padding-left: 40px;
         }
 
-        /* Responsiv mobil-layout */
         @media (max-width: 900px) or (orientation: portrait) {
-            body {
-                padding: 30px 20px 40px 20px; 
-            }
-
-            header {
-                flex-direction: column; 
-                height: auto;
-                gap: 15px;
-                text-align: center;
-                margin-bottom: 20px;
-                align-items: center;
-            }
-
-            .header-clocks-left {
-                justify-content: center;
-                align-items: center;
-                width: 100%;
-                height: auto;
-            }
-
-            .digital-clock-big {
-                font-size: 5rem;
-                line-height: 1.0;
-                height: auto;
-                letter-spacing: -2px;
-                margin-bottom: 0;
-            }
-
-            .header-date-right {
-                position: static;
-                text-align: center;
-                width: 100%;
-                font-size: 1.6rem;
-            }
-
-            .status-box-container {
-                font-size: 1.2rem;
-                padding: 16px;
-                margin-bottom: 25px;
-            }
-
-            main {
-                flex-direction: column; 
-                gap: 40px;
-            }
-
-            .left-column {
-                width: 100%; 
-                padding-right: 0;
-                margin-right: 0;
-                border-right: none; 
-            }
-
-            .info-day-title, .day-title, .holiday-text, .no-events-text {
-                padding-left: 20px; 
-            }
-
-            .info-content, .event-list {
-                padding-left: 40px; 
-            }
+            body { padding: 30px 20px 40px 20px; }
+            header { flex-direction: column; height: auto; gap: 15px; text-align: center; margin-bottom: 20px; align-items: center; }
+            .header-clocks-left { justify-content: center; align-items: center; width: 100%; height: auto; }
+            .digital-clock-big { font-size: 5rem; line-height: 1.0; height: auto; letter-spacing: -2px; margin-bottom: 0; }
+            .header-date-right { position: static; text-align: center; width: 100%; font-size: 1.6rem; }
+            .status-box-container { font-size: 1.2rem; padding: 16px; margin-bottom: 25px; }
+            main { flex-direction: column; gap: 40px; }
+            .left-column { width: 100%; padding-right: 0; margin-right: 0; border-right: none; }
+            .info-day-title, .day-title, .holiday-text, .no-events-text { padding-left: 20px; }
+            .info-content, .event-list { padding-left: 40px; }
         }
     </style>
 </head>
@@ -379,15 +316,10 @@
         <div class="header-clocks-left">
             <div class="digital-clock-big" id="digital-clock">00:00</div>
         </div>
-        
-        <div class="header-date-right" id="complete-date-string">
-            Laster dato...
-        </div>
+        <div class="header-date-right" id="complete-date-string">Laster dato...</div>
     </header>
 
-    <div class="status-box-container" id="live-status-bar">
-        Kobler til tidsstatus...
-    </div>
+    <div class="status-box-container" id="live-status-bar">Laster tidsstatus...</div>
 
     <main>
         <div class="column left-column">
@@ -395,19 +327,15 @@
             <div class="info-day-title" id="info-day-heading">--</div>
             <div class="info-content" id="info-text">Laster faste rutiner...</div>
         </div>
-        
         <div class="column right-column">
             <div class="calendar-title">Dette skjer:</div>
-            <div id="calendar-list">Kobler til Google Kalender...</div>
+            <div id="calendar-list">Google Kalender...</div>
         </div>
     </main>
 
     <script src="https://apis.google.com/js/api.js"></script>
 
     <script>
-        /****************************************************************
-         * 1. REDIGERBARE FASTE RUTINER (PERMANENTE ENDRINGER)
-         ****************************************************************/
         const fasteRutinerHverdag = [
             { tid: "07.30", tekst: "Frokost" },
             { tid: "08.00", tekst: "Ta medisiner" },
@@ -440,9 +368,6 @@
             { tid: "20.30", tekst: "Kveldsmat" }
         ];
 
-        /****************************************************************
-         * 2. GOOGLE API CONFIGURATION / AUTENTISERING
-         ****************************************************************/
         const API_KEY = 'AIzaSyDabiLiH6tR1bonxhjgNqq9PoTSa9wogzE';
         const CALENDAR_ID = '6836a3463ada75841f11c52afbd588f7467b5c7014a9ac8118e24205f42d301c@group.calendar.google.com'; 
         const HOLIDAY_CALENDAR_ID = 'no.norwegian#holiday@group.v.calendar.google.com'; 
@@ -455,9 +380,6 @@
         let wakeLock = null;
         let inactivityTimeout = null;
 
-        /****************************************************************
-         * 3. APPLIKASJONSLOGIKK
-         ****************************************************************/
         function genererRutineHTML(rutineListe) {
             let html = "";
             rutineListe.forEach(item => {
@@ -466,24 +388,25 @@
             return html;
         }
 
-        // Forbedret statuslogikk som automatisk avbryter natt-modus dersom en tidlig morgenavtale eksisterer
+        // Korrigert statusboksfunksjon med feilsikker tidssone- og differanseberegning
         function oppdaterLiveStatusBoks(hoursStr, minutesStr) {
             const statusEl = document.getElementById('live-status-bar');
             if (!statusEl) return;
 
             const nå = new Date();
             const gjeldendeTime = nå.getHours();
+            
+            // Henter dato-streng konsekvent i lokal tidssone for å unngå forskyvning
             const dagensNøkkel = nå.toLocaleDateString('sv-SE', {timeZone: 'Europe/Oslo'});
             const dagensKalenderHendelser = globalEventsCache[dagensNøkkel] || [];
             
             let nesteAvtale = null;
 
-            // Sorterer dagens avtaler kronologisk
+            // Sorterer avtaler kronologisk
             const sorterteHendelser = dagensKalenderHendelser
                 .filter(ev => ev.start && ev.start.dateTime)
                 .sort((a, b) => new Date(a.start.dateTime) - new Date(b.start.dateTime));
 
-            // Finner den første kommende avtalen
             for (let ev of sorterteHendelser) {
                 const startTidspunkt = new Date(ev.start.dateTime);
                 if (startTidspunkt > nå) {
@@ -494,32 +417,30 @@
 
             let boksHTML = `Nå er klokken <span class="status-box-highlight">${hoursStr}:${minutesStr}</span>. `;
 
-            // NY SIKKERHETSLOGIKK:
-            // Hvis det er natt (23-07), sjekker vi om neste avtale inntreffer i løpet av de neste 4 timene (f.eks hjelpepleier kl 05:00)
+            // Hvis det er natt (23:00 - 07:00), sjekker vi om neste avtale er innenfor de neste 6 timene
             if (gjeldendeTime >= 23 || gjeldendeTime < 7) {
                 let erKritiskMorgenAvtale = false;
                 
                 if (nesteAvtale) {
-                    const tidTilNesteAvtale = new Date(nesteAvtale.start.dateTime) - nå;
-                    const fireTimerIMillisekunder = 4 * 60 * 60 * 1000;
+                    // Trygg beregning basert på faktiske UTC-millisekunder uavhengig av nettleserens tolking
+                    const tidTilNesteAvtale = new Date(nesteAvtale.start.dateTime).getTime() - nå.getTime();
+                    const seksTimerIMillisekunder = 6 * 60 * 60 * 1000; // Økt vindu til 6 timer for økt sikkerhet
                     
-                    if (tidTilNesteAvtale <= fireTimerIMillisekunder) {
+                    if (tidTilNesteAvtale > 0 && tidTilNesteAvtale <= seksTimerIMillisekunder) {
                         erKritiskMorgenAvtale = true;
                     }
                 }
 
                 if (erKritiskMorgenAvtale) {
-                    // Hvis en avtale er nært forestående om natten, avbrytes sovemodusen og brukeren varsles
-                    const nesteTid = new Date(nesteAvtale.start.dateTime).toLocaleTimeString('no-NO', {hour: '2-digit', minute:'2-digit'});
+                    const nesteTid = new Date(nesteAvtale.start.dateTime).toLocaleTimeString('no-NO', {hour: '2-digit', minute:'2-digit', timeZone: 'Europe/Oslo'});
                     boksHTML += `Neste avtale er <span class="status-box-highlight">${nesteAvtale.summary}</span> klokken <span class="status-box-highlight">${nesteTid}</span>.`;
                 } else {
-                    // Hvis natten er tom og trygg, vises den beroligende meldingen
                     boksHTML += `Det er natt, og det er ingen flere avtaler før i morgen.`;
                 }
             } else {
-                // Standard dagtids-visning
+                // Dagtid-logikk
                 if (nesteAvtale) {
-                    const nesteTid = new Date(nesteAvtale.start.dateTime).toLocaleTimeString('no-NO', {hour: '2-digit', minute:'2-digit'});
+                    const nesteTid = new Date(nesteAvtale.start.dateTime).toLocaleTimeString('no-NO', {hour: '2-digit', minute:'2-digit', timeZone: 'Europe/Oslo'});
                     boksHTML += `Neste avtale er <span class="status-box-highlight">${nesteAvtale.summary}</span> klokken <span class="status-box-highlight">${nesteTid}</span>.`;
                 } else {
                     boksHTML += `Ingen flere planlagte avtaler i dag.`;
@@ -756,6 +677,7 @@
             }, 180000); 
         }
 
+        // Lyttere for automatisk retur til toppen
         function setupInactivityListeners() {
             window.addEventListener('scroll', resetInactivityTimer);
             window.addEventListener('touchstart', resetInactivityTimer, true);
@@ -788,7 +710,6 @@
             requestWakeLock();
             updateClockAndLayout();
             setupInactivityListeners();
-            
             setInterval(updateClockAndLayout, 1000);
 
             if (typeof gapi !== 'undefined') {
