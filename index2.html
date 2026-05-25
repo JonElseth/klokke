@@ -29,6 +29,7 @@
             --shadow: rgba(0, 0, 0, 0.05);
             --box-bg: #ffffff;
             --box-border: #cbd5e1;
+            --highlight-text: #0066cc; /* Trygg blå farge for utheving om dagen */
         }
 
         body.night-mode {
@@ -43,6 +44,7 @@
             --shadow: rgba(0, 0, 0, 0.3);
             --box-bg: #1e293b;
             --box-border: #334155;
+            --highlight-text: #38bdf8; /* Klar lyseblå farge for utheving om natten (erstatter rød) */
         }
 
         * {
@@ -129,9 +131,11 @@
             transition: background 1s ease, border 1s ease, box-shadow 1s ease;
         }
 
+        /* Uthevet tekst bruker nå en høykontrast-blåfarge i stedet for rødt */
         .status-box-highlight {
-            color: var(--clock-accent);
+            color: var(--highlight-text);
             font-weight: 500;
+            transition: color 1s ease;
         }
 
         /* --- HOVEDOMRÅDE --- */
@@ -159,7 +163,7 @@
 
         /* --- OVERKRIFTER --- */
         .info-title, .calendar-title {
-            font-size: 2.4rem; /* Økt svakt fra 2.2rem for å balansere ny tekststørrelse */
+            font-size: 2.4rem; 
             font-weight: 500;
             margin-bottom: 14px; 
             color: var(--text-main);
@@ -168,7 +172,7 @@
         /* --- VENSTRE SIDE: STRUKTUR FOR RUTINER --- */
         .info-day-title {
             font-family: 'Poppins', sans-serif;
-            font-size: 1.75rem; /* Økt fra 1.5rem for bedre synlighet */
+            font-size: 1.75rem; 
             font-weight: 400;
             margin-bottom: 14px;
             padding-left: 40px; 
@@ -178,9 +182,9 @@
         .info-content {
             display: flex;
             flex-direction: column;
-            gap: 6px; /* Økt klaring mellom elementene */
+            gap: 6px; 
             font-family: 'Lato', sans-serif;
-            font-size: 1.55rem; /* Økt fra 1.25rem for kognitiv optimalisering */
+            font-size: 1.55rem; 
             color: var(--text-main);
             padding-left: 80px; 
         }
@@ -217,7 +221,7 @@
             align-items: center;
             gap: 15px;
             font-family: 'Poppins', sans-serif;
-            font-size: 1.75rem; /* Økt fra 1.5rem for bedre synlighet */
+            font-size: 1.75rem; 
             font-weight: 400;
             margin-bottom: 14px; 
             padding-left: 40px; 
@@ -235,7 +239,7 @@
         }
 
         .holiday-text {
-            font-size: 1.25rem; /* Økt fra 1.1rem */
+            font-size: 1.25rem; 
             color: var(--clock-accent);
             font-weight: 400;
             font-style: normal;
@@ -254,7 +258,7 @@
 
         .event-item {
             font-family: 'Lato', sans-serif;
-            font-size: 1.55rem; /* Økt fra 1.25rem for kognitiv optimalisering */
+            font-size: 1.55rem; 
             line-height: 1.4;
             color: var(--text-main);
             display: flex;
@@ -286,7 +290,7 @@
             color: #ffffff !important; 
             margin-right: 6px;
             line-height: 1.2; 
-            font-size: 18px; /* Økt i tråd med teksten for øvrig */
+            font-size: 18px; 
             vertical-align: middle;
         }
 
@@ -463,35 +467,42 @@
             return html;
         }
 
+        // Oppdatert statusboks med forbedret tidslogikk og fargekontrast
         function oppdaterLiveStatusBoks(hoursStr, minutesStr) {
             const statusEl = document.getElementById('live-status-bar');
             if (!statusEl) return;
 
             const nå = new Date();
+            const gjeldendeTime = nå.getHours();
             const dagensNøkkel = nå.toLocaleDateString('sv-SE', {timeZone: 'Europe/Oslo'});
             const dagensKalenderHendelser = globalEventsCache[dagensNøkkel] || [];
             
-            let nesteAvtale = null;
+            let boksHTML = `Nå er klokken <span class="status-box-highlight">${hoursStr}:${minutesStr}</span>. `;
 
-            const sorterteHendelser = dagensKalenderHendelser
-                .filter(ev => ev.start && ev.start.dateTime)
-                .sort((a, b) => new Date(a.start.dateTime) - new Date(b.start.dateTime));
-
-            for (let ev of sorterteHendelser) {
-                const startTidspunkt = new Date(ev.start.dateTime);
-                if (startTidspunkt > nå) {
-                    nesteAvtale = ev;
-                    break;
-                }
-            }
-
-            let boksHTML = `Nå er klokken <span class="status-box-highlight">${hoursStr}:${minutesStr}</span>`;
-
-            if (nesteAvtale) {
-                const nesteTid = new Date(nesteAvtale.start.dateTime).toLocaleTimeString('no-NO', {hour: '2-digit', minute:'2-digit'});
-                boksHTML += `, neste: <span class="status-box-highlight">${nesteAvtale.summary} kl. ${nesteTid}</span>.`;
+            // Logisk sjekk: Hvis det er natt (mellom kl. 23:00 og 07:00), fokuserer vi kun på søvn og ro
+            if (gjeldendeTime >= 23 || gjeldendeTime < 7) {
+                boksHTML += `Det er natt, og det er ingen flere avtaler før i morgen.`;
             } else {
-                boksHTML += `, ingen flere avtaler i dag.`;
+                // Dagtid-logikk: Finn neste avtale i Google Kalender
+                let nesteAvtale = null;
+                const sorterteHendelser = dagensKalenderHendelser
+                    .filter(ev => ev.start && ev.start.dateTime)
+                    .sort((a, b) => new Date(a.start.dateTime) - new Date(b.start.dateTime));
+
+                for (let ev of sorterteHendelser) {
+                    const startTidspunkt = new Date(ev.start.dateTime);
+                    if (startTidspunkt > nå) {
+                        nesteAvtale = ev;
+                        break;
+                    }
+                }
+
+                if (nesteAvtale) {
+                    const nesteTid = new Date(nesteAvtale.start.dateTime).toLocaleTimeString('no-NO', {hour: '2-digit', minute:'2-digit'});
+                    boksHTML += `Neste avtale er <span class="status-box-highlight">${nesteAvtale.summary}</span> klokken <span class="status-box-highlight">${nesteTid}</span>.`;
+                } else {
+                    boksHTML += `Ingen flere planlagte avtaler i dag.`;
+                }
             }
 
             statusEl.innerHTML = boksHTML;
@@ -517,7 +528,7 @@
             if (h >= 6 && h < 9) periodText = "morgen";
             else if (h >= 9 && h < 12) periodText = "formiddag";
             else if (h >= 12 && h < 18) periodText = "ettermiddag";
-            else if (h >= 18 && h < 23) periodText = "kveld"; // Definert som natt fra kl 23:00
+            else if (h >= 18 && h < 23) periodText = "kveld";
             
             const dayName = ukeDager[now.getDay()].toLowerCase();
             const dayNum = now.getDate();
