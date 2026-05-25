@@ -57,6 +57,9 @@
             user-select: none;
             display: flex;
             flex-direction: column;
+            
+            /* SIKKERHETSSONE FOR DET FYSISKE DEKSELET INTEGRERT FRA INDEX1.HTML */
+            padding: 79px 60px 74px 60px; 
             transition: background 1s ease, color 1s ease;
         }
 
@@ -66,10 +69,10 @@
             display: flex;
             align-items: center;
             justify-content: flex-start;
-            padding: 0 60px;
             background-color: var(--bg-color);
             transition: background 1s ease;
             gap: 30px;
+            padding-bottom: 20px;
         }
 
         .header-left {
@@ -132,14 +135,13 @@
 
         .column {
             height: 100%;
-            padding: 10px 0 100px 0; 
+            padding-top: 10px;
         }
 
         .left-column {
             width: max-content; 
             overflow: hidden; 
             background-color: var(--bg-color);
-            padding-left: 60px;
             padding-right: 60px; 
         }
 
@@ -148,7 +150,6 @@
             background-color: var(--bg-color);
             overflow-y: auto;
             scrollbar-width: none;
-            padding-right: 60px;
         }
         
         .right-column::-webkit-scrollbar {
@@ -163,6 +164,7 @@
             color: var(--text-main);
         }
 
+        /* --- VENSTRE SIDE: STRUKTUR FOR RUTINER --- */
         .info-day-title {
             font-family: 'Poppins', sans-serif;
             font-size: 1.5rem;
@@ -172,7 +174,6 @@
             text-transform: lowercase;
         }
 
-        /* Redusert gap fra 10px til 4px for å minske luften vertikalt */
         .info-content {
             display: flex;
             flex-direction: column;
@@ -193,7 +194,7 @@
             font-weight: 400;
         }
 
-        /* --- KALENDERVISNING --- */
+        /* --- HØYRE SIDE: KALENDERVISNING --- */
         .day-section {
             width: 100%;
             margin-bottom: 35px; 
@@ -331,7 +332,42 @@
 
     <script>
         /****************************************************************
-         * CONFIGURATION / AUTENTISERING
+         * 1. REDIGERBARE FASTE RUTINER (PERMANENTE ENDRINGER)
+         ****************************************************************/
+        const fasteRutinerHverdag = [
+            { tid: "07.30", tekst: "Frokost" },
+            { tid: "08.00", tekst: "Ta medisiner" },
+            { tid: "09.00", tekst: "Tur med hunden" },
+            { tid: "11.30", tekst: "Lunsj" },
+            { tid: "14.00", tekst: "Sjekke meldinger" },
+            { tid: "15.30", tekst: "Middag" },
+            { tid: "19.30", tekst: "Gå tur med hunden" },
+            { tid: "20.30", tekst: "Kveldsmat" }
+        ];
+
+        const fasteRutinerLoerdag = [
+            { tid: "07.30", tekst: "Frokost" },
+            { tid: "08.00", tekst: "Ta medisiner" },
+            { tid: "09.00", tekst: "Tur med hunden" },
+            { tid: "12.00", tekst: "Gjerne varm lunsj" },
+            { tid: "14.00", tekst: "Sjekke meldinger" },
+            { tid: "15.30", tekst: "Middag" },
+            { tid: "19.30", tekst: "Gå tur med hunden" },
+            { tid: "20.30", tekst: "Kveldsmat" }
+        ];
+
+        const fasteRutinerSoendag = [
+            { tid: "07.30", tekst: "Frokost" },
+            { tid: "08.00", tekst: "Ta medisiner" },
+            { tid: "09.00", tekst: "Tur med hunden" },
+            { tid: "13.00", tekst: "Middag" },
+            { tid: "14.00", tekst: "Sjekke meldinger" },
+            { tid: "19.30", tekst: "Gå tur med hunden" },
+            { tid: "20.30", tekst: "Kveldsmat" }
+        ];
+
+        /****************************************************************
+         * 2. GOOGLE API CONFIGURATION / AUTENTISERING
          ****************************************************************/
         const API_KEY = 'AIzaSyDabiLiH6tR1bonxhjgNqq9PoTSa9wogzE';
         const CALENDAR_ID = '6836a3463ada75841f11c52afbd588f7467b5c7014a9ac8118e24205f42d301c@group.calendar.google.com'; 
@@ -340,25 +376,21 @@
         const ukeDager = ["Søndag", "Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag", "Lørdag"];
         const maaneder = ["Januar", "Februar", "Mars", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Desember"];
 
-        const infoHverdag = {
-            overskrift: "mandag - fredag",
-            tekst: "<div class='info-item'>•  <span class='info-time'>07.30:</span> Frokost</div><div class='info-item'>•  <span class='info-time'>08.00:</span> Ta medisiner</div><div class='info-item'>•  <span class='info-time'>09.00:</span> Tur med hunden</div><div class='info-item'>•  <span class='info-time'>11.30:</span> Lunsj</div><div class='info-item'>•  <span class='info-time'>14.00:</span> Sjekke e-post og meldinger</div><div class='info-item'>•  <span class='info-time'>15.30:</span> Middag</div><div class='info-item'>•  <span class='info-time'>19.30:</span> Gå tur med hunden</div><div class='info-item'>•  <span class='info-time'>20.30:</span> Kveldsmat</div>"
-        };
-
-        const infoLoerdag = {
-            overskrift: "lørdag",
-            tekst: "<div class='info-item'>•  <span class='info-time'>09.00:</span> Rolig frokost og kaffe</div><div class='info-item'>•  <span class='info-time'>10.00:</span> Medisiner</div><div class='info-item'>•  <span class='info-time'>11.30:</span> Tur med hunden</div><div class='info-item'>•  <span class='info-time'>13.00:</span> Lunsj</div><div class='info-item'>•  <span class='info-time'>16.00:</span> Middag</div><div class='info-item'>•  <span class='info-time'>19.30:</span> Kveldstur med hunden</div><div class='info-item'>•  <span class='info-time'>21.00:</span> Lørdagskos og TV</div>"
-        };
-
-        const infoSoendag = {
-            overskrift: "søndag",
-            tekst: "<div class='info-item'>•  <span class='info-time'>09.00:</span> Rolig søndagsfrokost</div><div class='info-item'>•  <span class='info-time'>10.00:</span> Medisiner</div><div class='info-item'>•  <span class='info-time'>12.00:</span> Gå en lengre tur</div><div class='info-item'>•  <span class='info-time'>14.00:</span> Lunsj</div><div class='info-item'>•  <span class='info-time'>17.00:</span> Middag</div><div class='info-item'>•  <span class='info-time'>20.00:</span> Kveldsmat</div><div class='info-item'>•  <span class='info-time'>22.00:</span> Forberede ny uke</div>"
-        };
-
         let globalEventsCache = {}; 
         let globalHolidaysCache = {}; 
         let wakeLock = null;
         let inactivityTimeout = null;
+
+        /****************************************************************
+         * 3. APPLIKASJONSLOGIKK
+         ****************************************************************/
+        function genererRutineHTML(rutineListe) {
+            let html = "";
+            rutineListe.forEach(item => {
+                html += `<div class='info-item'>•  <span class='info-time'>${item.tid}:</span> ${item.tekst}</div>`;
+            });
+            return html;
+        }
 
         function buildClockUI() {
             const ticksG = document.getElementById('ticks');
@@ -441,14 +473,14 @@
 
             const dayOfWeek = now.getDay(); 
             if (dayOfWeek === 6) {
-                document.getElementById('info-day-heading').innerText = infoLoerdag.overskrift;
-                document.getElementById('info-text').innerHTML = infoLoerdag.tekst;
+                document.getElementById('info-day-heading').innerText = "lørdag";
+                document.getElementById('info-text').innerHTML = genererRutineHTML(fasteRutinerLoerdag);
             } else if (dayOfWeek === 0) {
-                document.getElementById('info-day-heading').innerText = infoSoendag.overskrift;
-                document.getElementById('info-text').innerHTML = infoSoendag.tekst;
+                document.getElementById('info-day-heading').innerText = "søndag";
+                document.getElementById('info-text').innerHTML = genererRutineHTML(fasteRutinerSoendag);
             } else {
-                document.getElementById('info-day-heading').innerText = infoHverdag.overskrift;
-                document.getElementById('info-text').innerHTML = infoHverdag.tekst;
+                document.getElementById('info-day-heading').innerText = "mandag - fredag";
+                document.getElementById('info-text').innerHTML = genererRutineHTML(fasteRutinerHverdag);
             }
         }
 
