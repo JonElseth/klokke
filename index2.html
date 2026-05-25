@@ -74,9 +74,9 @@
             display: none; 
         }
 
-        /* --- HEADER / TOPPLINJE --- */
+        /* --- HEADER / TOPPLINJE (Optimalisert for kun digital visning) --- */
         header {
-            height: 120px; 
+            height: 110px; /* Redusert noe etter at analog sirkel ble fjernet */
             display: flex;
             justify-content: space-between; 
             background-color: var(--bg-color);
@@ -86,52 +86,29 @@
             flex-shrink: 0;
         }
 
+        /* Venstrejustert digital klokke direkte i startposisjon */
         .header-clocks-left {
             display: flex;
             align-items: flex-end; 
-            gap: 25px;
             flex-shrink: 0;
-            height: 120px;
+            height: 110px;
         }
-
-        .analog-clock-svg {
-            width: 120px;
-            height: 120px;
-            display: block;
-        }
-        
-        .clock-face { fill: none; }
-        .tick-hour { stroke: var(--clock-ticks); stroke-width: 2.8; stroke-linecap: round; }
-        .clock-number { 
-            font-family: 'Poppins', sans-serif; 
-            font-weight: 400; 
-            font-size: 9px; 
-            fill: var(--clock-face); 
-            text-anchor: middle; 
-            dominant-baseline: middle; 
-        }
-
-        .hand { stroke-linecap: round; }
-        .hand-hour { stroke: var(--clock-face); stroke-width: 5.5; }
-        .hand-minute { stroke: var(--clock-face); stroke-width: 4; }
-        .center-dot { fill: var(--clock-accent); }
 
         .digital-clock-big {
-            font-size: 162px; 
-            font-weight: 400;
-            letter-spacing: -7px;
-            line-height: 0.7; 
+            font-size: 142px; /* Svakt nedjustert for å fjerne ekstrem ruving når den står alene */
+            font-weight: 500;  /* Økt til 500 for maksimal tydelighet og kontrast */
+            letter-spacing: -5px;
+            line-height: 0.72; 
             display: inline-block;
-            margin-bottom: -4px; 
+            margin-bottom: -5px; 
         }
 
-        /* Endret: Redusert font-size fra 2.2rem til 1.6rem for å matche den nye infoboksen nøyaktig */
         .header-date-right {
             position: absolute;
             top: 0;
             right: 0;
             text-align: right;
-            font-size: 1.6rem; /* Samme størrelse som innholdet i status-box */
+            font-size: 1.6rem; 
             font-weight: 500;  
             color: var(--text-main);
             line-height: 1.0; 
@@ -349,11 +326,10 @@
                 align-items: center;
                 width: 100%;
                 height: auto;
-                gap: 15px;
             }
 
             .digital-clock-big {
-                font-size: 4.5rem;
+                font-size: 5rem;
                 line-height: 1.0;
                 height: auto;
                 letter-spacing: -2px;
@@ -399,14 +375,6 @@
 
     <header>
         <div class="header-clocks-left">
-            <svg class="analog-clock-svg" viewBox="0 0 100 100" id="analog-clock">
-                <circle cx="50" cy="50" r="48" class="clock-face" />
-                <g id="ticks"></g>
-                <g id="numbers"></g>
-                <line id="hour-hand" class="hand hand-hour" x1="50" y1="50" x2="50" y2="30" />
-                <line id="minute-hand" class="hand hand-minute" x1="50" y1="50" x2="50" y2="18" />
-                <circle cx="50" cy="50" r="2.5" class="center-dot" />
-            </svg>
             <div class="digital-clock-big" id="digital-clock">00:00</div>
         </div>
         
@@ -496,54 +464,13 @@
             return html;
         }
 
-        function buildClockUI() {
-            const ticksG = document.getElementById('ticks');
-            const numsG = document.getElementById('numbers');
-            ticksG.innerHTML = '';
-            numsG.innerHTML = '';
-            
-            const akser = [0, 15, 30, 45];
-            akser.forEach(i => {
-                const angle = (i * 6) * (Math.PI / 180);
-                const x1 = 50 + 41 * Math.sin(angle);
-                const y1 = 50 - 41 * Math.cos(angle);
-                const x2 = 50 + 48 * Math.sin(angle);
-                const y2 = 50 - 48 * Math.cos(angle);
-                
-                const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-                line.setAttribute("x1", x1); line.setAttribute("y1", y1);
-                line.setAttribute("x2", x2); line.setAttribute("y2", y2);
-                line.classList.add("tick-hour");
-                ticksG.appendChild(line);
-            });
-
-            const hovedTall = [
-                { verdi: 12, angle: 0 },
-                { verdi: 3, angle: 90 },
-                { verdi: 6, angle: 180 },
-                { verdi: 9, angle: 270 }
-            ];
-
-            hovedTall.forEach(t => {
-                const rad = t.angle * (Math.PI / 180);
-                const x = 50 + 32 * Math.sin(rad);
-                const y = 50 - 32 * Math.cos(rad) + 0.5;
-                
-                const txt = document.createElementNS("http://www.w3.org/2000/svg", "text");
-                txt.setAttribute("x", x); txt.setAttribute("y", y);
-                txt.classList.add("clock-number");
-                txt.textContent = t.verdi;
-                numsG.appendChild(txt);
-            });
-        }
-
         function oppdaterLiveStatusBoks(hoursStr, minutesStr) {
             const statusEl = document.getElementById('live-status-bar');
             if (!statusEl) return;
 
             const nå = new Date();
             const dagensNøkkel = nå.toLocaleDateString('sv-SE', {timeZone: 'Europe/Oslo'});
-            const dagensKalenderHendelser = globalEventsCache[dagensNøkkel] || [];
+            const dagensKalenderHendelser = globalEventsCache[dateNøkkel = dagensNøkkel] || [];
             
             let nesteAvtale = null;
 
@@ -575,9 +502,6 @@
             const now = new Date();
             const m = now.getMinutes();
             const h = now.getHours();
-
-            document.getElementById('minute-hand').setAttribute('transform', `rotate(${m * 6} 50 50)`);
-            document.getElementById('hour-hand').setAttribute('transform', `rotate(${(h % 12) * 30 + m * 0.5} 50 50)`);
 
             let hoursStr = String(h).padStart(2, '0');
             let minutesStr = String(m).padStart(2, '0');
@@ -831,7 +755,6 @@
 
         window.addEventListener('DOMContentLoaded', () => {
             requestWakeLock();
-            buildClockUI();
             updateClockAndLayout();
             setupInactivityListeners();
             
