@@ -57,10 +57,10 @@
             display: flex;
             flex-direction: column;
             
-            /* ENDRET: Tillater vertikal rulling av hele siden nå */
+            /* Tillater vertikal rulling av hele siden */
             overflow-y: auto;
             overflow-x: hidden;
-            scrollbar-width: none; /* Skjuler rullefelt i Firefox */
+            scrollbar-width: none; 
             
             /* SIKKERHETSSONE FOR DET FYSISKE DEKSELET */
             padding: 79px 60px 74px 60px; 
@@ -68,7 +68,7 @@
         }
 
         body::-webkit-scrollbar {
-            display: none; /* Skjuler rullefelt i Chrome, Safari og Edge */
+            display: none; 
         }
 
         /* --- HEADER / TOPPLINJE --- */
@@ -174,20 +174,21 @@
             text-transform: lowercase;
         }
 
+        /* Økt gap fra 0px til 12px for mer luft mellom rutinene */
         .info-content {
             display: flex;
             flex-direction: column;
-            gap: 0px; 
+            gap: 12px; 
             font-family: 'Lato', sans-serif;
             font-size: 1.25rem;
             color: var(--text-main);
             padding-left: 80px; 
         }
 
+        /* Justert line-height til 1.8 for en mer elegant og mindre sammentrykt stil */
         .info-item {
             white-space: nowrap;
-            line-height: 1.4;
-            padding: 2px 0;
+            line-height: 1.8;
         }
 
         .info-time {
@@ -661,13 +662,11 @@
         function resetInactivityTimer() {
             clearTimeout(inactivityTimeout);
             inactivityTimeout = setTimeout(function() {
-                // ENDRET: Ruller hele vinduet jevnt tilbake til toppen
                 window.scrollTo({ top: 0, behavior: 'smooth' });
-            }, 180000); // 3 minutter med inaktivitet
+            }, 180000); 
         }
 
         function setupInactivityListeners() {
-            // Lytter på rullefelt og bevegelser over hele vinduet/skjermen
             window.addEventListener('scroll', resetInactivityTimer);
             window.addEventListener('touchstart', resetInactivityTimer, true);
             window.addEventListener('touchmove', resetInactivityTimer, true);
