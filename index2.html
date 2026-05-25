@@ -57,12 +57,11 @@
             display: flex;
             flex-direction: column;
             
-            /* Tillater vertikal rulling av hele siden */
             overflow-y: auto;
             overflow-x: hidden;
             scrollbar-width: none; 
             
-            /* SIKKERHETSSONE FOR DET FYSISKE DEKSELET */
+            /* SIKKERHETSSONE FOR DET FYSISKE DEKSELET (LANDSKAP) */
             padding: 79px 60px 74px 60px; 
             transition: background 1s ease, color 1s ease;
         }
@@ -156,11 +155,11 @@
             background-color: var(--bg-color);
         }
 
-        /* --- OVERKRIFTER (Krympet margin-bottom for mindre luft under) --- */
+        /* --- OVERKRIFTER --- */
         .info-title, .calendar-title {
             font-size: 2.2rem;
             font-weight: 500;
-            margin-bottom: 10px; /* Redusert fra 25px for å trekke innholdet opp */
+            margin-bottom: 10px; 
             color: var(--text-main);
         }
 
@@ -292,6 +291,60 @@
             font-size: 1.25rem;
             color: var(--text-muted);
             padding-left: 40px;
+        }
+
+        /* ***************************************************************
+         * AUTOMATISK MOBIL- OG PORTRETTILPASNING (MEDIA QUERIES)
+         *************************************************************** */
+        @media (max-width: 900px) or (orientation: portrait) {
+            body {
+                /* Fjerner deksel-padding på mobil for å spare plass */
+                padding: 30px 20px 40px 20px; 
+            }
+
+            header {
+                flex-direction: column; /* Stabler klokke og tekst vertikalt */
+                height: auto;
+                gap: 15px;
+                text-align: center;
+                margin-bottom: 20px;
+            }
+
+            .header-left {
+                width: 100%; /* Sørger for at klokken sentreres */
+            }
+
+            .header-right {
+                align-items: center;
+                width: 100%;
+            }
+
+            .day-status {
+                font-size: 2.5rem; /* Litt mindre tekst på mobilskjerm */
+            }
+
+            main {
+                flex-direction: column; /* Stabler kolonnene vertikalt */
+                gap: 40px;
+            }
+
+            .left-column {
+                width: 100%; /* Tar full bredde på mobil */
+                padding-right: 0;
+            }
+
+            /* Trapper ned tabulator-innrykkene på mobil for å unngå trang tekst */
+            .info-day-title, .day-title, .holiday-text, .no-events-text {
+                padding-left: 20px; 
+            }
+
+            .info-content, .event-list {
+                padding-left: 40px; 
+            }
+            
+            .info-item {
+                white-space: normal; /* Tillater tekstbryting på rutinene hvis mobilskjermen er ekstremt smal */
+            }
         }
     </style>
 </head>
@@ -500,7 +553,6 @@
             container.innerHTML = '';
             
             const today = new Date();
-            const todayKey = today.toLocaleDateString('sv-SE', {timeZone: 'Europe/Oslo'});
             let totalDaysRendered = 0;
 
             for (let i = 0; i < 185; i++) {
@@ -529,7 +581,7 @@
                 title.className = 'day-title';
                 
                 let titleHTML = `<span>${dayName.toLowerCase()} ${dateNum}. ${monthName} ${yearNum}</span>`;
-                if (dateKey === todayKey) {
+                if (dateKey === today.toLocaleDateString('sv-SE', {timeZone: 'Europe/Oslo'})) {
                     titleHTML += '<span class="today-badge">I dag</span>';
                 }
                 title.innerHTML = titleHTML;
@@ -655,9 +707,6 @@
             });
         }
 
-        /****************************************************************
-         * AUTOMATISK RETUR VED INAKTIVITET (PÅ HELE VINDUET)
-         ****************************************************************/
         function resetInactivityTimer() {
             clearTimeout(inactivityTimeout);
             inactivityTimeout = setTimeout(function() {
