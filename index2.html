@@ -123,7 +123,7 @@
             font-family: 'Lato', sans-serif;
         }
 
-        /* --- HOVEDOMRÅDE (Dynamisk bredde basert på innhold) --- */
+        /* --- HOVEDOMRÅDE --- */
         main {
             flex: 1;
             display: flex;
@@ -132,19 +132,19 @@
 
         .column {
             height: 100%;
-            padding: 10px 0 100px 0; /* Fjernet side-padding her, styres individuelt nå */
+            padding: 10px 0 100px 0; 
         }
 
         .left-column {
-            width: max-content; /* Tilpasser bredden nøyaktig etter teksten */
+            width: max-content; 
             overflow: hidden; 
             background-color: var(--bg-color);
             padding-left: 60px;
-            padding-right: 60px; /* Fast passende marg mellom venstre og høyre felt */
+            padding-right: 60px; 
         }
 
         .right-column {
-            flex: 1; /* Fyller opp resten av skjermen og trekker seg mot venstre */
+            flex: 1; 
             background-color: var(--bg-color);
             overflow-y: auto;
             scrollbar-width: none;
@@ -163,7 +163,6 @@
             color: var(--text-main);
         }
 
-        /* white-space: nowrap forhindrer tekstbryting på rutinene */
         .info-content {
             font-family: 'Lato', sans-serif;
             font-size: 1.25rem;
@@ -219,14 +218,24 @@
             padding-left: 80px; 
         }
 
+        /* Korrigert for å forhindre feil linjebryting på linje 2 */
         .event-item {
+            display: flex;
+            align-items: flex-start;
             font-family: 'Lato', sans-serif;
             font-size: 1.25rem;
             margin-bottom: 10px; 
             line-height: 2;
-            position: relative;
-            font-weight: 400;
             color: var(--text-main);
+        }
+
+        .event-bullet {
+            flex-shrink: 0;
+            margin-right: 12px;
+        }
+
+        .event-text-container {
+            flex: 1;
         }
 
         .event-time {
@@ -310,19 +319,16 @@
         const ukeDager = ["Søndag", "Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag", "Lørdag"];
         const maaneder = ["Januar", "Februar", "Mars", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Desember"];
 
-        // 1. Permanente endringer for ukedagene (Mandag - Fredag)
         const infoHverdag = {
             overskrift: "Rutiner ukedager:",
             tekst: "•  07.30: Frokost\n•  08.00: Ta medisiner\n•  09.00: Tur med hunden\n•  11.30: Lunsj\n•  14.00: Sjekke e-post og meldinger\n•  15.30: Middag\n•  19.30: Gå tur med hunden\n•  20.30: Kveldsmat"
         };
 
-        // 2. Permanente endringer for Lørdag
         const infoLoerdag = {
             overskrift: "Rutiner lørdag:",
             tekst: "•  09.00: Rolig frokost og kaffe\n•  10.00: Medisiner\n•  11.30: Tur med hunden\n•  13.00: Lunsj\n•  16.00: Middag\n•  19.30: Kveldstur med hunden\n•  21.00: Lørdagskos og TV"
         };
 
-        // 3. Permanente endringer for Søndag
         const infoSoendag = {
             overskrift: "Rutiner søndag:",
             tekst: "•  09.00: Rolig søndagsfrokost\n•  10.00: Medisiner\n•  12.00: Gå en lengre tur\n•  14.00: Lunsj\n•  17.00: Middag\n•  20.00: Kveldsmat\n•  22.00: Forberede ny uke"
@@ -333,9 +339,6 @@
         let wakeLock = null;
         let inactivityTimeout = null;
 
-        /****************************************************************
-         * BYGG ANALOG KLOKKE
-         ****************************************************************/
         function buildClockUI() {
             const ticksG = document.getElementById('ticks');
             const numsG = document.getElementById('numbers');
@@ -373,21 +376,16 @@
             }
         }
 
-        /****************************************************************
-         * SYNKRONISERING AV TID, DATO, PERIODE OG LYS/NATT-TEMA
-         ****************************************************************/
         function updateClockAndLayout() {
             const now = new Date();
             const s = now.getSeconds();
             const m = now.getMinutes();
             const h = now.getHours();
 
-            // 1. Analog Klokkevisere
             document.getElementById('second-hand').setAttribute('transform', `rotate(${s * 6} 50 50)`);
             document.getElementById('minute-hand').setAttribute('transform', `rotate(${m * 6 + s * 0.1} 50 50)`);
             document.getElementById('hour-hand').setAttribute('transform', `rotate(${(h % 12) * 30 + m * 0.5} 50 50)`);
 
-            // 2. Digital Klokke og Dato-streng
             let hoursStr = String(h).padStart(2, '0');
             let minutesStr = String(m).padStart(2, '0');
             let secondsStr = String(s).padStart(2, '0');
@@ -399,14 +397,12 @@
             
             document.getElementById('date-text').textContent = `${hoursStr}:${minutesStr}:${secondsStr} - ${dayName} ${dayNum}. ${monthName} ${yearNum}`;
 
-            // 3. DAG- og NATTMODUS (Lyst mellom 07:00 og 22:00)
             if (h >= 7 && h < 22) {
                 document.body.classList.remove('night-mode');
             } else {
                 document.body.classList.add('night-mode');
             }
 
-            // 4. Døgnperiode
             let periodText = "Det er natt";
             if (h >= 6 && h < 9) periodText = "Det er morgen";
             else if (h >= 9 && h < 12) periodText = "Det er formiddag";
@@ -414,7 +410,6 @@
             else if (h >= 18 && h < 24) periodText = "Det er kveld";
             document.getElementById('period-text').textContent = periodText;
 
-            // 5. Midnatt og Sikkerhetsoppdatering (Reload kl. 03:00)
             if (h === 3 && m === 0 && s === 0) {
                 window.location.reload(true);
                 return;
@@ -423,7 +418,6 @@
                 renderCalendarList(); 
             }
 
-            // 6. Tre-delt permanent info basert på ukedag, lørdag eller søndag
             const dayOfWeek = now.getDay(); 
             if (dayOfWeek === 6) {
                 document.getElementById('info-heading').innerText = infoLoerdag.overskrift;
@@ -437,9 +431,6 @@
             }
         }
 
-        /****************************************************************
-         * PARSING OG RENDER AV NAVNEMERKER (BADGES)
-         ****************************************************************/
         function formatEventSummary(summary) {
             if (!summary) return '';
             let html = summary;
@@ -512,7 +503,14 @@
                         }
 
                         const formatedText = formatEventSummary(ev.summary);
-                        li.innerHTML = `•  <span class="event-time">${timeStr}:</span> ${formatedText}`;
+                        
+                        // Delt inn i kuleretegn og en ren tekstbeholder for ryddig linjeinnrykk på linje 2
+                        li.innerHTML = `
+                            <span class="event-bullet">•</span>
+                            <div class="event-text-container">
+                                <span class="event-time">${timeStr}:</span> ${formatedText}
+                            </div>
+                        `;
                         list.appendChild(li);
                     });
                     daySection.appendChild(list);
@@ -525,9 +523,6 @@
             }
         }
 
-        /****************************************************************
-         * GOOGLE API DATAHENTING OG PARSING
-         ****************************************************************/
         function fetchCalendarData() {
             const start = new Date();
             start.setHours(0,0,0,0);
@@ -607,9 +602,6 @@
             });
         }
 
-        /****************************************************************
-         * AUTOMATISK RETUR VED INAKTIVITET
-         ****************************************************************/
         function resetInactivityTimer() {
             clearTimeout(inactivityTimeout);
             inactivityTimeout = setTimeout(function() {
@@ -640,9 +632,6 @@
             } catch (err) {}
         }
 
-        /****************************************************************
-         * INITIALISERING AV APPLIKASJONEN
-         ****************************************************************/
         function initGapiClient() {
             gapi.client.init({
                 'apiKey': API_KEY,
