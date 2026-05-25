@@ -57,7 +57,6 @@
             display: flex;
             flex-direction: column;
             
-            /* Tillater vertikal rulling av hele siden */
             overflow-y: auto;
             overflow-x: hidden;
             scrollbar-width: none; 
@@ -144,13 +143,12 @@
             padding-top: 10px;
         }
 
-        /* Lagt til en diskret, stiplet skillelinje på høyre kant */
         .left-column {
             width: max-content; 
             background-color: var(--bg-color);
             padding-right: 60px; 
-            margin-right: 60px; /* Skaper avstand fra linjen til kalenderen start */
-            border-right: 1px dashed var(--text-muted); /* Den diskrete stiplede linjen */
+            margin-right: 60px; 
+            border-right: 1px dashed var(--text-muted); 
         }
 
         .right-column {
@@ -237,25 +235,22 @@
             padding-left: 40px;
         }
 
+        /* Omstrukturert til en ren flex-container som matcher venstre side */
         .event-list {
-            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
             padding-left: 80px; 
         }
 
+        /* Gjort helt lik .info-item for identisk tekst- og kulepunktsplassering */
         .event-item {
-            display: flex;
-            align-items: flex-start;
             font-family: 'Lato', sans-serif;
             font-size: 1.25rem;
-            margin-bottom: 4px; 
             line-height: 1.4;
             color: var(--text-main);
-        }
-
-        .event-bullet {
-            flex-shrink: 0;
-            margin-right: 12px;
-            line-height: 1.4;
+            display: flex;
+            align-items: flex-start;
         }
 
         .event-text-container {
@@ -343,7 +338,7 @@
                 width: 100%; 
                 padding-right: 0;
                 margin-right: 0;
-                border-right: none; /* Fjerner skillelinjen på mobil siden de stables vertikalt */
+                border-right: none; 
             }
 
             .info-day-title, .day-title, .holiday-text, .no-events-text {
@@ -352,10 +347,6 @@
 
             .info-content, .event-list {
                 padding-left: 40px; 
-            }
-            
-            .info-item {
-                white-space: normal; 
             }
         }
     </style>
@@ -605,11 +596,12 @@
                 }
 
                 if (hasPersonalEvents) {
-                    const list = document.createElement('ul');
+                    // Konstruert som ren div-liste i scriptet for å fjerne ulik padding
+                    const list = document.createElement('div');
                     list.className = 'event-list';
 
                     globalEventsCache[dateKey].forEach(ev => {
-                        const li = document.createElement('li');
+                        const li = document.createElement('div');
                         li.className = 'event-item';
 
                         let timeStr = 'Hele dagen';
@@ -620,12 +612,8 @@
 
                         const formatedText = formatEventSummary(ev.summary);
                         
-                        li.innerHTML = `
-                            <span class="event-bullet">•</span>
-                            <div class="event-text-container">
-                                <span class="event-time">${timeStr}:</span> ${formatedText}
-                            </div>
-                        `;
+                        // Kulepunktet skrives nå som ren tekst med identisk avstand som venstre side
+                        li.innerHTML = `•  <div class="event-text-container"><span class="event-time">${timeStr}:</span> ${formatedText}</div>`;
                         list.appendChild(li);
                     });
                     daySection.appendChild(list);
