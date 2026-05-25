@@ -155,7 +155,7 @@
             display: none;
         }
 
-        /* --- OVERKRIFTER (Nedjustert til mer eksklusiv vekt 500) --- */
+        /* --- OVERKRIFTER --- */
         .info-title, .calendar-title {
             font-size: 2.2rem;
             font-weight: 500;
@@ -178,7 +178,6 @@
             white-space: nowrap;
         }
 
-        /* Fjernet bold fra rutinene til venstre */
         .info-time {
             color: var(--clock-accent);
             font-weight: 400;
@@ -191,7 +190,6 @@
             background-color: transparent;
         }
 
-        /* Nedjustert datotekst til vekt 400 for mer eksklusiv stil */
         .day-title {
             display: flex;
             justify-content: flex-start;
@@ -215,11 +213,12 @@
             letter-spacing: 1px;
         }
 
+        /* Endret fra fet og kursiv til ren normalvekt (400 og normal) */
         .holiday-text {
             font-size: 1.1rem;
             color: var(--clock-accent);
-            font-weight: 700;
-            font-style: italic;
+            font-weight: 400;
+            font-style: normal;
             margin-top: -8px;
             margin-bottom: 12px;
             text-transform: uppercase;
@@ -250,7 +249,6 @@
             flex: 1;
         }
 
-        /* Fjernet bold fra klokkeslett og "Hele dagen" til høyre */
         .event-time {
             color: var(--clock-accent); 
             font-weight: 400;
