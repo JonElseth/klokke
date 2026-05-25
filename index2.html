@@ -29,7 +29,7 @@
             --shadow: rgba(0, 0, 0, 0.05);
             --box-bg: #ffffff;
             --box-border: #cbd5e1;
-            --highlight-text: #0066cc; /* Trygg blå farge for utheving om dagen */
+            --highlight-text: #0066cc; 
         }
 
         body.night-mode {
@@ -44,7 +44,7 @@
             --shadow: rgba(0, 0, 0, 0.3);
             --box-bg: #1e293b;
             --box-border: #334155;
-            --highlight-text: #38bdf8; /* Klar lyseblå farge for utheving om natten (erstatter rød) */
+            --highlight-text: #38bdf8; 
         }
 
         * {
@@ -131,7 +131,6 @@
             transition: background 1s ease, border 1s ease, box-shadow 1s ease;
         }
 
-        /* Uthevet tekst bruker nå en høykontrast-blåfarge i stedet for rødt */
         .status-box-highlight {
             color: var(--highlight-text);
             font-weight: 500;
@@ -205,7 +204,7 @@
         .info-time {
             color: var(--clock-accent);
             font-weight: 400;
-            margin-right: 6px;
+            margin-right: 5px;
         }
 
         /* --- HØYRE SIDE: KALENDERVISNING --- */
@@ -467,7 +466,7 @@
             return html;
         }
 
-        // Oppdatert statusboks med forbedret tidslogikk og fargekontrast
+        // Forbedret statuslogikk som automatisk avbryter natt-modus dersom en tidlig morgenavtale eksisterer
         function oppdaterLiveStatusBoks(hoursStr, minutesStr) {
             const statusEl = document.getElementById('live-status-bar');
             if (!statusEl) return;
@@ -477,26 +476,48 @@
             const dagensNøkkel = nå.toLocaleDateString('sv-SE', {timeZone: 'Europe/Oslo'});
             const dagensKalenderHendelser = globalEventsCache[dagensNøkkel] || [];
             
+            let nesteAvtale = null;
+
+            // Sorterer dagens avtaler kronologisk
+            const sorterteHendelser = dagensKalenderHendelser
+                .filter(ev => ev.start && ev.start.dateTime)
+                .sort((a, b) => new Date(a.start.dateTime) - new Date(b.start.dateTime));
+
+            // Finner den første kommende avtalen
+            for (let ev of sorterteHendelser) {
+                const startTidspunkt = new Date(ev.start.dateTime);
+                if (startTidspunkt > nå) {
+                    nesteAvtale = ev;
+                    break;
+                }
+            }
+
             let boksHTML = `Nå er klokken <span class="status-box-highlight">${hoursStr}:${minutesStr}</span>. `;
 
-            // Logisk sjekk: Hvis det er natt (mellom kl. 23:00 og 07:00), fokuserer vi kun på søvn og ro
+            // NY SIKKERHETSLOGIKK:
+            // Hvis det er natt (23-07), sjekker vi om neste avtale inntreffer i løpet av de neste 4 timene (f.eks hjelpepleier kl 05:00)
             if (gjeldendeTime >= 23 || gjeldendeTime < 7) {
-                boksHTML += `Det er natt, og det er ingen flere avtaler før i morgen.`;
-            } else {
-                // Dagtid-logikk: Finn neste avtale i Google Kalender
-                let nesteAvtale = null;
-                const sorterteHendelser = dagensKalenderHendelser
-                    .filter(ev => ev.start && ev.start.dateTime)
-                    .sort((a, b) => new Date(a.start.dateTime) - new Date(b.start.dateTime));
-
-                for (let ev of sorterteHendelser) {
-                    const startTidspunkt = new Date(ev.start.dateTime);
-                    if (startTidspunkt > nå) {
-                        nesteAvtale = ev;
-                        break;
+                let erKritiskMorgenAvtale = false;
+                
+                if (nesteAvtale) {
+                    const tidTilNesteAvtale = new Date(nesteAvtale.start.dateTime) - nå;
+                    const fireTimerIMillisekunder = 4 * 60 * 60 * 1000;
+                    
+                    if (tidTilNesteAvtale <= fireTimerIMillisekunder) {
+                        erKritiskMorgenAvtale = true;
                     }
                 }
 
+                if (erKritiskMorgenAvtale) {
+                    // Hvis en avtale er nært forestående om natten, avbrytes sovemodusen og brukeren varsles
+                    const nesteTid = new Date(nesteAvtale.start.dateTime).toLocaleTimeString('no-NO', {hour: '2-digit', minute:'2-digit'});
+                    boksHTML += `Neste avtale er <span class="status-box-highlight">${nesteAvtale.summary}</span> klokken <span class="status-box-highlight">${nesteTid}</span>.`;
+                } else {
+                    // Hvis natten er tom og trygg, vises den beroligende meldingen
+                    boksHTML += `Det er natt, og det er ingen flere avtaler før i morgen.`;
+                }
+            } else {
+                // Standard dagtids-visning
                 if (nesteAvtale) {
                     const nesteTid = new Date(nesteAvtale.start.dateTime).toLocaleTimeString('no-NO', {hour: '2-digit', minute:'2-digit'});
                     boksHTML += `Neste avtale er <span class="status-box-highlight">${nesteAvtale.summary}</span> klokken <span class="status-box-highlight">${nesteTid}</span>.`;
