@@ -48,19 +48,27 @@
         }
 
         body {
-            height: 100vh;
+            min-height: 100vh;
             width: 100vw;
             background-color: var(--bg-color);
             color: var(--text-main);
             font-family: 'Poppins', sans-serif;
-            overflow: hidden;
             user-select: none;
             display: flex;
             flex-direction: column;
             
+            /* ENDRET: Tillater vertikal rulling av hele siden nå */
+            overflow-y: auto;
+            overflow-x: hidden;
+            scrollbar-width: none; /* Skjuler rullefelt i Firefox */
+            
             /* SIKKERHETSSONE FOR DET FYSISKE DEKSELET */
             padding: 79px 60px 74px 60px; 
             transition: background 1s ease, color 1s ease;
+        }
+
+        body::-webkit-scrollbar {
+            display: none; /* Skjuler rullefelt i Chrome, Safari og Edge */
         }
 
         /* --- HEADER / TOPPLINJE --- */
@@ -73,6 +81,7 @@
             transition: background 1s ease;
             gap: 30px;
             padding-bottom: 20px;
+            flex-shrink: 0;
         }
 
         .header-left {
@@ -130,17 +139,14 @@
         main {
             flex: 1;
             display: flex;
-            overflow: hidden;
         }
 
         .column {
-            height: 100%;
             padding-top: 10px;
         }
 
         .left-column {
             width: max-content; 
-            overflow: hidden; 
             background-color: var(--bg-color);
             padding-right: 60px; 
         }
@@ -148,12 +154,6 @@
         .right-column {
             flex: 1; 
             background-color: var(--bg-color);
-            overflow-y: auto;
-            scrollbar-width: none;
-        }
-        
-        .right-column::-webkit-scrollbar {
-            display: none;
         }
 
         /* --- OVERKRIFTER --- */
@@ -174,7 +174,6 @@
             text-transform: lowercase;
         }
 
-        /* Fjernet gap (0px) for maksimal kompakthet på venstre side */
         .info-content {
             display: flex;
             flex-direction: column;
@@ -185,7 +184,6 @@
             padding-left: 80px; 
         }
 
-        /* Redusert line-height fra 1.8 til 1.4 for tettere vertikal avstand */
         .info-item {
             white-space: nowrap;
             line-height: 1.4;
@@ -325,7 +323,7 @@
             <div class="info-content" id="info-text">Laster faste rutiner...</div>
         </div>
         
-        <div class="column right-column" id="event-container">
+        <div class="column right-column">
             <div class="calendar-title">Dette skjer:</div>
             <div id="calendar-list">Kobler til Google Kalender...</div>
         </div>
@@ -336,13 +334,13 @@
     <script>
         /****************************************************************
          * 1. REDIGERBARE FASTE RUTINER (PERMANENTE ENDRINGER)
-         * Her kan du enkelt legge til, fjerne eller endre rutinene.
          ****************************************************************/
         const fasteRutinerHverdag = [
             { tid: "07.30", tekst: "Frokost" },
             { tid: "08.00", tekst: "Ta medisiner" },
             { tid: "09.00", tekst: "Tur med hunden" },
             { tid: "11.30", tekst: "Lunsj" },
+            { tid: "14.00", tekst: "Sjekke meldinger" },
             { tid: "15.30", tekst: "Middag" },
             { tid: "19.30", tekst: "Gå tur med hunden" },
             { tid: "20.30", tekst: "Kveldsmat" }
@@ -353,6 +351,7 @@
             { tid: "08.00", tekst: "Ta medisiner" },
             { tid: "09.00", tekst: "Tur med hunden" },
             { tid: "12.00", tekst: "Gjerne varm lunsj" },
+            { tid: "14.00", tekst: "Sjekke meldinger" },
             { tid: "15.30", tekst: "Middag" },
             { tid: "19.30", tekst: "Gå tur med hunden" },
             { tid: "20.30", tekst: "Kveldsmat" }
@@ -363,6 +362,7 @@
             { tid: "08.00", tekst: "Ta medisiner" },
             { tid: "09.00", tekst: "Tur med hunden" },
             { tid: "13.00", tekst: "Middag" },
+            { tid: "14.00", tekst: "Sjekke meldinger" },
             { tid: "19.30", tekst: "Gå tur med hunden" },
             { tid: "20.30", tekst: "Kveldsmat" }
         ];
@@ -655,21 +655,19 @@
             });
         }
 
+        /****************************************************************
+         * AUTOMATISK RETUR VED INAKTIVITET (PÅ HELE VINDUET)
+         ****************************************************************/
         function resetInactivityTimer() {
             clearTimeout(inactivityTimeout);
             inactivityTimeout = setTimeout(function() {
-                const panel = document.getElementById('event-container');
-                if (panel) {
-                    panel.scrollTo({ top: 0, behavior: 'smooth' });
-                }
-            }, 180000); 
+                // ENDRET: Ruller hele vinduet jevnt tilbake til toppen
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }, 180000); // 3 minutter med inaktivitet
         }
 
         function setupInactivityListeners() {
-            const panel = document.getElementById('event-container');
-            if (panel) {
-                panel.addEventListener('scroll', resetInactivityTimer);
-            }
+            // Lytter på rullefelt og bevegelser over hele vinduet/skjermen
             window.addEventListener('scroll', resetInactivityTimer);
             window.addEventListener('touchstart', resetInactivityTimer, true);
             window.addEventListener('touchmove', resetInactivityTimer, true);
