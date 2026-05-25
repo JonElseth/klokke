@@ -187,11 +187,21 @@
         .info-item {
             white-space: nowrap;
             line-height: 1.4;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        /* Ny klasse for kulepunkt under rutiner - sikrer nøyaktig 9px avstand */
+        .info-bullet {
+            flex-shrink: 0;
+            margin-right: 9px;
+            line-height: 1.4;
         }
 
         .info-time {
             color: var(--clock-accent);
             font-weight: 400;
+            margin-right: 5px;
         }
 
         /* --- HØYRE SIDE: KALENDERVISNING --- */
@@ -251,7 +261,6 @@
             align-items: flex-start;
         }
 
-        /* Rettet: Egen klasse for kulepunktet for å tvinge eksakt lik avstand som venstre side */
         .event-bullet {
             flex-shrink: 0;
             margin-right: 9px; /* Fast avstand som sikrer perfekt visuell harmoni */
@@ -448,7 +457,8 @@
         function genererRutineHTML(rutineListe) {
             let html = "";
             rutineListe.forEach(item => {
-                html += `<div class='info-item'>•  <span class='info-time'>${item.tid}:</span> ${item.tekst}</div>`;
+                // Oppdatert struktur som bruker info-bullet klassen i stedet for råe tekst-mellomrom
+                html += `<div class='info-item'><span class='info-bullet'>•</span><span class='info-time'>${item.tid}:</span> ${item.tekst}</div>`;
             });
             return html;
         }
@@ -616,7 +626,6 @@
 
                         const formatedText = formatEventSummary(ev.summary);
                         
-                        // Rettet: Kulepunktet ligger nå i en separat <span class="event-bullet"> uten manuelle tekst-mellomrom
                         li.innerHTML = `<span class="event-bullet">•</span><div class="event-text-container"><span class="event-time">${timeStr}:</span> ${formatedText}</div>`;
                         list.appendChild(li);
                     });
