@@ -532,9 +532,8 @@
                         const list = document.createElement('div');
                         list.className = 'event-list';
 
-                        /* Endret: Forbedret sorteringslogikk. Sorterer primært kronologisk etter klokkeslett, 
-                           men tvinger alle heldagshendelser (mangler dateTime) til å havne nederst på dagen. */
-                        const sorterteHendelser = [...globalEventsCache[dateKey]].sort((a, b) => {
+                        // Sorterer listen og lagrer den eksplisitt tilbake i gjeldende dag
+                        globalEventsCache[dateKey].sort((a, b) => {
                             const aIsAllDay = !a.start.dateTime;
                             const bIsAllDay = !b.start.dateTime;
                             
@@ -545,7 +544,7 @@
                             return new Date(a.start.dateTime).getTime() - new Date(b.start.dateTime).getTime();
                         });
 
-                        sorterteHendelser.forEach(ev => {
+                        globalEventsCache[dateKey].forEach(ev => {
                             const li = document.createElement('div');
                             li.className = 'event-item';
 
