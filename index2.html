@@ -71,22 +71,22 @@
             display: none; 
         }
 
-        /* --- HEADER / TOPPLINJE --- */
+        /* --- HEADER / TOPPLINJE (Toppjustert innhold) --- */
         header {
             height: 160px;
             display: flex;
-            align-items: center;
-            justify-content: space-between; /* Skubber innholdet til hver sin kant */
+            align-items: flex-start; /* Endret fra center til flex-start for å kunne toppjustere datostrengen */
+            justify-content: space-between; 
             background-color: var(--bg-color);
             transition: background 1s ease;
             padding-bottom: 20px;
             flex-shrink: 0;
         }
 
-        /* Samler analog og digital klokke helt til venstre */
+        /* Samler analog og digital klokke toppjustert */
         .header-clocks-left {
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             gap: 25px;
             flex-shrink: 0;
         }
@@ -114,21 +114,22 @@
         .hand-second { stroke: var(--clock-accent); stroke-width: 1.3; }
         .center-dot { fill: var(--clock-accent); }
 
-        /* Stor digital klokke plassert ved siden av den analoge */
+        /* Gjort eksakt like høy som den analoge klokken uten sekunder */
         .digital-clock-big {
-            font-size: 5.5rem; /* Gjort like høy som den analoge klokken */
+            font-size: 6.8rem; /* Justert størrelse slik at teksthøyden matcher sirkelen nøyaktig */
             font-weight: 400;
-            letter-spacing: -2px;
-            line-height: 1;
+            letter-spacing: -3px;
+            line-height: 0.82; /* Låser linjehøyden stramt til toppen av bokstavene */
         }
 
-        /* Høyrejustert datofelt på samme linje */
+        /* Høyrejustert og toppjustert datofelt på linje med toppen av klokkene */
         .header-date-right {
             text-align: right;
-            font-size: 2.2rem; /* Nøyaktig samme størrelse som "Rutiner:" */
-            font-weight: 500;  /* Nøyaktig samme skriftvekt som "Rutiner:" */
+            font-size: 2.2rem; 
+            font-weight: 500;  
             color: var(--text-main);
-            line-height: 1.2;
+            line-height: 1.0; /* Sørger for at teksten flukter helt med øvre kant */
+            padding-top: 4px;  /* Bitteliten optisk justering for å linje perfekt med klokketeksten */
         }
 
         /* --- HOVEDOMRÅDE --- */
@@ -290,7 +291,7 @@
             padding-left: 40px;
         }
 
-        /* Responsiv mobil- layout */
+        /* Responsiv mobil-layout */
         @media (max-width: 900px) or (orientation: portrait) {
             body {
                 padding: 30px 20px 40px 20px; 
@@ -307,17 +308,20 @@
 
             .header-clocks-left {
                 justify-content: center;
+                align-items: center;
                 width: 100%;
             }
 
             .digital-clock-big {
-                font-size: 4rem;
+                font-size: 4.5rem;
+                line-height: 1.0;
             }
 
             .header-date-right {
                 text-align: center;
                 width: 100%;
                 font-size: 1.6rem;
+                padding-top: 0;
             }
 
             main {
@@ -354,10 +358,9 @@
                 <g id="numbers"></g>
                 <line id="hour-hand" class="hand hand-hour" x1="50" y1="50" x2="50" y2="30" />
                 <line id="minute-hand" class="hand hand-minute" x1="50" y1="50" x2="50" y2="18" />
-                <line id="second-hand" class="hand hand-second" x1="50" y1="50" x2="50" y2="12" />
                 <circle cx="50" cy="50" r="2.5" class="center-dot" />
             </svg>
-            <div class="digital-clock-big" id="digital-clock">00:00:00</div>
+            <div class="digital-clock-big" id="digital-clock">00:00</div>
         </div>
         
         <div class="header-date-right" id="complete-date-string">
@@ -481,20 +484,18 @@
 
         function updateClockAndLayout() {
             const now = new Date();
-            const s = now.getSeconds();
             const m = now.getMinutes();
             const h = now.getHours();
 
-            document.getElementById('second-hand').setAttribute('transform', `rotate(${s * 6} 50 50)`);
-            document.getElementById('minute-hand').setAttribute('transform', `rotate(${m * 6 + s * 0.1} 50 50)`);
+            // Analog viser synkronisering uten sekundviser
+            document.getElementById('minute-hand').setAttribute('transform', `rotate(${m * 6} 50 50)`);
             document.getElementById('hour-hand').setAttribute('transform', `rotate(${(h % 12) * 30 + m * 0.5} 50 50)`);
 
             let hoursStr = String(h).padStart(2, '0');
             let minutesStr = String(m).padStart(2, '0');
-            let secondsStr = String(s).padStart(2, '0');
             
-            // Oppdaterer den store digitale klokken
-            document.getElementById('digital-clock').textContent = `${hoursStr}:${minutesStr}:${secondsStr}`;
+            // Endret til å fjerne sekunder fra den digitale klokken
+            document.getElementById('digital-clock').textContent = `${hoursStr}:${minutesStr}`;
 
             if (h >= 7 && h < 22) {
                 document.body.classList.remove('night-mode');
@@ -513,14 +514,14 @@
             const monthName = maaneder[now.getMonth()].toLowerCase();
             const yearNum = now.getFullYear();
 
-            // Oppbygning av den høyrejusterte tekststrengen
-            document.getElementById('complete-date-string').textContent = `Det er ${periodText} ${dayName} ${dayNum}. ${monthName} ${yearNum}`;
+            // Lagt inn komma etter periodeteksten («Det er ettermiddag, mandag...»)
+            document.getElementById('complete-date-string').textContent = `Det er ${periodText}, ${dayName} ${dayNum}. ${monthName} ${yearNum}`;
 
-            if (h === 3 && m === 0 && s === 0) {
+            if (h === 3 && m === 0 && now.getSeconds() === 0) {
                 window.location.reload(true);
                 return;
             }
-            if (h === 0 && m === 0 && s === 0) {
+            if (h === 0 && m === 0 && now.getSeconds() === 0) {
                 renderCalendarList(); 
             }
 
