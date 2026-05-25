@@ -57,7 +57,6 @@
             display: flex;
             flex-direction: column;
             
-            /* Tillater vertikal rulling av hele siden */
             overflow-y: auto;
             overflow-x: hidden;
             scrollbar-width: none; 
@@ -71,7 +70,7 @@
             display: none; 
         }
 
-        /* --- HEADER / TOPPLINJE (Omstrukturert for perfekt linjeflyt) --- */
+        /* --- HEADER / TOPPLINJE --- */
         header {
             height: 120px; 
             display: flex;
@@ -79,15 +78,15 @@
             background-color: var(--bg-color);
             transition: background 1s ease;
             margin-bottom: 40px; 
-            position: relative; /* Tillater absolutt posisjonering av datoen i toppkant */
+            position: relative; 
             flex-shrink: 0;
         }
 
-        /* Samler analog og digital klokke slik at de hviler på nøyaktig samme bunnlinje */
+        /* Låser bunnlinjen på sirkel og tekst helt likt */
         .header-clocks-left {
             display: flex;
-            align-items: baseline; /* Låser teksten og sirkelen til felles bunnlinje */
-            gap: 20px;
+            align-items: flex-end; 
+            gap: 25px;
             flex-shrink: 0;
             height: 120px;
         }
@@ -96,7 +95,6 @@
             width: 120px;
             height: 120px;
             display: block;
-            align-self: flex-end; /* Sørger for at sirkelen hviler stødig på bunnen */
         }
         
         .clock-face { fill: none; }
@@ -116,23 +114,24 @@
         .hand-minute { stroke: var(--clock-face); stroke-width: 4; }
         .center-dot { fill: var(--clock-accent); }
 
-        /* Digital klokke skalert opp og justert for å eliminere ulik font-geometri */
+        /* Kompenserer for fontens geometri for å oppnå eksakt 120px reell visuell høyde */
         .digital-clock-big {
-            font-size: 138px; /* Økt fra 120px for å gi identisk fysisk høyde som sirkelen på skrivebordsflaten */
+            font-size: 162px; 
             font-weight: 400;
-            letter-spacing: -6px;
-            line-height: 0.76; /* Drar teksten ned slik at bokstavtoppene flukter med sirkeltoppen */
+            letter-spacing: -7px;
+            line-height: 0.7; 
             display: inline-block;
+            margin-bottom: -4px; /* Trimmer bort usynlig margin i bunnen av skrifttypen */
         }
 
-        /* Låst helt til øvre høyre kant av header-flaten */
+        /* Låst til absolutt toppkant */
         .header-date-right {
             position: absolute;
             top: 0;
             right: 0;
             text-align: right;
-            font-size: 2.2rem; /* Nøyaktig samme størrelse som "Rutiner:" */
-            font-weight: 500;  /* Nøyaktig samme skriftvekt som "Rutiner:" */
+            font-size: 2.2rem; 
+            font-weight: 500;  
             color: var(--text-main);
             line-height: 1.0; 
         }
@@ -316,6 +315,7 @@
                 align-items: center;
                 width: 100%;
                 height: auto;
+                gap: 15px;
             }
 
             .digital-clock-big {
@@ -323,6 +323,7 @@
                 line-height: 1.0;
                 height: auto;
                 letter-spacing: -2px;
+                margin-bottom: 0;
             }
 
             .header-date-right {
@@ -392,9 +393,6 @@
     <script src="https://apis.google.com/js/api.js"></script>
 
     <script>
-        /****************************************************************
-         * 1. REDIGERBARE FASTE RUTINER (PERMANENTE ENDRINGER)
-         ****************************************************************/
         const fasteRutinerHverdag = [
             { tid: "07.30", tekst: "Frokost" },
             { tid: "08.00", tekst: "Ta medisiner" },
@@ -427,9 +425,6 @@
             { tid: "20.30", tekst: "Kveldsmat" }
         ];
 
-        /****************************************************************
-         * 2. GOOGLE API CONFIGURATION / AUTENTISERING
-         ****************************************************************/
         const API_KEY = 'AIzaSyDabiLiH6tR1bonxhjgNqq9PoTSa9wogzE';
         const CALENDAR_ID = '6836a3463ada75841f11c52afbd588f7467b5c7014a9ac8118e24205f42d301c@group.calendar.google.com'; 
         const HOLIDAY_CALENDAR_ID = 'no.norwegian#holiday@group.v.calendar.google.com'; 
@@ -442,9 +437,6 @@
         let wakeLock = null;
         let inactivityTimeout = null;
 
-        /****************************************************************
-         * 3. APPLIKASJONSLOGIKK
-         ****************************************************************/
         function genererRutineHTML(rutineListe) {
             let html = "";
             rutineListe.forEach(item => {
@@ -520,7 +512,6 @@
             const monthName = maaneder[now.getMonth()].toLowerCase();
             const yearNum = now.getFullYear();
 
-            // Sørger for kommaet etter perioden og at alt ligger på rett linje øverst
             document.getElementById('complete-date-string').textContent = `Det er ${periodText}, ${dayName} ${dayNum}. ${monthName} ${yearNum}`;
 
             if (h === 3 && m === 0 && now.getSeconds() === 0) {
