@@ -250,7 +250,7 @@
             line-height: 1.4;
             color: var(--text-main);
             display: flex;
-            align-items: flex-start;
+            align-start: flex-start;
         }
 
         .event-bullet {
@@ -392,67 +392,121 @@
             const statusEl = document.getElementById('live-status-bar');
             if (!statusEl) return;
 
-            const nå = new Date();
-            const gjeldendeTime = nå.getHours();
-            const dagensNøkkel = nå.toLocaleDateString('sv-SE', {timeZone: 'Europe/Oslo'});
-            const dagensKalenderHendelser = globalEventsCache[dagensNøkkel] || [];
-            
-            let nesteAvtale = null;
-
-            // Filtrerer og sorterer utelukkende avtaler som har et konkret klokkeslett (dateTime)
-            const sorterteHendelser = dagensKalenderHendelser
-                .filter(ev => ev.start && ev.start.dateTime)
-                .sort((a, b) => new Date(a.start.dateTime) - new Date(b.start.dateTime));
-
-            for (let ev of sorterteHendelser) {
-                const startTidspunkt = new Date(ev.start.dateTime);
-                if (startTidspunkt > nå) {
-                    nesteAvtale = ev;
-                    break;
-                }
-            }
-
-            let boksHTML = `Nå er klokken <span class="status-box-highlight">${hoursStr}:${minutesStr}</span>. `;
-
-            if (gjeldendeTime >= 23 || gjeldendeTime < 7) {
-                let erKritiskMorgenAvtale = false;
+            try {
+                const nå = new Date();
+                const gjeldendeTime = nå.getHours();
+                const dagensNøkkel = nå.toLocaleDateString('sv-SE', {timeZone: 'Europe/Oslo'});
                 
-                if (nesteAvtale) {
-                    const tidTilNesteAvtale = new Date(nesteAvtale.start.dateTime).getTime() - nå.getTime();
-                    const seksTimerIMillisekunder = 6 * 60 * 60 * 1000; 
-                    
-                    if (tidTilNesteAvtale > 0 && tidTilNesteAvtale <= seksTimerIMillisekunder) {
-                        erKritiskMorgenAvtale = true;
+                // Rettet skrivefeil i variabelaksess
+                const dagensKalenderHendelser = globalEventsCache[dagensNøkkel] || [];
+                
+                let nesteAvtale = null;
+
+                const sorterteHendelser = dagensKalenderHendelser
+                    .filter(ev => ev.start && ev.start.dateTime)
+                    .sort((a, b) => new Date(a.start.dateTime) - new Date(b.start.dateTime));
+
+                for (let ev of sorterteHendelser) {
+                    const startTidspunkt = new Date(ev.start.dateTime);
+                    if (startTidspunkt > nå) {
+                        nesteAvtale = ev;
+                        break;
                     }
                 }
 
-                if (erKritiskMorgenAvtale) {
-                    const nesteTid = new Date(nesteAvtale.start.dateTime).toLocaleTimeString('no-NO', {hour: '2-digit', minute:'2-digit', timeZone: 'Europe/Oslo'});
-                    // Trimmer bort råtekst-prefiks i statuslinjen for å matche rensingen under
-                    let renSummary = nesteAvtale.summary ? nesteAvtale.summary.replace(/^(Mamma\s*&\s*Pappa:|Mamma\s+og\s+Pappa:|Mamma:|Pappa:)\s*/i, '') : '';
-                    boksHTML += `Neste avtale er <span class="status-box-highlight">${renSummary}</span> klokken <span class="status-box-highlight">${nesteTid}</span>.`;
-                } else {
-                    boksHTML += `Det er natt, og det er ingen flere avtaler før i morgen.`;
-                }
-            } else {
-                if (nesteAvtale) {
-                    const nesteTid = new Date(nesteAvtale.start.dateTime).toLocaleTimeString('no-NO', {hour: '2-digit', minute:'2-digit', timeZone: 'Europe/Oslo'});
-                    let renSummary = nesteAvtale.summary ? nesteAvtale.summary.replace(/^(Mamma\s*&\s*Pappa:|Mamma\s+og\s+Pappa:|Mamma:|Pappa:)\s*/i, '') : '';
-                    boksHTML += `Neste avtale er <span class="status-box-highlight">${renSummary}</span> klokken <span class="status-box-highlight">${nesteTid}</span>.`;
-                } else {
-                    boksHTML += `Ingen flere planlagte avtaler i dag.`;
-                }
-            }
+                let boksHTML = `Nå er klokken <span class="status-box-highlight">${hoursStr}:${minutesStr}</span>. `;
 
-            statusEl.innerHTML = boksHTML;
+                if (gjeldendeTime >= 23 || gjeldendeTime < 7) {
+                    let erKritiskMorgenAvtale = false;
+                    
+                    if (nesteAvtale) {
+                        const tidTilNesteAvtale = new Date(nesteAvtale.start.dateTime).getTime() - nå.getTime();
+                        const seksTimerIMillisekunder = 6 * 60 * 60 * 1000; 
+                        
+                        if (tidTilNesteAvtale > 0 && tidTilNesteAvtale <= seksTimerIMillisekunder) {
+                            erKritiskMorgenAvtale = true;
+                        }
+                    }
+
+                    if (erKritiskMorgenAvtale) {
+                        const nesteTid = new Date(nesteAvtale.start.dateTime).toLocaleTimeString('no-NO', {hour: '2-digit', minute:'2-digit', timeZone: 'Europe/Oslo'});
+                        let renSummary = nesteAvtale.summary ? nesteAvtale.summary.replace(/^(Mamma\s*&\s*Pappa:|Mamma\s+og\s+Pappa:|Mamma:|Pappa:)\s*/i, '') : '';
+                        boksHTML += `Neste avtale er <span class="status-box-highlight">${renSummary}</span> klokken <span class="status-box-highlight">${nesteTid}</span>.`;
+                    } else {
+                        boksHTML += `Det er natt, og det er ingen flere avtaler før i morgen.`;
+                    }
+                } else {
+                    if (nesteAvtale) {
+                        const nesteTid = new Date(nesteAvtale.start.dateTime).toLocaleTimeString('no-NO', {hour: '2-digit', minute:'2-digit', timeZone: 'Europe/Oslo'});
+                        let renSummary = nesteAvtale.summary ? nesteAvtale.summary.replace(/^(Mamma\s*&\s*Pappa:|Mamma\s+og\s+Pappa:|Mamma:|Pappa:)\s*/i, '') : '';
+                        boksHTML += `Neste avtale er <span class="status-box-highlight">${renSummary}</span> klokken <span class="status-box-highlight">${nesteTid}</span>.`;
+                    } else {
+                        boksHTML += `Ingen flere planlagte avtaler i dag.`;
+                    }
+                }
+
+                statusEl.innerHTML = boksHTML;
+            } catch (feil) {
+                console.error("Feil i statusberegning:", feil);
+                statusEl.innerHTML = `Nå er klokken <span class="status-box-highlight">${hoursStr}:${minutesStr}</span>.`;
+            }
         }
 
-        // Automatisk rensing av prefiks-tekst siden den uansett erstattes av fargede badges
+        function updateClockAndLayout() {
+            const now = new Date();
+            const m = now.getMinutes();
+            const h = now.getHours();
+
+            let hoursStr = String(h).padStart(2, '0');
+            let minutesStr = String(m).padStart(2, '0');
+            
+            document.getElementById('digital-clock').textContent = `${hoursStr}:${minutesStr}`;
+
+            if (h >= 7 && h < 22) {
+                document.body.classList.remove('night-mode');
+            } else {
+                document.body.classList.add('night-mode');
+            }
+
+            let periodText = "natt";
+            if (h >= 6 && h < 9) periodText = "morgen";
+            else if (h >= 9 && h < 12) periodText = "formiddag";
+            else if (h >= 12 && h < 18) periodText = "ettermiddag";
+            else if (h >= 18 && h < 23) periodText = "kveld";
+            
+            const dayName = ukeDager[now.getDay()].toLowerCase();
+            const dayNum = now.getDate();
+            const monthName = maaneder[now.getMonth()].toLowerCase();
+            const yearNum = now.getFullYear();
+
+            document.getElementById('complete-date-string').textContent = `Det er ${periodText}, ${dayName} ${dayNum}. ${monthName} ${yearNum}`;
+
+            oppdaterLiveStatusBoks(hoursStr, minutesStr);
+
+            if (h === 3 && m === 0 && now.getSeconds() === 0) {
+                window.location.reload(true);
+                return;
+            }
+            if (h === 0 && m === 0 && now.getSeconds() === 0) {
+                renderCalendarList(); 
+            }
+
+            const dayOfWeek = now.getDay(); 
+            if (dayOfWeek === 6) {
+                document.getElementById('info-day-heading').innerText = "lørdag";
+                document.getElementById('info-text').innerHTML = genererRutineHTML(fasteRutinerLoerdag);
+            } else if (dayOfWeek === 0) {
+                document.getElementById('info-day-heading').innerText = "søndag";
+                document.getElementById('info-text').innerHTML = genererRutineHTML(fasteRutinerSoendag);
+            } else {
+                document.getElementById('info-day-heading').innerText = "mandag - fredag";
+                document.getElementById('info-text').innerHTML = genererRutineHTML(fasteRutinerHverdag);
+            }
+        }
+
         function formatEventSummary(summary) {
             if (!summary) return '';
             let html = summary;
-            
-            // Erstatter og fjerner samtidig råteksten bak, slik at det ikke står "Pappa: Pappa: Jon kommer..."
             html = html.replace(/^(Mamma\s*&\s*[pP]appa:|Mamma\s+og\s+[pP]appa:)\s*/g, '<span class="badge-navn badge-begge">Mamma & pappa</span> ');
             html = html.replace(/^[mM]amma:\s*/g, '<span class="badge-navn badge-mamma">Mamma</span> ');
             html = html.replace(/^[pP]appa:\s*/g, '<span class="badge-navn badge-pappa">Pappa</span> ');
