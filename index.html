@@ -9,11 +9,18 @@
     </style>
 </head>
 <body>
-    <div id="calendar-list">Laster...</div>
+    <div id="calendar-list">Laster avtaler...</div>
+
     <script src="https://apis.google.com/js/api.js"></script>
     <script>
         const API_KEY = 'AIzaSyDabiLiH6tR1bonxhjgNqq9PoTSa9wogzE';
         const CALENDAR_ID = '6836a3463ada75841f11c52afbd588f7467b5c7014a9ac8118e24205f42d301c@group.calendar.google.com';
+
+        // Hjelpefunksjon for å finne første klokkeslett-mønster i en tekst
+        function finnKlokkeslett(tekst) {
+            const match = tekst.match(/([0-9]{1,2})[:.]([0-9]{2})/);
+            return match ? parseInt(match[1]) * 60 + parseInt(match[2]) : 9999;
+        }
 
         function start() {
             gapi.load('client', () => {
@@ -26,17 +33,18 @@
             gapi.client.calendar.events.list({
                 calendarId: CALENDAR_ID,
                 timeMin: new Date().toISOString(),
-                singleEvents: true,
-                orderBy: 'startTime'
+                singleEvents: true
             }).then(res => {
                 const list = document.getElementById('calendar-list');
                 list.innerHTML = '';
-                (res.result.items || []).forEach(ev => {
-                    // Bruker start.dateTime fra Google, som nå er korrekt satt opp i kalenderen din
-                    let startTid = ev.start.dateTime ? new Date(ev.start.dateTime) : null;
-                    let tidStr = startTid ? startTid.toLocaleTimeString('no-NO', {hour:'2-digit', minute:'2-digit'}) : "Hele dagen";
-                    
-                    list.innerHTML += `<div class='event-item'><b>${tidStr}</b>: ${ev.summary}</div>`;
+                
+                // Manuelt sortere basert på klokkeslett funnet i teksten
+                let items = (res.result.items || []).sort((a, b) => finnKlokkeslett(a.summary) - finnKlokkeslett(b.summary));
+
+                items.forEach(ev => {
+                    // Vi viser tidspunktet fra Google hvis det finnes, ellers teksten fra tittelen
+                    let tid = ev.start.dateTime ? new Date(ev.start.dateTime).toLocaleTimeString('no-NO', {hour:'2-digit', minute:'2-digit'}) : "Hele dagen";
+                    list.innerHTML += `<div class='event-item'><b>${tid}</b>: ${ev.summary}</div>`;
                 });
             });
         }
