@@ -374,9 +374,10 @@
                     const dateNum = currentDay.getDate();
                     const monthName = maaneder[currentDay.getMonth()].toLowerCase();
                     
-                    // Vi bruker slice(1) for å hente resten av ordet og toUpperCase() på første bokstav
-let dagNavnFormatisert = dayName.charAt(0).toUpperCase() + dayName.slice(1).toLowerCase();
-daySection.innerHTML = `<div class="day-title">${prefix}${dagNavnFormatisert} ${dateNum}. ${monthName}</div>`;
+// Vi beholder prefix (I dag/I morgen) slik den er, 
+// og tvinger kun stor forbokstav på første bokstav i selve dagnavnet
+let dagNavnStort = dayName.charAt(0).toUpperCase() + dayName.slice(1).toLowerCase();
+daySection.innerHTML = `<div class="day-title">${prefix}${dagNavnStort} ${dateNum}. ${monthName}</div>`;
 
                     if (hasHoliday) {
                         const holDiv = document.createElement('div');
