@@ -35,7 +35,18 @@
             }).then(res => {
                 const list = document.getElementById('calendar-list');
                 list.innerHTML = '';
-                (res.result.items || []).forEach(ev => {
+                
+                // Hent ut og sorter manuelt
+                let items = res.result.items || [];
+                items.sort((a, b) => {
+                    let tidA = a.start.dateTime ? new Date(a.start.dateTime).getTime() : 0;
+                    let tidB = b.start.dateTime ? new Date(b.start.dateTime).getTime() : 0;
+                    return tidA - tidB;
+                });
+
+                if (items.length === 0) { list.innerText = "Ingen avtaler funnet."; return; }
+                
+                items.forEach(ev => {
                     let tid = ev.start.dateTime ? new Date(ev.start.dateTime).toLocaleTimeString('no-NO', {hour:'2-digit', minute:'2-digit'}) : "Hele dagen";
                     list.innerHTML += `<div class='event-item'><b>${tid}</b>: ${ev.summary}</div>`;
                 });
