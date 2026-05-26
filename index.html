@@ -259,8 +259,22 @@
                     const erIIdag = startTid.toLocaleDateString('sv-SE', {timeZone: 'Europe/Oslo'}) === dagensNøkkel;
                     const tidPrefix = erIIdag ? "klokken" : "i morgen klokken";
                     
-                    let renSummary = nesteAvtale.summary ? nesteAvtale.summary.replace(/^(Mamma\s*&\s*Pappa:|Mamma\s+og\s+Pappa:|Mamma:|Pappa:)\s*/i, '') : '';
-                    statusEl.innerHTML = `Neste avtale er <span class="status-box-highlight">${renSummary}</span> ${tidPrefix} <span class="status-box-highlight">${nesteTid}</span>.`;
+                    let summary = nesteAvtale.summary || "";
+                    let hvem = "Neste avtale er";
+                    let renSummary = summary;
+
+                    if (/^(Mamma\s*&\s*Pappa:|Mamma\s+og\s+Pappa:)/i.test(summary)) {
+                        hvem = "Neste avtale er til mamma og pappa";
+                        renSummary = summary.replace(/^(Mamma\s*&\s*Pappa:|Mamma\s+og\s+Pappa:)\s*/i, '');
+                    } else if (/^Mamma:/i.test(summary)) {
+                        hvem = "Neste avtale er til mamma";
+                        renSummary = summary.replace(/^Mamma:\s*/i, '');
+                    } else if (/^Pappa:/i.test(summary)) {
+                        hvem = "Neste avtale er til pappa";
+                        renSummary = summary.replace(/^Pappa:\s*/i, '');
+                    }
+
+                    statusEl.innerHTML = `${hvem} <span class="status-box-highlight">${renSummary}</span> ${tidPrefix} <span class="status-box-highlight">${nesteTid}</span>.`;
                 } else {
                     statusEl.innerHTML = `Ingen flere planlagte avtaler de nærmeste timene.`;
                 }
