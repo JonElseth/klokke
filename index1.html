@@ -435,8 +435,14 @@
             } catch (e) { console.error(e); }
         }
 
-        function updateClockAndLayout() {
+function updateClockAndLayout() {
             const now = new Date();
+            
+            // NY LOGIKK: Oppdater umiddelbart ved midnatt
+            if (now.getHours() === 0 && now.getMinutes() === 0 && now.getSeconds() === 0) {
+                fetchCalendarData();
+            }
+
             document.getElementById('digital-clock').textContent = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
             if (now.getHours() >= 7 && now.getHours() < 22) document.body.classList.remove('night-mode'); else document.body.classList.add('night-mode');
             const periods = ["natt", "morgen", "formiddag", "ettermiddag", "kveld"];
