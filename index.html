@@ -2,79 +2,69 @@
 <html lang="no">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <title>Eksklusiv Seniorkalender</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seniorkalender</title>
     <style>
-        :root { --bg-color: #f1f5f9; --text-main: #1e293b; --text-muted: #64748b; --clock-accent: #ef4444; --box-bg: #ffffff; --box-border: #cbd5e1; --highlight-text: #0066cc; }
-        body.night-mode { --bg-color: #0f172a; --text-main: #f8fafc; --text-muted: #94a3b8; --box-bg: #1e293b; --box-border: #334155; --highlight-text: #38bdf8; }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { min-height: 100vh; background-color: var(--bg-color); color: var(--text-main); font-family: 'Poppins', sans-serif; padding: 60px; transition: background 1s ease; }
-        header { display: flex; justify-content: space-between; margin-bottom: 40px; }
-        .digital-clock-big { font-size: 120px; font-weight: 500; }
-        .status-box { width: 100%; margin-bottom: 40px; padding: 24px; background: var(--box-bg); border: 1px solid var(--box-border); border-radius: 16px; font-size: 1.6rem; }
-        main { display: flex; gap: 60px; }
-        .left-column { width: 300px; border-right: 1px dashed var(--text-muted); }
-        .right-column { flex: 1; }
-        .event-item { font-size: 1.55rem; margin-bottom: 20px; }
-        .event-time { color: var(--clock-accent); font-weight: 700; }
+        :root { --bg: #f1f5f9; --text: #1e293b; --accent: #ef4444; }
+        body.night-mode { --bg: #0f172a; --text: #f8fafc; }
+        body { background: var(--bg); color: var(--text); font-family: sans-serif; padding: 40px; }
+        .digital-clock { font-size: 80px; font-weight: bold; }
+        #calendar-list { margin-top: 20px; font-size: 1.5rem; }
+        .event-item { margin-bottom: 15px; }
     </style>
 </head>
 <body>
-    <header>
-        <div id="digital-clock" class="digital-clock-big">00:00</div>
-        <div id="complete-date-string" style="font-size: 1.6rem;">Laster...</div>
-    </header>
-    <div class="status-box" id="live-status-bar">Laster...</div>
-    <main>
-        <div class="left-column">
-            <h2>Rutiner:</h2>
-            <div id="info-text"></div>
-        </div>
-        <div class="right-column">
-            <h2>Dette skjer:</h2>
-            <div id="calendar-list">Laster kalender...</div>
-        </div>
-    </main>
+    <div id="digital-clock" class="digital-clock">00:00</div>
+    <div id="live-status-bar">Laster status...</div>
+    <h2>Dette skjer:</h2>
+    <div id="calendar-list">Laster avtaler fra Google...</div>
+
     <script src="https://apis.google.com/js/api.js"></script>
     <script>
         const API_KEY = 'AIzaSyDabiLiH6tR1bonxhjgNqq9PoTSa9wogzE';
         const CALENDAR_ID = '6836a3463ada75841f11c52afbd588f7467b5c7014a9ac8118e24205f42d301c@group.calendar.google.com';
 
-        function initClient() {
-            gapi.client.init({apiKey: API_KEY, discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"]})
-                .then(() => fetchEvents())
-                .catch(e => console.error("Init feil:", e));
+        function start() {
+            gapi.load('client', () => {
+                gapi.client.init({
+                    apiKey: API_KEY,
+                    discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"]
+                }).then(() => {
+                    console.log("API initialisert");
+                    fetchEvents();
+                    setInterval(fetchEvents, 60000); // Oppdater hvert minutt
+                }).catch(e => document.getElementById('calendar-list').innerText = "Init feil: " + e.message);
+            });
         }
 
         function fetchEvents() {
             gapi.client.calendar.events.list({
-                calendarId: CALENDAR_ID,
-                timeMin: new Date().toISOString(),
-                singleEvents: true,
-                orderBy: 'startTime'
+                'calendarId': CALENDAR_ID,
+                'timeMin': new Date().toISOString(),
+                'singleEvents': true,
+                'orderBy': 'startTime'
             }).then(res => {
                 const list = document.getElementById('calendar-list');
                 list.innerHTML = '';
-                res.result.items.forEach(ev => {
-                    let time = ev.start.dateTime ? new Date(ev.start.dateTime).toLocaleTimeString('no-NO', {hour: '2-digit', minute:'2-digit'}) : "Hele dagen";
-                    list.innerHTML += `<div class='event-item'><span class='event-time'>${time}:</span> ${ev.summary}</div>`;
+                const items = res.result.items || [];
+                if (items.length === 0) { list.innerText = "Ingen avtaler funnet."; return; }
+                
+                items.forEach(ev => {
+                    let time = ev.start.dateTime ? new Date(ev.start.dateTime).toLocaleTimeString('no-NO', {hour:'2-digit', minute:'2-digit'}) : "Hele dagen";
+                    list.innerHTML += `<div class='event-item'><b>${time}</b>: ${ev.summary}</div>`;
                 });
             }).catch(e => {
                 document.getElementById('calendar-list').innerText = "Kunne ikke hente avtaler. Sjekk at kalenderen er offentlig.";
             });
         }
 
-        function updateClock() {
+        setInterval(() => {
             const n = new Date();
-            document.getElementById('digital-clock').textContent = n.toLocaleTimeString('no-NO', {hour: '2-digit', minute:'2-digit'});
+            document.getElementById('digital-clock').textContent = n.toLocaleTimeString('no-NO', {hour:'2-digit', minute:'2-digit'});
             document.body.classList.toggle('night-mode', n.getHours() < 7 || n.getHours() >= 22);
-        }
+        }, 1000);
 
-        gapi.load('client', initClient);
-        setInterval(updateClock, 1000);
-        setInterval(fetchEvents, 300000);
-        updateClock();
+        start();
     </script>
 </body>
 </html>
