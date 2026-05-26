@@ -5,15 +5,11 @@
     <title>Seniorkalender</title>
     <style>
         body { font-family: sans-serif; padding: 40px; background: #f1f5f9; color: #1e293b; }
-        .digital-clock { font-size: 80px; font-weight: bold; margin-bottom: 20px; }
-        .event-item { font-size: 1.5rem; margin-bottom: 15px; padding: 10px; background: white; border-radius: 8px; border-left: 5px solid #ef4444; }
+        .event-item { font-size: 1.5rem; margin-bottom: 15px; padding: 15px; background: white; border-radius: 8px; border-left: 5px solid #06b6d4; }
     </style>
 </head>
 <body>
-    <div id="digital-clock" class="digital-clock">00:00</div>
-    <h2>Dette skjer:</h2>
-    <div id="calendar-list">Laster avtaler...</div>
-
+    <div id="calendar-list">Laster...</div>
     <script src="https://apis.google.com/js/api.js"></script>
     <script>
         const API_KEY = 'AIzaSyDabiLiH6tR1bonxhjgNqq9PoTSa9wogzE';
@@ -22,7 +18,7 @@
         function start() {
             gapi.load('client', () => {
                 gapi.client.init({apiKey: API_KEY, discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"]})
-                .then(() => fetchEvents());
+                .then(fetchEvents);
             });
         }
 
@@ -35,30 +31,15 @@
             }).then(res => {
                 const list = document.getElementById('calendar-list');
                 list.innerHTML = '';
-                
-                // Hent ut og sorter manuelt
-                let items = res.result.items || [];
-                items.sort((a, b) => {
-                    let tidA = a.start.dateTime ? new Date(a.start.dateTime).getTime() : 0;
-                    let tidB = b.start.dateTime ? new Date(b.start.dateTime).getTime() : 0;
-                    return tidA - tidB;
+                (res.result.items || []).forEach(ev => {
+                    // Bruker start.dateTime fra Google, som nå er korrekt satt opp i kalenderen din
+                    let startTid = ev.start.dateTime ? new Date(ev.start.dateTime) : null;
+                    let tidStr = startTid ? startTid.toLocaleTimeString('no-NO', {hour:'2-digit', minute:'2-digit'}) : "Hele dagen";
+                    
+                    list.innerHTML += `<div class='event-item'><b>${tidStr}</b>: ${ev.summary}</div>`;
                 });
-
-                if (items.length === 0) { list.innerText = "Ingen avtaler funnet."; return; }
-                
-                items.forEach(ev => {
-                    let tid = ev.start.dateTime ? new Date(ev.start.dateTime).toLocaleTimeString('no-NO', {hour:'2-digit', minute:'2-digit'}) : "Hele dagen";
-                    list.innerHTML += `<div class='event-item'><b>${tid}</b>: ${ev.summary}</div>`;
-                });
-            }).catch(e => {
-                document.getElementById('calendar-list').innerText = "Feil: " + e.message;
             });
         }
-
-        setInterval(() => {
-            document.getElementById('digital-clock').textContent = new Date().toLocaleTimeString('no-NO', {hour:'2-digit', minute:'2-digit'});
-        }, 1000);
-
         start();
     </script>
 </body>
