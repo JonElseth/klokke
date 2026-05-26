@@ -26,6 +26,7 @@
             --box-bg: #ffffff;
             --box-border: #cbd5e1;
             --highlight-text: #0066cc; 
+            --time-of-day-color: #0f172a; /* Mørk, tydelig farge */
         }
 
         body.night-mode {
@@ -39,6 +40,7 @@
             --box-bg: #1e293b;
             --box-border: #334155;
             --highlight-text: #38bdf8; 
+            --time-of-day-color: #f8fafc;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -83,14 +85,26 @@
             margin-bottom: -5px; 
         }
 
+        /* NY DESIGN FOR TIDSORIENTERING - STØRRE OG TYDELIGERE */
+        .time-of-day-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            justify-content: flex-start;
+        }
+
+        .time-of-day-label {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--time-of-day-color);
+            text-transform: capitalize;
+            line-height: 1.2;
+        }
+
         .header-date-right {
-            position: absolute;
-            top: 0;
-            right: 0;
-            text-align: right;
-            font-size: 1.6rem; 
-            font-weight: 500;  
-            color: var(--text-main);
+            font-size: 1.4rem; 
+            font-weight: 400;  
+            color: var(--text-muted);
             line-height: 1.0; 
         }
 
@@ -144,7 +158,7 @@
             header { flex-direction: column; height: auto; gap: 15px; text-align: center; margin-bottom: 20px; align-items: center; }
             .header-clocks-left { justify-content: center; align-items: center; width: 100%; height: auto; }
             .digital-clock-big { font-size: 5rem; line-height: 1.0; height: auto; letter-spacing: -2px; margin-bottom: 0; }
-            .header-date-right { position: static; text-align: center; width: 100%; font-size: 1.6rem; }
+            .time-of-day-label { font-size: 1.8rem; }
             .status-box-container { font-size: 1.4rem; padding: 20px; margin-bottom: 25px; }
             main { flex-direction: column; gap: 40px; }
             .left-column { width: 100%; padding-right: 0; margin-right: 0; border-right: none; }
@@ -159,7 +173,10 @@
         <div class="header-clocks-left">
             <div class="digital-clock-big" id="digital-clock">00:00</div>
         </div>
-        <div class="header-date-right" id="complete-date-string">Laster dato...</div>
+        <div class="time-of-day-wrapper">
+            <div class="time-of-day-label" id="time-of-day-label">Laster...</div>
+            <div class="header-date-right" id="complete-date-string">Laster dato...</div>
+        </div>
     </header>
 
     <div class="status-box-container" id="live-status-bar">Laster neste avtale...</div>
@@ -373,7 +390,7 @@
 
                             if (b.computedStart && !b.isAllDay) {
                                 const d = new Date(b.computedStart);
-                                bTid = { timer: d.getHours(), minutter: d.getMinutes() };
+                                bTid = { timer: b.getHours(), minutter: b.getMinutes() };
                             } else {
                                 const tekstTid = hentKlokkeslettFraTekst(b.summary);
                                 if (tekstTid) bTid = { timer: tekstTid.timer, minutter: tekstTid.minutter };
@@ -446,13 +463,17 @@
             else if (h >= 12 && h < 18) periodText = "ettermiddag";
             else if (h >= 18 && h < 23) periodText = "kveld";
             
+            // Oppdater tids-etiketten
+            const timeLabelEl = document.getElementById('time-of-day-label');
+            if (timeLabelEl) timeLabelEl.innerText = periodText;
+            
             const dayName = ukeDager[now.getDay()].toLowerCase();
             const dayNum = now.getDate();
             const monthName = maaneder[now.getMonth()].toLowerCase();
             const yearNum = now.getFullYear();
 
             const dateStrEl = document.getElementById('complete-date-string');
-            if (dateStrEl) dateStrEl.textContent = `Det er ${periodText}, ${dayName} ${dayNum}. ${monthName} ${yearNum}`;
+            if (dateStrEl) dateStrEl.textContent = `${dayName} ${dayNum}. ${monthName} ${yearNum}`;
 
             oppdaterLiveStatusBoks();
 
