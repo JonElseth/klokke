@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <title>Eksklusiv Seniorkalender</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg-color: #f1f5f9; --text-main: #1e293b; --text-muted: #64748b; --clock-accent: #ef4444; --box-bg: #ffffff; --box-border: #cbd5e1; --highlight-text: #0066cc; }
+        body.night-mode { --bg-color: #0f172a; --text-main: #f8fafc; --text-muted: #94a3b8; --box-bg: #1e293b; --box-border: #334155; --highlight-text: #38bdf8; }
+        body { background-color: var(--bg-color); color: var(--text-main); font-family: 'Poppins', sans-serif; padding: 79px 60px; transition: background 1s ease; height: 100vh; overflow-y: auto; }
+        header { display: flex; justify-content: space-between; margin-bottom: 40px; align-items: flex-end; }
+        .digital-clock-big { font-size: 142px; font-weight: 500; line-height: 0.7; }
+        .status-box-container { width: 100%; margin-bottom: 40px; padding: 24px; background-color: var(--box-bg); border: 1px solid var(--box-border); border-radius: 16px; font-size: 1.6rem; }
+        .status-box-highlight { color: var(--highlight-text); font-weight: 500; }
+        main { display: flex; gap: 60px; }
+        .left-column { width: 350px; border-right: 1px dashed var(--text-muted); padding-right: 20px; }
+        .event-item { font-family: 'Lato'; font-size: 1.55rem; margin-bottom: 20px; padding: 10px; border-left: 5px solid var(--clock-accent); background: var(--box-bg); }
+        .info-item { font-family: 'Lato'; font-size: 1.55rem; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <header>
+        <div id="digital-clock" class="digital-clock-big">00:00</div>
+        <div id="complete-date-string" style="font-size: 1.6rem; text-align: right;">Laster dato...</div>
+    </header>
+
+    <div class="status-box-container" id="live-status-bar">Laster status...</div>
+
+    <main>
+        <div class="left-column">
+            <h2>Rutiner (<span id="rutine-dag-navn">--</span>)</h2>
+            <div id="info-text"></div>
+        </div>
+        <div class="right-column" style="flex: 1;">
+            <h2>Dette skjer</h2>
+            <div id="calendar-list">Laster...</div>
+        </div>
+    </main>
+
+    <script src="https://apis.google.com/js/api.js"></script>
+    <script>
+        const API_KEY = 'AIzaSyDabiLiH6tR1bonxhjgNqq9PoTSa9wogzE';
+        const CALENDAR_ID = '6836a3463ada75841f11c52afbd588f7467b5c7014a9ac8118e24205f42d301c@group.calendar.google.com';
+        const ukeDager = ["søndag", "mandag", "tirsdag", "onsdag", "torsdag", "fredag", "lørdag"];
+        const maaneder = ["januar", "februar", "mars", "april", "mai", "juni", "juli", "august", "september", "oktober", "november", "desember"];
+        
+        const rutiner = {
+            hverdag: [{tid: "07.30", tekst: "Frokost"}, {tid: "08.00", tekst: "Medisiner"}, {tid: "09.00", tekst: "Tur"}, {tid: "15.30", tekst: "Middag"}],
+            loerdag: [{tid: "07.30", tekst: "Frokost"}, {tid: "12.00", tekst: "Varm lunsj"}, {tid: "15.30", tekst: "Middag"}],
+            soendag: [{tid: "07.30", tekst: "Frokost"}, {tid: "13.00", tekst: "Middag"}]
+        };
+
+        function updateDisplay() {
+            const n = new Date();
+            // Klokke
+            document.getElementById('digital-clock').textContent = n.toLocaleTimeString('no-NO', {hour: '2-digit', minute:'2-digit'});
+            
+            // Dato-streng
+            const p = n.getHours() < 6 ? "natt" : n.getHours() < 9 ? "morgen" : n.getHours() < 12 ? "formiddag" : n.getHours() < 18 ? "ettermiddag" : "kveld";
+            document.getElementById('complete-date-string').textContent = `Det er ${p}, ${ukeDager[n.getDay()]} ${n.getDate()}. ${maaneder[n.getMonth()]} ${n.getFullYear()}`;
+            
+            // Nattmodus
+            document.body.classList.toggle('night-mode', n.getHours() < 7 || n.getHours() >= 22);
+        }
+
+        function oppdaterRutiner() {
+            const d = new Date().getDay();
+            let dag, liste;
+            if (d === 6) { dag = "lørdag"; liste = rutiner.loerdag; }
+            else if (d === 0) { dag = "søndag"; liste = rutiner.soendag; }
+            else { dag = "mandag - fredag"; liste = rutiner.hverdag; }
+            
+            document.getElementById('rutine-dag-navn').textContent = dag;
+            document.getElementById('info-text').innerHTML = liste.map(r => `<div class='info-item'><b>${r.tid}</b>: ${r.tekst}</div>`).join('');
+        }
+
+        function updateLiveStatus(events) {
+            const statusEl = document.getElementById('live-status-bar');
+            const nå = new Date();
+            const neste = events.filter(e => new Date(e.start.dateTime) > nå)[0];
+
+            if (nå.getHours() >= 22 || nå.getHours() < 7) {
+                if (neste) {
+                    const tid = new Date(neste.start.dateTime);
+                    const ukedagNavn = ukeDager[tid.getDay()];
+                    statusEl.innerHTML = `Det er natt, ingen flere avtaler før <span class="status-box-highlight">${ukedagNavn}</span>.`;
+                } else {
+                    statusEl.innerHTML = "Det er natt, ingen flere avtaler.";
+                }
+            } else {
+                statusEl.innerHTML = neste ? `Neste avtale er: <span class="status-box-highlight">${neste.summary}</span>` : "Ingen flere avtaler i dag.";
+            }
+        }
+
+        function fetchEvents() {
+            gapi.client.calendar.events.list({
+                calendarId: CALENDAR_ID,
+                timeMin: new Date().toISOString(),
+                singleEvents: true,
+                orderBy: 'startTime'
+            }).then(res => {
+                const items = res.result.items || [];
+                document.getElementById('calendar-list').innerHTML = items.map(ev => 
+                    `<div class='event-item'><b>${ev.start.dateTime ? new Date(ev.start.dateTime).toLocaleTimeString('no-NO', {hour:'2-digit', minute:'2-digit'}) : "Hele dagen"}</b>: ${ev.summary}</div>`
+                ).join('');
+                updateLiveStatus(items);
+            });
+        }
+
+        function setupInactivity() {
+            let timeout;
+            const reset = () => {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => window.scrollTo({top: 0, behavior: 'smooth'}), 180000);
+            };
+            ['scroll', 'touchstart', 'mousedown', 'keydown', 'wheel'].forEach(e => window.addEventListener(e, reset));
+            reset();
+        }
+
+        setInterval(updateDisplay, 1000);
+        oppdaterRutiner();
+        setupInactivity();
+        gapi.load('client', () => {
+            gapi.client.init({apiKey: API_KEY, discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"]})
+            .then(fetchEvents);
+        });
+    </script>
+</body>
+</html>
