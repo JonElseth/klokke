@@ -438,9 +438,14 @@
 function updateClockAndLayout() {
             const now = new Date();
             
-            // NY LOGIKK: Oppdater umiddelbart ved midnatt
+            // Oppdater umiddelbart ved midnatt
             if (now.getHours() === 0 && now.getMinutes() === 0 && now.getSeconds() === 0) {
                 fetchCalendarData();
+            }
+
+            // Tving oppdatering av kalenderlisten hvert minutt for å vise "Tid passert" korrekt
+            if (now.getSeconds() === 0) {
+                renderCalendarList();
             }
 
             document.getElementById('digital-clock').textContent = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
