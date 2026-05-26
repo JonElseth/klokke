@@ -131,18 +131,16 @@
 
         main { flex: 1; display: flex; }
         .column { padding-top: 10px; }
-        .left-column { width: max-content; background-color: var(--bg-color); padding-right: 30px; margin-right: 30px; border-right: 1px dashed var(--text-muted); }
+        .left-column { width: max-content; background-color: var(--bg-color); padding-right: 60px; margin-right: 60px; border-right: 1px dashed var(--text-muted); }
         .right-column { flex: 1; background-color: var(--bg-color); }
-        
-        /* Justert marger for Rutiner og Avtaler */
-        .info-title, .calendar-title { font-size: 2.4rem; font-weight: 500; margin-bottom: 5px; color: var(--text-main); }
+        .info-title, .calendar-title { font-size: 2.4rem; font-weight: 500; margin-bottom: 14px; color: var(--text-main); }
         .info-day-title { font-family: 'Poppins', sans-serif; font-size: 1.75rem; font-weight: 400; margin-bottom: 14px; padding-left: 40px; text-transform: lowercase; }
         .info-content { display: flex; flex-direction: column; gap: 6px; font-family: 'Lato', sans-serif; font-size: 1.55rem; color: var(--text-main); padding-left: 40px; }
         .info-item { white-space: nowrap; line-height: 1.4; display: flex; align-items: flex-start; }
         .info-bullet { flex-shrink: 0; margin-right: 10px; line-height: 1.4; }
         .info-time { color: var(--clock-accent); font-weight: 700; margin-right: 5px; }
         
-        /* Stiplet linje mellom dager (både horisontalt og vertikalt skille) */
+        /* Stiplet linje mellom dager (horisontal) */
         .day-section { width: 100%; margin-bottom: 35px; padding-bottom: 30px; border-bottom: 1px dashed var(--box-border); }
         
         .day-title { display: flex; justify-content: flex-start; align-items: center; gap: 15px; font-family: 'Poppins', sans-serif; font-size: 1.75rem; font-weight: 400; margin-bottom: 14px; padding-left: 40px; }
@@ -322,9 +320,8 @@
                 container.innerHTML = '';
                 const today = new Date();
                 const todayKey = today.toLocaleDateString('sv-SE', {timeZone: 'Europe/Oslo'});
-                const iMorgen = new Date(); iMorgen.setDate(today.getDate() + 1);
-                const morgenKey = iMorgen.toLocaleDateString('sv-SE', {timeZone: 'Europe/Oslo'});
-
+                const morgenKey = new Date(today.getTime() + 86400000).toLocaleDateString('sv-SE', {timeZone: 'Europe/Oslo'});
+                
                 for (let i = 0; i < 60; i++) {
                     const currentDay = new Date();
                     currentDay.setDate(today.getDate() + i);
@@ -363,7 +360,7 @@
             oppdaterLiveStatusBoks();
         }
 
-        async function requestWakeLock() { try { if ('wakeLock' in navigator) wakeLock = await navigator.wakeLock.request('screen'); } catch (e) {} }
+        async function requestWakeLock() { try { if ('wakeLock' in navigator) await navigator.wakeLock.request('screen'); } catch (e) {} }
         function fetchCalendarData() {
             if (typeof gapi === 'undefined' || !gapi.client) return;
             const start = new Date(); start.setHours(0,0,0,0); const end = new Date(); end.setDate(end.getDate() + 185);
@@ -371,7 +368,7 @@
                 gapi.client.calendar.events.list({ 'calendarId': CALENDAR_ID, 'timeMin': start.toISOString(), 'timeMax': end.toISOString(), 'singleEvents': true, 'orderBy': 'startTime' }),
                 gapi.client.calendar.events.list({ 'calendarId': HOLIDAY_CALENDAR_ID, 'timeMin': start.toISOString(), 'timeMax': end.toISOString(), 'singleEvents': true })
             ]).then(res => {
-                globalEventsCache = {};
+                globalEventsCache = {}; 
                 res[0].result.items.forEach(ev => {
                     const k = new Date(ev.start.dateTime || ev.start.date).toLocaleDateString('sv-SE', {timeZone: 'Europe/Oslo'});
                     if (!globalEventsCache[k]) globalEventsCache[k] = [];
