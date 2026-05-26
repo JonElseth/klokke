@@ -26,7 +26,7 @@
             --box-bg: #ffffff;
             --box-border: #cbd5e1;
             --highlight-text: #0066cc; 
-            --time-of-day-color: #0f172a; /* Mørk, tydelig farge */
+            --time-of-day-color: #0f172a;
         }
 
         body.night-mode {
@@ -85,7 +85,7 @@
             margin-bottom: -5px; 
         }
 
-        /* NY DESIGN FOR TIDSORIENTERING - STØRRE OG TYDELIGERE */
+        /* OPPDATERT DESIGN: STØRRE OG MER LUFT */
         .time-of-day-wrapper {
             display: flex;
             flex-direction: column;
@@ -94,18 +94,19 @@
         }
 
         .time-of-day-label {
-            font-size: 2.2rem;
+            font-size: 3.5rem; /* Enda større */
             font-weight: 700;
             color: var(--time-of-day-color);
             text-transform: capitalize;
-            line-height: 1.2;
+            line-height: 1.0;
         }
 
         .header-date-right {
-            font-size: 1.4rem; 
-            font-weight: 400;  
+            font-size: 2.0rem; /* Enda større */
+            font-weight: 500;  
             color: var(--text-muted);
-            line-height: 1.0; 
+            line-height: 1.0;
+            margin-top: 15px; /* MER LUFT */
         }
 
         .status-box-container {
@@ -158,7 +159,8 @@
             header { flex-direction: column; height: auto; gap: 15px; text-align: center; margin-bottom: 20px; align-items: center; }
             .header-clocks-left { justify-content: center; align-items: center; width: 100%; height: auto; }
             .digital-clock-big { font-size: 5rem; line-height: 1.0; height: auto; letter-spacing: -2px; margin-bottom: 0; }
-            .time-of-day-label { font-size: 1.8rem; }
+            .time-of-day-label { font-size: 2.5rem; }
+            .header-date-right { font-size: 1.6rem; }
             .status-box-container { font-size: 1.4rem; padding: 20px; margin-bottom: 25px; }
             main { flex-direction: column; gap: 40px; }
             .left-column { width: 100%; padding-right: 0; margin-right: 0; border-right: none; }
@@ -390,7 +392,7 @@
 
                             if (b.computedStart && !b.isAllDay) {
                                 const d = new Date(b.computedStart);
-                                bTid = { timer: b.getHours(), minutter: b.getMinutes() };
+                                bTid = { timer: d.getHours(), minutter: d.getMinutes() };
                             } else {
                                 const tekstTid = hentKlokkeslettFraTekst(b.summary);
                                 if (tekstTid) bTid = { timer: tekstTid.timer, minutter: tekstTid.minutter };
@@ -463,7 +465,6 @@
             else if (h >= 12 && h < 18) periodText = "ettermiddag";
             else if (h >= 18 && h < 23) periodText = "kveld";
             
-            // Oppdater tids-etiketten
             const timeLabelEl = document.getElementById('time-of-day-label');
             if (timeLabelEl) timeLabelEl.innerText = periodText;
             
