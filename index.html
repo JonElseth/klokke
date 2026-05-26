@@ -462,7 +462,7 @@ function oppdaterLiveStatusBoks(hoursStr, minutesStr) {
                 const todayKey = today.toLocaleDateString('sv-SE', {timeZone: 'Europe/Oslo'});
                 let totalDaysRendered = 0;
 
-                for (let i = 0; i < 185; i++) {
+                for (let i = 0; i < 60; i++) {
                     const currentDay = new Date();
                     currentDay.setDate(today.getDate() + i);
                     const dateKey = currentDay.toLocaleDateString('sv-SE', {timeZone: 'Europe/Oslo'});
