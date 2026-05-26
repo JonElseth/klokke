@@ -427,11 +427,7 @@ if (nesteAvtale) {
     boksHTML = `Ingen flere avtaler i dag.`;
 }
 
-        statusEl.innerHTML = boksHTML;
-    } catch (feil) {
-        statusEl.innerHTML = `Nå er klokken <span class="status-box-highlight">${hoursStr}:${minutesStr}</span>.`;
-    }
-}
+
 
         function formatEventSummary(summary) {
             if (!summary) return '';
