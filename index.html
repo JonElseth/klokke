@@ -385,87 +385,51 @@
             return html;
         }
 
-        function oppdaterLiveStatusBoks(hoursStr, minutesStr) {
-            const statusEl = document.getElementById('live-status-bar');
-            if (!statusEl) return;
+function oppdaterLiveStatusBoks(hoursStr, minutesStr) {
+    const statusEl = document.getElementById('live-status-bar');
+    if (!statusEl) return;
 
-            try {
-                const nå = new Date();
-                const gjeldendeTime = nå.getHours();
-                const dagensNøkkel = nå.toLocaleDateString('sv-SE', {timeZone: 'Europe/Oslo'});
-                const dagensKalenderHendelser = globalEventsCache[dagensNøkkel] || [];
-                
-                let nesteAvtale = null;
+    try {
+        const nå = new Date();
+        const dagensNøkkel = nå.toLocaleDateString('sv-SE', {timeZone: 'Europe/Oslo'});
+        
+        // Hent alle hendelser for i dag og i morgen for å sikre at vi ser fremover
+        const iMorgen = new Date();
+        iMorgen.setDate(nå.getDate() + 1);
+        const morgendagensNøkkel = iMorgen.toLocaleDateString('sv-SE', {timeZone: 'Europe/Oslo'});
 
-                const sorterteHendelser = dagensKalenderHendelser
-                    .filter(ev => ev.computedStart)
-                    .sort((a, b) => new Date(a.computedStart).getTime() - new Date(b.computedStart).getTime());
+        const alleAktuelleHendelser = [
+            ...(globalEventsCache[dagensNøkkel] || []),
+            ...(globalEventsCache[morgendagensNøkkel] || [])
+        ];
 
-                for (let ev of sorterteHendelser) {
-                    const startTidspunkt = new Date(ev.computedStart);
-                    if (startTidspunkt > nå) {
-                        nesteAvtale = ev;
-                        break;
-                    }
-                }
+        // Finn den aller første avtalen som starter ETTER nåværende tidspunkt
+        const sorterteHendelser = alleAktuelleHendelser
+            .filter(ev => ev.computedStart && new Date(ev.computedStart) > nå)
+            .sort((a, b) => new Date(a.computedStart).getTime() - new Date(b.computedStart).getTime());
 
-                let boksHTML = `Nå er klokken <span class="status-box-highlight">${hoursStr}:${minutesStr}</span>. `;
+        const nesteAvtale = sorterteHendelser[0];
+        let boksHTML = `Nå er klokken <span class="status-box-highlight">${hoursStr}:${minutesStr}</span>. `;
 
-                if (gjeldendeTime >= 23 || gjeldendeTime < 7) {
-                    let erKritiskMorgenAvtale = false;
-                    
-                    if (nesteAvtale) {
-                        const tidTilNesteAvtale = new Date(nesteAvtale.computedStart).getTime() - nå.getTime();
-                        const seksTimerIMillisekunder = 6 * 60 * 60 * 1000; 
-                        
-                        if (tidTilNesteAvtale > 0 && tidTilNesteAvtale <= seksTimerIMillisekunder) {
-                            erKritiskMorgenAvtale = true;
-                        }
-                    }
-
-                    if (erKritiskMorgenAvtale) {
-                        const nesteTid = new Date(nesteAvtale.computedStart).toLocaleTimeString('no-NO', {hour: '2-digit', minute:'2-digit', timeZone: 'Europe/Oslo'});
-                        let renSummary = nesteAvtale.summary ? nesteAvtale.summary.replace(/^(Mamma\s*&\s*Pappa:|Mamma\s+og\s+Pappa:|Mamma:|Pappa:)\s*/i, '') : '';
-                        boksHTML += `Neste avtale er <span class="status-box-highlight">${renSummary}</span> klokken <span class="status-box-highlight">${nesteTid}</span>.`;
-                    } else {
-                        const iMorgen = new Date();
-                        iMorgen.setDate(nå.getDate() + 1);
-                        const morgendagensNøkkel = iMorgen.toLocaleDateString('sv-SE', {timeZone: 'Europe/Oslo'});
-                        const morgendagensHendelser = globalEventsCache[morgendagensNøkkel] || [];
-                        
-                        const førsteIAvtaleIMorgen = morgendagensHendelser
-                            .filter(ev => ev.computedStart)
-                            .sort((a, b) => new Date(a.computedStart).getTime() - new Date(b.computedStart).getTime())[0];
-
-                        if (førsteIAvtaleIMorgen) {
-                            const morgenTime = new Date(førsteIAvtaleIMorgen.computedStart).getHours();
-                            let periodeTekst = "i morgen";
-                            
-                            if (morgenTime >= 7 && morgenTime < 9) periodeTekst = "i dag tidlig";
-                            else if (morgenTime >= 9 && morgenTime < 12) periodeTekst = "i formiddag";
-                            else if (morgenTime >= 12 && morgenTime < 18) periodeTekst = "i ettermiddag";
-                            else if (morgenTime >= 18 && morgenTime < 23) periodeTekst = "i kveld";
-                            
-                            boksHTML += `Det er natt, og det er ingen flere avtaler før <span class="status-box-highlight">${periodeTekst}</span>.`;
-                        } else {
-                            boksHTML += `Det er natt, og det er ingen flere avtaler i morgen.`;
-                        }
-                    }
-                } else {
-                    if (nesteAvtale) {
-                        const nesteTid = new Date(nesteAvtale.computedStart).toLocaleTimeString('no-NO', {hour: '2-digit', minute:'2-digit', timeZone: 'Europe/Oslo'});
-                        let renSummary = nesteAvtale.summary ? nesteAvtale.summary.replace(/^(Mamma\s*&\s*Pappa:|Mamma\s+og\s+Pappa:|Mamma:|Pappa:)\s*/i, '') : '';
-                        boksHTML += `Neste avtale er <span class="status-box-highlight">${renSummary}</span> klokken <span class="status-box-highlight">${nesteTid}</span>.`;
-                    } else {
-                        boksHTML += `Ingen flere planlagte avtaler i dag.`;
-                    }
-                }
-
-                statusEl.innerHTML = boksHTML;
-            } catch (feil) {
-                statusEl.innerHTML = `Nå er klokken <span class="status-box-highlight">${hoursStr}:${minutesStr}</span>.`;
-            }
+        if (nesteAvtale) {
+            const startTid = new Date(nesteAvtale.computedStart);
+            const nesteTid = startTid.toLocaleTimeString('no-NO', {hour: '2-digit', minute:'2-digit', timeZone: 'Europe/Oslo'});
+            
+            // Sjekk om det er i dag eller senere
+            const erIIdag = startTid.toLocaleDateString('sv-SE', {timeZone: 'Europe/Oslo'}) === dagensNøkkel;
+            const tidPrefix = erIIdag ? "klokken" : "i morgen klokken";
+            
+            let renSummary = nesteAvtale.summary ? nesteAvtale.summary.replace(/^(Mamma\s*&\s*Pappa:|Mamma\s+og\s+Pappa:|Mamma:|Pappa:)\s*/i, '') : '';
+            boksHTML += `Neste avtale er <span class="status-box-highlight">${renSummary}</span> ${tidPrefix} <span class="status-box-highlight">${nesteTid}</span>.`;
+        } else {
+            boksHTML += `Ingen flere planlagte avtaler de nærmeste timene.`;
         }
+
+        statusEl.innerHTML = boksHTML;
+    } catch (feil) {
+        statusEl.innerHTML = `Nå er klokken <span class="status-box-highlight">${hoursStr}:${minutesStr}</span>.`;
+    }
+}
 
         function formatEventSummary(summary) {
             if (!summary) return '';
