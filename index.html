@@ -378,8 +378,38 @@
 
                     if (!hasPersonalEvents && !hasHoliday) continue;
 
-                    const daySection = document.createElement('div');
+                    
+
+
+
+
+
+
+
+
+
+
+
+
+const daySection = document.createElement('div');
                     daySection.className = 'day-section';
+
+
+
+
+// --- HER LIMER DU INN DEN NYE LOGIKKEN ---
+            const diffDager = Math.round((currentDay - today) / (1000 * 60 * 60 * 24));
+            if (diffDager >= 2) {
+                daySection.classList.add('future-day');
+            }
+            // ------------------------------------------
+
+
+
+
+
+
+
 
                     // ENDRING 2: ETIKETT "I DAG, " / "I MORGEN, "
                     let prefix = "";
