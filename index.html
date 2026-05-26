@@ -140,7 +140,7 @@
         .info-bullet { flex-shrink: 0; margin-right: 10px; line-height: 1.4; }
         .info-time { color: var(--clock-accent); font-weight: 700; margin-right: 5px; }
         
-        /* ENDRING 1: Stiplet linje mellom dager */
+        /* HER ER DEN STIPLEDE LINJEN (HORISONTAL) LAGT TIL I DIN ORIGINALE KLASSE */
         .day-section { width: 100%; margin-bottom: 35px; padding-bottom: 30px; border-bottom: 2px dashed var(--box-border); }
         
         .day-title { display: flex; justify-content: flex-start; align-items: center; gap: 15px; font-family: 'Poppins', sans-serif; font-size: 1.75rem; font-weight: 400; margin-bottom: 14px; padding-left: 40px; }
@@ -368,10 +368,7 @@
                     const daySection = document.createElement('div');
                     daySection.className = 'day-section';
 
-                    // ENDRING 2: ETIKETT "I DAG, " / "I MORGEN, "
-                    let prefix = "";
-                    if (dateKey === todayKey) prefix = "I dag, ";
-                    else if (dateKey === morgenKey) prefix = "I morgen, ";
+                    let prefix = dateKey === todayKey ? "I dag, " : dateKey === morgenKey ? "I morgen, " : "";
                     
                     const dayName = ukeDager[currentDay.getDay()];
                     const dateNum = currentDay.getDate();
