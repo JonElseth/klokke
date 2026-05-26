@@ -532,24 +532,29 @@
                         const list = document.createElement('div');
                         list.className = 'event-list';
 
-                        // Sorterer listen og lagrer den eksplisitt tilbake i gjeldende dag
-                        globalEventsCache[dateKey].sort((a, b) => {
-                            const aIsAllDay = !a.start.dateTime;
-                            const bIsAllDay = !b.start.dateTime;
+                        // LØSNING: Oppretter en helt ren og isolert kopi av arrayen før sortering skjer
+                        const råHendelser = [...globalEventsCache[dateKey]];
+
+                        // UTFØRER SORTERING DIREKTE PÅ VISNINGSKOPIEN
+                        råHendelser.sort((a, b) => {
+                            const aIsAllDay = !a.start || !a.start.dateTime;
+                            const bIsAllDay = !b.start || !b.start.dateTime;
                             
+                            // Hvis én er heldags og den andre har tid, flytt heldags til bunnen (return 1)
                             if (aIsAllDay && !bIsAllDay) return 1;
                             if (!aIsAllDay && bIsAllDay) return -1;
                             if (aIsAllDay && bIsAllDay) return 0;
                             
+                            // Hvis begge har klokkeslett, sorter strengt etter tidspunkt
                             return new Date(a.start.dateTime).getTime() - new Date(b.start.dateTime).getTime();
                         });
 
-                        globalEventsCache[dateKey].forEach(ev => {
+                        råHendelser.forEach(ev => {
                             const li = document.createElement('div');
                             li.className = 'event-item';
 
                             let timeStr = 'Hele dagen';
-                            if (ev.start.dateTime) {
+                            if (ev.start && ev.start.dateTime) {
                                 const d = new Date(ev.start.dateTime);
                                 timeStr = d.toLocaleTimeString('no-NO', {hour: '2-digit', minute:'2-digit', timeZone: 'Europe/Oslo'});
                             }
