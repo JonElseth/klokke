@@ -264,13 +264,13 @@
                     let renSummary = summary;
 
                     if (/^(Mamma\s*&\s*Pappa:|Mamma\s+og\s+Pappa:)/i.test(summary)) {
-                        hvem = "Neste avtale er til mamma og pappa";
+                        hvem = "Neste avtale er til mamma og pappa:";
                         renSummary = summary.replace(/^(Mamma\s*&\s*Pappa:|Mamma\s+og\s+Pappa:)\s*/i, '');
                     } else if (/^Mamma:/i.test(summary)) {
-                        hvem = "Neste avtale er til mamma";
+                        hvem = "Neste avtale er til mamma:";
                         renSummary = summary.replace(/^Mamma:\s*/i, '');
                     } else if (/^Pappa:/i.test(summary)) {
-                        hvem = "Neste avtale er til pappa";
+                        hvem = "Neste avtale er til pappa:";
                         renSummary = summary.replace(/^Pappa:\s*/i, '');
                     }
 
