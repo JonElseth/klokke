@@ -373,11 +373,22 @@
                     const dayName = ukeDager[currentDay.getDay()];
                     const dateNum = currentDay.getDate();
                     const monthName = maaneder[currentDay.getMonth()].toLowerCase();
+
+
+
                     
-// Vi beholder prefix (I dag/I morgen) slik den er, 
-// og tvinger kun stor forbokstav på første bokstav i selve dagnavnet
-let dagNavnStort = dayName.charAt(0).toUpperCase() + dayName.slice(1).toLowerCase();
-daySection.innerHTML = `<div class="day-title">${prefix}${dagNavnStort} ${dateNum}. ${monthName}</div>`;
+// Hvis det er i dag eller i morgen, bruk liten forbokstav på dagnavnet
+// Hvis det er en dag lenger frem, bruk stor forbokstav
+let dagNavn = dayName.toLowerCase();
+if (prefix === "") {
+    dagNavn = dayName.charAt(0).toUpperCase() + dayName.slice(1).toLowerCase();
+}
+
+daySection.innerHTML = `<div class="day-title">${prefix}${dagNavn} ${dateNum}. ${monthName}</div>`;
+
+
+
+
 
                     if (hasHoliday) {
                         const holDiv = document.createElement('div');
