@@ -419,11 +419,13 @@ function oppdaterLiveStatusBoks(hoursStr, minutesStr) {
             const erIIdag = startTid.toLocaleDateString('sv-SE', {timeZone: 'Europe/Oslo'}) === dagensNøkkel;
             const tidPrefix = erIIdag ? "klokken" : "i morgen klokken";
             
-            let renSummary = nesteAvtale.summary ? nesteAvtale.summary.replace(/^(Mamma\s*&\s*Pappa:|Mamma\s+og\s+Pappa:|Mamma:|Pappa:)\s*/i, '') : '';
-            boksHTML += `Neste avtale er <span class="status-box-highlight">${renSummary}</span> ${tidPrefix} <span class="status-box-highlight">${nesteTid}</span>.`;
-        } else {
-            boksHTML += `Ingen flere planlagte avtaler de nærmeste timene.`;
-        }
+// Foreslått forenkling
+if (nesteAvtale) {
+    let renSummary = nesteAvtale.summary ? nesteAvtale.summary.replace(/^(Mamma\s*&\s*Pappa:|Mamma\s+og\s+Pappa:|Mamma:|Pappa:)\s*/i, '') : '';
+    boksHTML = `Neste avtale er <span class="status-box-highlight">${renSummary}</span> ${tidPrefix} klokken <span class="status-box-highlight">${nesteTid}</span>.`;
+} else {
+    boksHTML = `Ingen flere avtaler i dag.`;
+}
 
         statusEl.innerHTML = boksHTML;
     } catch (feil) {
