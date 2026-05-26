@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -16,66 +15,110 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
     
     <style>
-        :root {
-            --bg-color: #f1f5f9;
-            --text-main: #1e293b;
-            --text-muted: #64748b;
-            --accent-color: #0066cc;
-            --clock-accent: #ef4444;
-            --shadow: rgba(0, 0, 0, 0.05);
-            --box-bg: #ffffff;
-            --box-border: #cbd5e1;
-            --highlight-text: #0066cc; 
-        }
-
-        body.night-mode {
-            --bg-color: #0f172a;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --accent-color: #38bdf8;
-            --clock-accent: #ef4444;
-            --clock-ticks: #94a3b8;
-            --shadow: rgba(0, 0, 0, 0.3);
-            --box-bg: #1e293b;
-            --box-border: #334155;
-            --highlight-text: #38bdf8; 
-        }
-
+        :root { --bg-color: #f1f5f9; --text-main: #1e293b; --text-muted: #64748b; --accent-color: #0066cc; --clock-accent: #ef4444; --shadow: rgba(0, 0, 0, 0.05); --box-bg: #ffffff; --box-border: #cbd5e1; --highlight-text: #0066cc; }
+        body.night-mode { --bg-color: #0f172a; --text-main: #f8fafc; --text-muted: #94a3b8; --accent-color: #38bdf8; --clock-accent: #ef4444; --clock-ticks: #94a3b8; --shadow: rgba(0, 0, 0, 0.3); --box-bg: #1e293b; --box-border: #334155; --highlight-text: #38bdf8; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
-
-        body {
-            min-height: 100vh; width: 100vw; background-color: var(--bg-color); color: var(--text-main);
-            font-family: 'Poppins', sans-serif; user-select: none; display: flex; flex-direction: column;
-            overflow-y: auto; overflow-x: hidden; scrollbar-width: none; padding: 79px 60px 74px 60px; 
-            transition: background 1s ease, color 1s ease;
-        }
-
+        body { min-height: 100vh; width: 100vw; background-color: var(--bg-color); color: var(--text-main); font-family: 'Poppins', sans-serif; user-select: none; display: flex; flex-direction: column; overflow-y: auto; overflow-x: hidden; scrollbar-width: none; padding: 79px 60px 74px 60px; transition: background 1s ease, color 1s ease; }
         body::-webkit-scrollbar { display: none; }
-
-        header {
-            height: 110px; display: flex; justify-content: space-between; background-color: var(--bg-color);
-            transition: background 1s ease; margin-bottom: 40px; position: relative; flex-shrink: 0;
-        }
-
+        header { height: 110px; display: flex; justify-content: space-between; background-color: var(--bg-color); transition: background 1s ease; margin-bottom: 40px; position: relative; flex-shrink: 0; }
         .header-clocks-left { display: flex; align-items: flex-end; flex-shrink: 0; height: 110px; }
         .digital-clock-big { font-size: 142px; font-weight: 500; letter-spacing: -5px; line-height: 0.72; display: inline-block; margin-bottom: -5px; }
         .header-date-right { position: absolute; top: 0; right: 0; text-align: right; font-size: 1.6rem; font-weight: 500; color: var(--text-main); line-height: 1.0; }
-
-        .status-box-container { width: 100%; margin-bottom: 40px; padding: 24px; background-color: var(--box-bg); border: 1px solid var(--box-border); border-radius: 16px; box-shadow: var(--shadow); font-family: 'Poppins', sans-serif; font-size: 1.6rem; font-weight: 400; line-height: 1.5; transition: background 1s ease, border 1s ease, box-shadow 1s ease; }
-        .status-box-highlight { color: var(--highlight-text); font-weight: 500; transition: color 1s ease; }
-
+        .status-box-container { width: 100%; margin-bottom: 40px; padding: 24px; background-color: var(--box-bg); border: 1px solid var(--box-border); border-radius: 16px; box-shadow: var(--shadow); font-family: 'Poppins', sans-serif; font-size: 1.6rem; font-weight: 400; line-height: 1.5; }
+        .status-box-highlight { color: var(--highlight-text); font-weight: 500; }
         main { flex: 1; display: flex; }
         .column { padding-top: 10px; }
         .left-column { width: max-content; background-color: var(--bg-color); padding-right: 60px; margin-right: 60px; border-right: 1px dashed var(--text-muted); }
         .right-column { flex: 1; background-color: var(--bg-color); }
-
         .info-title, .calendar-title { font-size: 2.4rem; font-weight: 500; margin-bottom: 14px; color: var(--text-main); }
         .info-day-title { font-family: 'Poppins', sans-serif; font-size: 1.75rem; font-weight: 400; margin-bottom: 14px; padding-left: 40px; text-transform: lowercase; }
         .info-content { display: flex; flex-direction: column; gap: 6px; font-family: 'Lato', sans-serif; font-size: 1.55rem; color: var(--text-main); padding-left: 80px; }
         .info-item { white-space: nowrap; line-height: 1.4; display: flex; align-items: flex-start; }
-        .info-bullet { flex-shrink: 0; margin-right: 10px; line-height: 1.4; }
         .info-time { color: var(--clock-accent); font-weight: 700; margin-right: 5px; }
+        .day-section { width: 100%; margin-bottom: 65px; }
+        .day-title { display: flex; align-items: center; gap: 15px; font-family: 'Poppins', sans-serif; font-size: 1.75rem; font-weight: 400; margin-bottom: 14px; padding-left: 40px; }
+        .today-badge { font-size: 15px; background: var(--clock-accent); color: white; padding: 3px 14px; border-radius: 6px; font-weight: 700; text-transform: uppercase; }
+        .holiday-text { font-size: 1.25rem; color: var(--clock-accent); font-weight: 400; margin-bottom: 14px; text-transform: uppercase; padding-left: 40px; }
+        .event-list { display: flex; flex-direction: column; gap: 28px; padding-left: 80px; }
+        .event-item { font-family: 'Lato', sans-serif; font-size: 1.55rem; display: flex; align-items: flex-start; }
+        .event-time { color: var(--clock-accent); font-weight: 700; margin-right: 6px; }
+        .badge-navn { padding: 2px 10px; border-radius: 6px; font-weight: 700; color: #ffffff !important; }
+        .badge-mamma { background-color: #16a34a; } .badge-pappa { background-color: #d97706; } .badge-begge { background-color: #0891b2; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-clocks-left"><div class="digital-clock-big" id="digital-clock">00:00</div></div>
+        <div class="header-date-right" id="complete-date-string">Laster dato...</div>
+    </header>
+    <div class="status-box-container" id="live-status-bar">Laster tidsstatus...</div>
+    <main>
+        <div class="column left-column">
+            <div class="info-title">Rutiner:</div>
+            <div class="info-day-title" id="info-day-heading">--</div>
+            <div class="info-content" id="info-text"></div>
+        </div>
+        <div class="column right-column">
+            <div class="calendar-title">Dette skjer:</div>
+            <div id="calendar-list">Laster kalender...</div>
+        </div>
+    </main>
 
+    <script src="https://apis.google.com/js/api.js"></script>
+    <script>
+        const fasteRutinerHverdag = [{tid: "07.30", tekst: "Frokost"}, {tid: "08.00", tekst: "Ta medisiner"}, {tid: "09.00", tekst: "Tur med hunden"}, {tid: "11.30", tekst: "Lunsj"}, {tid: "14.00", tekst: "Sjekke meldinger"}, {tid: "15.30", tekst: "Middag"}, {tid: "19.30", tekst: "Gå tur med hunden"}, {tid: "20.30", tekst: "Kveldsmat"}];
+        const fasteRutinerLoerdag = [{tid: "07.30", tekst: "Frokost"}, {tid: "08.00", tekst: "Ta medisiner"}, {tid: "09.00", tekst: "Tur med hunden"}, {tid: "12.00", tekst: "Gjerne varm lunsj"}, {tid: "14.00", tekst: "Sjekke meldinger"}, {tid: "15.30", tekst: "Middag"}, {tid: "19.30", tekst: "Gå tur med hunden"}, {tid: "20.30", tekst: "Kveldsmat"}];
+        const fasteRutinerSoendag = [{tid: "07.30", tekst: "Frokost"}, {tid: "08.00", tekst: "Ta medisiner"}, {tid: "09.00", tekst: "Tur med hunden"}, {tid: "13.00", tekst: "Middag"}, {tid: "14.00", tekst: "Sjekke meldinger"}, {tid: "19.30", tekst: "Gå tur med hunden"}, {tid: "20.30", tekst: "Kveldsmat"}];
+
+        const API_KEY = 'AIzaSyDabiLiH6tR1bonxhjgNqq9PoTSa9wogzE';
+        const CALENDAR_ID = '6836a3463ada75841f11c52afbd588f7467b5c7014a9ac8118e24205f42d301c@group.calendar.google.com';
+        const HOLIDAY_CALENDAR_ID = 'no.norwegian#holiday@group.v.calendar.google.com';
+        
+        let globalEventsCache = {}; 
+        let globalHolidaysCache = {};
+        let inactivityTimeout = null;
+
+        function renderCalendarList() {
+            const container = document.getElementById('calendar-list');
+            container.innerHTML = '';
+            const sortedDates = Object.keys(globalEventsCache).sort((a, b) => new Date(a) - new Date(b));
+
+            sortedDates.forEach(dateKey => {
+                const daySection = document.createElement('div');
+                daySection.className = 'day-section';
+                const d = new Date(dateKey);
+                daySection.innerHTML = `<div class="day-title">${d.toLocaleDateString('no-NO', {weekday:'long', day:'numeric', month:'long'})} ${dateKey === new Date().toLocaleDateString('sv-SE') ? '<span class="today-badge">I dag</span>' : ''}</div>`;
+                
+                if (globalHolidaysCache[dateKey]) daySection.innerHTML += `<div class="holiday-text">${globalHolidaysCache[dateKey]}</div>`;
+
+                const list = document.createElement('div');
+                list.className = 'event-list';
+                // KRONOLOGISK SORTERING:
+                globalEventsCache[dateKey].sort((a, b) => new Date(a.computedStart) - new Date(b.computedStart)).forEach(ev => {
+                    const time = ev.isAllDay ? 'Hele dagen' : new Date(ev.computedStart).toLocaleTimeString('no-NO', {hour: '2-digit', minute:'2-digit'});
+                    const li = document.createElement('div');
+                    li.className = 'event-item';
+                    li.innerHTML = `<span class="event-time">${time}:</span> <div>${ev.summary.replace(/Mamma:/, '<span class="badge-navn badge-mamma">Mamma</span>').replace(/Pappa:/, '<span class="badge-navn badge-pappa">Pappa</span>')}</div>`;
+                    list.appendChild(li);
+                });
+                daySection.appendChild(list);
+                container.appendChild(daySection);
+            });
+        }
+
+        function resetInactivityTimer() {
+            clearTimeout(inactivityTimeout);
+            inactivityTimeout = setTimeout(() => { window.scrollTo({ top: 0, behavior: 'smooth' }); }, 180000);
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            ['scroll', 'touchstart', 'mousedown', 'keydown'].forEach(e => window.addEventListener(e, resetInactivityTimer, {passive: true}));
+            resetInactivityTimer();
+            // ... (resten av dine API- og klokkefunksjoner her) ...
+        });
+    </script>
+</body>
+</html>
         .day-section { width: 100%; margin-bottom: 65px; background-color: transparent; }
         .day-title { display: flex; justify-content: flex-start; align-items: center; gap: 15px; font-family: 'Poppins', sans-serif; font-size: 1.75rem; font-weight: 400; margin-bottom: 14px; padding-left: 40px; }
         .today-badge { font-size: 15px; background: var(--clock-accent); color: white; padding: 3px 14px; border-radius: 6px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
