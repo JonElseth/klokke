@@ -5,47 +5,63 @@
     <title>Seniorkalender</title>
     <style>
         body { font-family: sans-serif; padding: 40px; background: #f1f5f9; color: #1e293b; }
+        .digital-clock { font-size: 80px; font-weight: bold; margin-bottom: 20px; }
         .event-item { font-size: 1.5rem; margin-bottom: 15px; padding: 15px; background: white; border-radius: 8px; border-left: 5px solid #06b6d4; }
     </style>
 </head>
 <body>
+    <div id="digital-clock" class="digital-clock">00:00</div>
+    <h2>Dette skjer:</h2>
     <div id="calendar-list">Laster avtaler...</div>
+
     <script src="https://apis.google.com/js/api.js"></script>
     <script>
         const API_KEY = 'AIzaSyDabiLiH6tR1bonxhjgNqq9PoTSa9wogzE';
         const CALENDAR_ID = '6836a3463ada75841f11c52afbd588f7467b5c7014a9ac8118e24205f42d301c@group.calendar.google.com';
 
-        function hentKlokkeslettFraTekst(summary) {
-            const matches = summary.match(/([0-9]{1,2})[:.]([0-9]{2})/g);
-            if (matches) {
-                const sisteTid = matches[matches.length - 1];
-                const [h, m] = sisteTid.split(/[:.]/);
-                return parseInt(h) * 60 + parseInt(m);
-            }
-            return 9999;
+        function start() {
+            gapi.load('client', () => {
+                gapi.client.init({
+                    apiKey: API_KEY, 
+                    discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"]
+                }).then(fetchEvents);
+            });
         }
 
         function fetchEvents() {
             gapi.client.calendar.events.list({
                 calendarId: CALENDAR_ID,
                 timeMin: new Date().toISOString(),
-                singleEvents: true
+                singleEvents: true,
+                orderBy: 'startTime'
             }).then(res => {
                 const list = document.getElementById('calendar-list');
                 list.innerHTML = '';
-                let items = (res.result.items || []).sort((a, b) => hentKlokkeslettFraTekst(a.summary) - hentKlokkeslettFraTekst(b.summary));
+                
+                const items = res.result.items || [];
+                if (items.length === 0) {
+                    list.innerText = "Ingen avtaler funnet.";
+                    return;
+                }
 
                 items.forEach(ev => {
-                    let tid = ev.start.dateTime ? new Date(ev.start.dateTime).toLocaleTimeString('no-NO', {hour:'2-digit', minute:'2-digit'}) : "Hele dagen";
-                    list.innerHTML += `<div class='event-item'><b>${tid}</b>: ${ev.summary}</div>`;
+                    // Bruker start.dateTime direkte. Dette fungerer perfekt når du legger inn enkeltavtaler.
+                    let startTid = ev.start.dateTime ? new Date(ev.start.dateTime) : null;
+                    let tidStr = startTid ? startTid.toLocaleTimeString('no-NO', {hour:'2-digit', minute:'2-digit'}) : "Hele dagen";
+                    
+                    list.innerHTML += `<div class='event-item'><b>${tidStr}</b>: ${ev.summary}</div>`;
                 });
+            }).catch(e => {
+                document.getElementById('calendar-list').innerText = "Feil: " + e.message;
             });
         }
 
-        gapi.load('client', () => {
-            gapi.client.init({apiKey: API_KEY, discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"]})
-            .then(fetchEvents);
-        });
+        // Oppdater klokken hvert sekund
+        setInterval(() => {
+            document.getElementById('digital-clock').textContent = new Date().toLocaleTimeString('no-NO', {hour:'2-digit', minute:'2-digit'});
+        }, 1000);
+
+        start();
     </script>
 </body>
 </html>
