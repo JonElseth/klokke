@@ -140,8 +140,8 @@
         .info-bullet { flex-shrink: 0; margin-right: 10px; line-height: 1.4; }
         .info-time { color: var(--clock-accent); font-weight: 700; margin-right: 5px; }
         
-        /* ENDRING 1: Stiplet linje mellom dagene */
-        .day-section { width: 100%; margin-bottom: 35px; padding-bottom: 30px; border-bottom: 1px dashed var(--box-border); }
+        /* ENDRING 1: Stiplet linje (matchar vertikal linje i tykkelse/stil) */
+        .day-section { width: 100%; margin-bottom: 35px; padding-bottom: 30px; border-bottom: 1px dashed var(--text-muted); }
         
         .day-title { display: flex; justify-content: flex-start; align-items: center; gap: 15px; font-family: 'Poppins', sans-serif; font-size: 1.75rem; font-weight: 400; margin-bottom: 14px; padding-left: 40px; }
         .holiday-text { font-size: 1.25rem; color: var(--clock-accent); font-weight: 400; font-style: normal; margin-top: -8px; margin-bottom: 14px; text-transform: uppercase; padding-left: 40px; }
@@ -199,6 +199,9 @@
     <script src="https://apis.google.com/js/api.js"></script>
 
     <script>
+        // =========================================================
+        // HER KAN DU ENDRE DINE FASTE RUTINER
+        // =========================================================
         const fasteRutinerHverdag = [
             { tid: "07.30", tekst: "Frokost" },
             { tid: "08.00", tekst: "Ta medisiner" },
@@ -230,6 +233,7 @@
             { tid: "19.30", tekst: "Gå tur med hunden" },
             { tid: "20.30", tekst: "Kveldsmat" }
         ];
+        // =========================================================
 
         const API_KEY = 'AIzaSyDabiLiH6tR1bonxhjgNqq9PoTSa9wogzE';
         const CALENDAR_ID = '6836a3463ada75841f11c52afbd588f7467b5c7014a9ac8118e24205f42d301c@group.calendar.google.com'; 
