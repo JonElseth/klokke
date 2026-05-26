@@ -401,11 +401,11 @@
                 let nesteAvtale = null;
 
                 const sorterteHendelser = dagensKalenderHendelser
-                    .filter(ev => ev.start && ev.start.dateTime)
-                    .sort((a, b) => new Date(a.start.dateTime).getTime() - new Date(b.start.dateTime).getTime());
+                    .filter(ev => ev.computedStart)
+                    .sort((a, b) => new Date(a.computedStart).getTime() - new Date(b.computedStart).getTime());
 
                 for (let ev of sorterteHendelser) {
-                    const startTidspunkt = new Date(ev.start.dateTime);
+                    const startTidspunkt = new Date(ev.computedStart);
                     if (startTidspunkt > nå) {
                         nesteAvtale = ev;
                         break;
@@ -418,7 +418,7 @@
                     let erKritiskMorgenAvtale = false;
                     
                     if (nesteAvtale) {
-                        const tidTilNesteAvtale = new Date(nesteAvtale.start.dateTime).getTime() - nå.getTime();
+                        const tidTilNesteAvtale = new Date(nesteAvtale.computedStart).getTime() - nå.getTime();
                         const seksTimerIMillisekunder = 6 * 60 * 60 * 1000; 
                         
                         if (tidTilNesteAvtale > 0 && tidTilNesteAvtale <= seksTimerIMillisekunder) {
@@ -427,7 +427,7 @@
                     }
 
                     if (erKritiskMorgenAvtale) {
-                        const nesteTid = new Date(nesteAvtale.start.dateTime).toLocaleTimeString('no-NO', {hour: '2-digit', minute:'2-digit', timeZone: 'Europe/Oslo'});
+                        const nesteTid = new Date(nesteAvtale.computedStart).toLocaleTimeString('no-NO', {hour: '2-digit', minute:'2-digit', timeZone: 'Europe/Oslo'});
                         let renSummary = nesteAvtale.summary ? nesteAvtale.summary.replace(/^(Mamma\s*&\s*Pappa:|Mamma\s+og\s+Pappa:|Mamma:|Pappa:)\s*/i, '') : '';
                         boksHTML += `Neste avtale er <span class="status-box-highlight">${renSummary}</span> klokken <span class="status-box-highlight">${nesteTid}</span>.`;
                     } else {
@@ -437,11 +437,11 @@
                         const morgendagensHendelser = globalEventsCache[morgendagensNøkkel] || [];
                         
                         const førsteIAvtaleIMorgen = morgendagensHendelser
-                            .filter(ev => ev.start && ev.start.dateTime)
-                            .sort((a, b) => new Date(a.start.dateTime).getTime() - new Date(b.start.dateTime).getTime())[0];
+                            .filter(ev => ev.computedStart)
+                            .sort((a, b) => new Date(a.computedStart).getTime() - new Date(b.computedStart).getTime())[0];
 
                         if (førsteIAvtaleIMorgen) {
-                            const morgenTime = new Date(førsteIAvtaleIMorgen.start.dateTime).getHours();
+                            const morgenTime = new Date(førsteIAvtaleIMorgen.computedStart).getHours();
                             let periodeTekst = "i morgen";
                             
                             if (morgenTime >= 7 && morgenTime < 9) periodeTekst = "i morgen tidlig";
@@ -456,7 +456,7 @@
                     }
                 } else {
                     if (nesteAvtale) {
-                        const nesteTid = new Date(nesteAvtale.start.dateTime).toLocaleTimeString('no-NO', {hour: '2-digit', minute:'2-digit', timeZone: 'Europe/Oslo'});
+                        const nesteTid = new Date(nesteAvtale.computedStart).toLocaleTimeString('no-NO', {hour: '2-digit', minute:'2-digit', timeZone: 'Europe/Oslo'});
                         let renSummary = nesteAvtale.summary ? nesteAvtale.summary.replace(/^(Mamma\s*&\s*Pappa:|Mamma\s+og\s+Pappa:|Mamma:|Pappa:)\s*/i, '') : '';
                         boksHTML += `Neste avtale er <span class="status-box-highlight">${renSummary}</span> klokken <span class="status-box-highlight">${nesteTid}</span>.`;
                     } else {
@@ -477,6 +477,18 @@
             html = html.replace(/^[mM]amma:\s*/g, '<span class="badge-navn badge-mamma">Mamma</span> ');
             html = html.replace(/^[pP]appa:\s*/g, '<span class="badge-navn badge-pappa">Pappa</span> ');
             return html;
+        }
+
+        function hentKlokkeslettFraTekst(summary) {
+            if (!summary) return null;
+            const match = summary.match(/(?:^|\s)([0-2][0-9])[\.:]([0-5][0-9])(?:\s|$)/);
+            if (match) {
+                return {
+                    timer: parseInt(match[1], 10),
+                    minutter: parseInt(match[2], 10)
+                };
+            }
+            return null;
         }
 
         function renderCalendarList() {
@@ -532,21 +544,38 @@
                         const list = document.createElement('div');
                         list.className = 'event-list';
 
-                        // LØSNING: Oppretter en helt ren og isolert kopi av arrayen før sortering skjer
                         const råHendelser = [...globalEventsCache[dateKey]];
 
-                        // UTFØRER SORTERING DIREKTE PÅ VISNINGSKOPIEN
                         råHendelser.sort((a, b) => {
-                            const aIsAllDay = !a.start || !a.start.dateTime;
-                            const bIsAllDay = !b.start || !b.start.dateTime;
-                            
-                            // Hvis én er heldags og den andre har tid, flytt heldags til bunnen (return 1)
-                            if (aIsAllDay && !bIsAllDay) return 1;
-                            if (!aIsAllDay && bIsAllDay) return -1;
-                            if (aIsAllDay && bIsAllDay) return 0;
-                            
-                            // Hvis begge har klokkeslett, sorter strengt etter tidspunkt
-                            return new Date(a.start.dateTime).getTime() - new Date(b.start.dateTime).getTime();
+                            let aTid = null;
+                            let bTid = null;
+
+                            if (a.computedStart && !a.isAllDay) {
+                                const d = new Date(a.computedStart);
+                                aTid = { timer: d.getHours(), minutter: d.getMinutes() };
+                            } else {
+                                const tekstTid = hentKlokkeslettFraTekst(a.summary);
+                                if (tekstTid) aTid = { timer: tekstTid.timer, minutter: tekstTid.minutter };
+                            }
+
+                            if (b.computedStart && !b.isAllDay) {
+                                const d = new Date(b.computedStart);
+                                bTid = { timer: d.getHours(), minutter: d.getMinutes() };
+                            } else {
+                                const tekstTid = hentKlokkeslettFraTekst(b.summary);
+                                if (tekstTid) bTid = { timer: tekstTid.timer, minutter: tekstTid.minutter };
+                            }
+
+                            if (aTid && bTid) {
+                                if (aTid.timer !== bTid.timer) return aTid.timer - bTid.timer;
+                                if (aTid.minutter !== bTid.minutter) return aTid.minutter - bTid.minutter;
+                                return 0;
+                            }
+
+                            if (aTid && !bTid) return -1;
+                            if (!aTid && bTid) return 1;
+
+                            return 0;
                         });
 
                         råHendelser.forEach(ev => {
@@ -554,9 +583,14 @@
                             li.className = 'event-item';
 
                             let timeStr = 'Hele dagen';
-                            if (ev.start && ev.start.dateTime) {
-                                const d = new Date(ev.start.dateTime);
+                            if (ev.computedStart && !ev.isAllDay) {
+                                const d = new Date(ev.computedStart);
                                 timeStr = d.toLocaleTimeString('no-NO', {hour: '2-digit', minute:'2-digit', timeZone: 'Europe/Oslo'});
+                            } else {
+                                const tekstTid = hentKlokkeslettFraTekst(ev.summary);
+                                if (tekstTid) {
+                                    timeStr = `${String(tekstTid.timer).padStart(2, '0')}.${String(tekstTid.minutter).padStart(2, '0')}`;
+                                }
                             }
 
                             const formatedText = formatEventSummary(ev.summary);
@@ -662,6 +696,7 @@
                 const tempEvents = {};
                 personalEvents.forEach(event => {
                     if (!event.start) return;
+                    
                     if (event.start.date) {
                         const startParts = event.start.date.split('-');
                         const endParts = event.end.date.split('-');
@@ -671,7 +706,12 @@
                         while (current < end) {
                             const key = current.toLocaleDateString('sv-SE', {timeZone: 'Europe/Oslo'});
                             if (!tempEvents[key]) { tempEvents[key] = []; }
-                            tempEvents[key].push(event);
+                            
+                            let evCopy = JSON.parse(JSON.stringify(event));
+                            evCopy.computedStart = current.toISOString();
+                            evCopy.isAllDay = true;
+                            
+                            tempEvents[key].push(evCopy);
                             current.setDate(current.getDate() + 1);
                         }
                     } else if (event.start.dateTime) {
@@ -682,14 +722,35 @@
                         
                         if (startKey === endKey) {
                             if (!tempEvents[startKey]) { tempEvents[startKey] = []; }
-                            tempEvents[startKey].push(event);
+                            let evCopy = JSON.parse(JSON.stringify(event));
+                            evCopy.computedStart = current.toISOString();
+                            evCopy.isAllDay = false;
+                            tempEvents[startKey].push(evCopy);
                         } else {
                             let iter = new Date(current.getFullYear(), current.getMonth(), current.getDate());
                             let stop = new Date(end.getFullYear(), end.getMonth(), end.getDate());
                             while (iter <= stop) {
                                 const key = iter.toLocaleDateString('sv-SE', {timeZone: 'Europe/Oslo'});
                                 if (!tempEvents[key]) { tempEvents[key] = []; }
-                                tempEvents[key].push(event);
+                                
+                                let evCopy = JSON.parse(JSON.stringify(event));
+                                
+                                // LOGIKK FOR FLERDAGSHEMDELSER MED KLOKKESLETT:
+                                if (key === startKey) {
+                                    // Første dag: Bruk ekte starttidspunkt
+                                    evCopy.computedStart = current.toISOString();
+                                    evCopy.isAllDay = false;
+                                } else if (key === endKey) {
+                                    // Siste dag: Bruk slutttidspunktet som startpunkt for sorteringen denne dagen
+                                    evCopy.computedStart = end.toISOString();
+                                    evCopy.isAllDay = false;
+                                } else {
+                                    // Mellomliggende dager (som onsdagen): Sett den til hele dagen
+                                    evCopy.computedStart = iter.toISOString();
+                                    evCopy.isAllDay = true;
+                                }
+                                
+                                tempEvents[key].push(evCopy);
                                 iter.setDate(iter.getDate() + 1);
                             }
                         }
