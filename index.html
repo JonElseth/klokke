@@ -23,8 +23,6 @@
             --text-muted: #64748b;
             --accent-color: #0066cc;
             --clock-accent: #ef4444;
-            --clock-ticks: #334155;
-            --clock-face: #1e293b;
             --shadow: rgba(0, 0, 0, 0.05);
             --box-bg: #ffffff;
             --box-border: #cbd5e1;
@@ -38,7 +36,6 @@
             --accent-color: #38bdf8;
             --clock-accent: #ef4444;
             --clock-ticks: #94a3b8;
-            --clock-face: #f8fafc;
             --shadow: rgba(0, 0, 0, 0.3);
             --box-bg: #1e293b;
             --box-border: #334155;
@@ -735,17 +732,13 @@
                                 
                                 let evCopy = JSON.parse(JSON.stringify(event));
                                 
-                                // LOGIKK FOR FLERDAGSHEMDELSER MED KLOKKESLETT:
                                 if (key === startKey) {
-                                    // Første dag: Bruk ekte starttidspunkt
                                     evCopy.computedStart = current.toISOString();
                                     evCopy.isAllDay = false;
                                 } else if (key === endKey) {
-                                    // Siste dag: Bruk slutttidspunktet som startpunkt for sorteringen denne dagen
                                     evCopy.computedStart = end.toISOString();
                                     evCopy.isAllDay = false;
                                 } else {
-                                    // Mellomliggende dager (som onsdagen): Sett den til hele dagen
                                     evCopy.computedStart = iter.toISOString();
                                     evCopy.isAllDay = true;
                                 }
