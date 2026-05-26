@@ -385,49 +385,43 @@
             return html;
         }
 
-function oppdaterLiveStatusBoks(hoursStr, minutesStr) {
-    const statusEl = document.getElementById('live-status-bar');
-    if (!statusEl) return;
+        function oppdaterLiveStatusBoks() {
+            const statusEl = document.getElementById('live-status-bar');
+            if (!statusEl) return;
 
-    try {
-        const nå = new Date();
-        const dagensNøkkel = nå.toLocaleDateString('sv-SE', {timeZone: 'Europe/Oslo'});
-        
-        // Hent alle hendelser for i dag og i morgen for å sikre at vi ser fremover
-        const iMorgen = new Date();
-        iMorgen.setDate(nå.getDate() + 1);
-        const morgendagensNøkkel = iMorgen.toLocaleDateString('sv-SE', {timeZone: 'Europe/Oslo'});
+            try {
+                const nå = new Date();
+                const dagensNøkkel = nå.toLocaleDateString('sv-SE', {timeZone: 'Europe/Oslo'});
+                const iMorgen = new Date();
+                iMorgen.setDate(nå.getDate() + 1);
+                const morgendagensNøkkel = iMorgen.toLocaleDateString('sv-SE', {timeZone: 'Europe/Oslo'});
 
-        const alleAktuelleHendelser = [
-            ...(globalEventsCache[dagensNøkkel] || []),
-            ...(globalEventsCache[morgendagensNøkkel] || [])
-        ];
+                const alleAktuelleHendelser = [
+                    ...(globalEventsCache[dagensNøkkel] || []),
+                    ...(globalEventsCache[morgendagensNøkkel] || [])
+                ];
 
-        // Finn den aller første avtalen som starter ETTER nåværende tidspunkt
-        const sorterteHendelser = alleAktuelleHendelser
-            .filter(ev => ev.computedStart && new Date(ev.computedStart) > nå)
-            .sort((a, b) => new Date(a.computedStart).getTime() - new Date(b.computedStart).getTime());
+                const sorterteHendelser = alleAktuelleHendelser
+                    .filter(ev => ev.computedStart && new Date(ev.computedStart) > nå)
+                    .sort((a, b) => new Date(a.computedStart).getTime() - new Date(b.computedStart).getTime());
 
-        const nesteAvtale = sorterteHendelser[0];
-        let boksHTML = `Nå er klokken <span class="status-box-highlight">${hoursStr}:${minutesStr}</span>. `;
+                const nesteAvtale = sorterteHendelser[0];
 
-        if (nesteAvtale) {
-            const startTid = new Date(nesteAvtale.computedStart);
-            const nesteTid = startTid.toLocaleTimeString('no-NO', {hour: '2-digit', minute:'2-digit', timeZone: 'Europe/Oslo'});
-            
-            // Sjekk om det er i dag eller senere
-            const erIIdag = startTid.toLocaleDateString('sv-SE', {timeZone: 'Europe/Oslo'}) === dagensNøkkel;
-            const tidPrefix = erIIdag ? "klokken" : "i morgen klokken";
-            
-// Foreslått forenkling
-if (nesteAvtale) {
-    let renSummary = nesteAvtale.summary ? nesteAvtale.summary.replace(/^(Mamma\s*&\s*Pappa:|Mamma\s+og\s+Pappa:|Mamma:|Pappa:)\s*/i, '') : '';
-    boksHTML = `Neste avtale er <span class="status-box-highlight">${renSummary}</span> ${tidPrefix} klokken <span class="status-box-highlight">${nesteTid}</span>.`;
-} else {
-    boksHTML = `Ingen flere avtaler i dag.`;
-}
-
-
+                if (nesteAvtale) {
+                    const startTid = new Date(nesteAvtale.computedStart);
+                    const nesteTid = startTid.toLocaleTimeString('no-NO', {hour: '2-digit', minute:'2-digit', timeZone: 'Europe/Oslo'});
+                    const erIIdag = startTid.toLocaleDateString('sv-SE', {timeZone: 'Europe/Oslo'}) === dagensNøkkel;
+                    const tidPrefix = erIIdag ? "klokken" : "i morgen klokken";
+                    
+                    let renSummary = nesteAvtale.summary ? nesteAvtale.summary.replace(/^(Mamma\s*&\s*Pappa:|Mamma\s+og\s+Pappa:|Mamma:|Pappa:)\s*/i, '') : '';
+                    statusEl.innerHTML = `Neste avtale er <span class="status-box-highlight">${renSummary}</span> ${tidPrefix} <span class="status-box-highlight">${nesteTid}</span>.`;
+                } else {
+                    statusEl.innerHTML = `Ingen flere planlagte avtaler de nærmeste timene.`;
+                }
+            } catch (feil) {
+                statusEl.innerHTML = `Avventer kalenderdata...`;
+            }
+        }
 
         function formatEventSummary(summary) {
             if (!summary) return '';
@@ -600,7 +594,7 @@ if (nesteAvtale) {
             const dateStrEl = document.getElementById('complete-date-string');
             if (dateStrEl) dateStrEl.textContent = `Det er ${periodText}, ${dayName} ${dayNum}. ${monthName} ${yearNum}`;
 
-            oppdaterLiveStatusBoks(hoursStr, minutesStr);
+            oppdaterLiveStatusBoks();
 
             if (h === 3 && m === 0 && now.getSeconds() === 0) {
                 window.location.reload(true);
@@ -726,8 +720,7 @@ if (nesteAvtale) {
 
                 renderCalendarList();
                 
-                const transientNow = new Date();
-                oppdaterLiveStatusBoks(String(transientNow.getHours()).padStart(2, '0'), String(transientNow.getMinutes()).padStart(2, '0'));
+                oppdaterLiveStatusBoks();
             }).catch(err => {
                 console.error("Feil ved henting av kalenderdata:", err);
             });
