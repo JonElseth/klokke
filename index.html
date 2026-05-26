@@ -140,10 +140,8 @@
         .info-bullet { flex-shrink: 0; margin-right: 10px; line-height: 1.4; }
         .info-time { color: var(--clock-accent); font-weight: 700; margin-right: 5px; }
         
+        /* ENDRING 1: Stiplet linje mellom dager */
         .day-section { width: 100%; margin-bottom: 35px; padding-bottom: 30px; border-bottom: 2px dashed var(--box-border); }
-        
-        /* NY: Klasse for å dimme ned dager lenger frem */
-        .day-section.future-day { opacity: 0.5; transition: opacity 0.3s ease; }
         
         .day-title { display: flex; justify-content: flex-start; align-items: center; gap: 15px; font-family: 'Poppins', sans-serif; font-size: 1.75rem; font-weight: 400; margin-bottom: 14px; padding-left: 40px; }
         .holiday-text { font-size: 1.25rem; color: var(--clock-accent); font-weight: 400; font-style: normal; margin-top: -8px; margin-bottom: 14px; text-transform: uppercase; padding-left: 40px; }
@@ -201,6 +199,9 @@
     <script src="https://apis.google.com/js/api.js"></script>
 
     <script>
+        // =========================================================
+        // HER KAN DU ENDRE DINE FASTE RUTINER
+        // =========================================================
         const fasteRutinerHverdag = [
             { tid: "07.30", tekst: "Frokost" },
             { tid: "08.00", tekst: "Ta medisiner" },
@@ -232,6 +233,7 @@
             { tid: "19.30", tekst: "Gå tur med hunden" },
             { tid: "20.30", tekst: "Kveldsmat" }
         ];
+        // =========================================================
 
         const API_KEY = 'AIzaSyDabiLiH6tR1bonxhjgNqq9PoTSa9wogzE';
         const CALENDAR_ID = '6836a3463ada75841f11c52afbd588f7467b5c7014a9ac8118e24205f42d301c@group.calendar.google.com'; 
@@ -242,6 +244,8 @@
 
         let globalEventsCache = {}; 
         let globalHolidaysCache = {}; 
+        let wakeLock = null;
+        let inactivityTimeout = null;
 
         function resetInactivityTimer() {
             clearTimeout(inactivityTimeout);
@@ -363,12 +367,8 @@
 
                     const daySection = document.createElement('div');
                     daySection.className = 'day-section';
-                    
-                    // Dimming: Hvis det er 2 dager frem eller mer (i >= 2)
-                    if (i >= 2) {
-                        daySection.classList.add('future-day');
-                    }
 
+                    // ENDRING 2: ETIKETT "I DAG, " / "I MORGEN, "
                     let prefix = "";
                     if (dateKey === todayKey) prefix = "I dag, ";
                     else if (dateKey === morgenKey) prefix = "I morgen, ";
@@ -377,12 +377,7 @@
                     const dateNum = currentDay.getDate();
                     const monthName = maaneder[currentDay.getMonth()].toLowerCase();
                     
-                    let dagNavn = dayName.toLowerCase();
-                    if (prefix === "") {
-                        dagNavn = dayName.charAt(0).toUpperCase() + dayName.slice(1).toLowerCase();
-                    }
-                    
-                    daySection.innerHTML = `<div class="day-title">${prefix}${dagNavn} ${dateNum}. ${monthName}</div>`;
+                    daySection.innerHTML = `<div class="day-title">${prefix}${dayName.toLowerCase()} ${dateNum}. ${monthName}</div>`;
 
                     if (hasHoliday) {
                         const holDiv = document.createElement('div');
