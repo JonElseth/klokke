@@ -85,7 +85,6 @@
             margin-bottom: -5px; 
         }
 
-        /* OPPDATERT DESIGN: STØRRE OG MER LUFT */
         .time-of-day-wrapper {
             display: flex;
             flex-direction: column;
@@ -94,7 +93,7 @@
         }
 
         .time-of-day-label {
-            font-size: 3.5rem; /* Enda større */
+            font-size: 3.5rem;
             font-weight: 700;
             color: var(--time-of-day-color);
             text-transform: capitalize;
@@ -102,11 +101,11 @@
         }
 
         .header-date-right {
-            font-size: 2.0rem; /* Enda større */
+            font-size: 2.0rem;
             font-weight: 500;  
             color: var(--text-muted);
             line-height: 1.0;
-            margin-top: 15px; /* MER LUFT */
+            margin-top: 15px;
         }
 
         .status-box-container {
@@ -140,9 +139,11 @@
         .info-item { white-space: nowrap; line-height: 1.4; display: flex; align-items: flex-start; }
         .info-bullet { flex-shrink: 0; margin-right: 10px; line-height: 1.4; }
         .info-time { color: var(--clock-accent); font-weight: 700; margin-right: 5px; }
-        .day-section { width: 100%; margin-bottom: 65px; background-color: transparent; }
+        
+        /* ENDRING 1: Stiplet linje mellom dagene */
+        .day-section { width: 100%; margin-bottom: 35px; padding-bottom: 30px; border-bottom: 1px dashed var(--box-border); }
+        
         .day-title { display: flex; justify-content: flex-start; align-items: center; gap: 15px; font-family: 'Poppins', sans-serif; font-size: 1.75rem; font-weight: 400; margin-bottom: 14px; padding-left: 40px; }
-        .today-badge { font-size: 15px; background: var(--clock-accent); color: white; padding: 3px 14px; border-radius: 6px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
         .holiday-text { font-size: 1.25rem; color: var(--clock-accent); font-weight: 400; font-style: normal; margin-top: -8px; margin-bottom: 14px; text-transform: uppercase; padding-left: 40px; }
         .event-list { display: flex; flex-direction: column; gap: 28px; padding-left: 80px; }
         .event-item { font-family: 'Lato', sans-serif; font-size: 1.55rem; line-height: 1.4; color: var(--text-main); display: flex; align-items: flex-start; }
@@ -198,9 +199,6 @@
     <script src="https://apis.google.com/js/api.js"></script>
 
     <script>
-        // =========================================================
-        // HER KAN DU ENDRE DINE FASTE RUTINER
-        // =========================================================
         const fasteRutinerHverdag = [
             { tid: "07.30", tekst: "Frokost" },
             { tid: "08.00", tekst: "Ta medisiner" },
@@ -232,7 +230,6 @@
             { tid: "19.30", tekst: "Gå tur med hunden" },
             { tid: "20.30", tekst: "Kveldsmat" }
         ];
-        // =========================================================
 
         const API_KEY = 'AIzaSyDabiLiH6tR1bonxhjgNqq9PoTSa9wogzE';
         const CALENDAR_ID = '6836a3463ada75841f11c52afbd588f7467b5c7014a9ac8118e24205f42d301c@group.calendar.google.com'; 
@@ -352,7 +349,7 @@
                     const daySection = document.createElement('div');
                     daySection.className = 'day-section';
 
-                    // NY DATO-LOGIKK HER
+                    // ENDRING 2: ETIKETT "I DAG, " / "I MORGEN, "
                     let prefix = "";
                     if (dateKey === todayKey) prefix = "I dag, ";
                     else if (dateKey === morgenKey) prefix = "I morgen, ";
@@ -360,6 +357,7 @@
                     const dayName = ukeDager[currentDay.getDay()];
                     const dateNum = currentDay.getDate();
                     const monthName = maaneder[currentDay.getMonth()].toLowerCase();
+                    const yearNum = currentDay.getFullYear();
                     
                     daySection.innerHTML = `<div class="day-title">${prefix}${dayName.toLowerCase()} ${dateNum}. ${monthName}</div>`;
 
@@ -375,7 +373,6 @@
                         list.className = 'event-list';
 
                         const råHendelser = [...globalEventsCache[dateKey]];
-                        // Sortering beholdt
                         råHendelser.sort((a, b) => {
                             let aTid = null; let bTid = null;
                             if (a.computedStart && !a.isAllDay) { const d = new Date(a.computedStart); aTid = { timer: d.getHours(), minutter: d.getMinutes() }; }
@@ -409,12 +406,10 @@
 
         function updateClockAndLayout() {
             const now = new Date();
-            const h = now.getHours();
-            document.getElementById('digital-clock').textContent = `${String(h).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-            document.body.classList.toggle('night-mode', h < 7 || h >= 22);
-            
+            document.getElementById('digital-clock').textContent = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+            if (now.getHours() >= 7 && now.getHours() < 22) document.body.classList.remove('night-mode'); else document.body.classList.add('night-mode');
             const periods = ["natt", "morgen", "formiddag", "ettermiddag", "kveld"];
-            document.getElementById('time-of-day-label').innerText = periods[h < 6 ? 0 : h < 9 ? 1 : h < 12 ? 2 : h < 18 ? 3 : 4];
+            document.getElementById('time-of-day-label').innerText = periods[now.getHours() < 6 ? 0 : now.getHours() < 9 ? 1 : now.getHours() < 12 ? 2 : now.getHours() < 18 ? 3 : 4];
             document.getElementById('complete-date-string').textContent = `${ukeDager[now.getDay()].toLowerCase()} ${now.getDate()}. ${maaneder[now.getMonth()].toLowerCase()} ${now.getFullYear()}`;
             
             const dayOfWeek = now.getDay(); 
@@ -429,23 +424,19 @@
             Promise.all([
                 gapi.client.calendar.events.list({ 'calendarId': CALENDAR_ID, 'timeMin': start.toISOString(), 'timeMax': end.toISOString(), 'singleEvents': true, 'orderBy': 'startTime' }),
                 gapi.client.calendar.events.list({ 'calendarId': HOLIDAY_CALENDAR_ID, 'timeMin': start.toISOString(), 'timeMax': end.toISOString(), 'singleEvents': true })
-            ]).then(responses => {
-                globalEventsCache = {};
-                responses[0].result.items.forEach(ev => {
-                    const key = new Date(ev.start.dateTime || ev.start.date).toLocaleDateString('sv-SE', {timeZone: 'Europe/Oslo'});
-                    if (!globalEventsCache[key]) globalEventsCache[key] = [];
+            ]).then(res => {
+                globalEventsCache = {}; 
+                res[0].result.items.forEach(ev => {
+                    const k = new Date(ev.start.dateTime || ev.start.date).toLocaleDateString('sv-SE', {timeZone: 'Europe/Oslo'});
+                    if (!globalEventsCache[k]) globalEventsCache[k] = [];
                     ev.computedStart = (ev.start.dateTime || ev.start.date);
-                    globalEventsCache[key].push(ev);
+                    globalEventsCache[k].push(ev);
                 });
-                globalHolidaysCache = {}; responses[1].result.items.forEach(h => globalHolidaysCache[h.start.date || h.start.dateTime.split('T')[0]] = h.summary);
+                globalHolidaysCache = {}; res[1].result.items.forEach(h => globalHolidaysCache[(h.start.date || h.start.dateTime.split('T')[0])] = h.summary);
                 renderCalendarList();
             });
         }
-
-        window.addEventListener('DOMContentLoaded', () => {
-            setInterval(updateClockAndLayout, 1000); updateClockAndLayout();
-            gapi.load('client', () => gapi.client.init({ 'apiKey': API_KEY, 'discoveryDocs': ["https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"] }).then(() => { fetchCalendarData(); setInterval(fetchCalendarData, 300000); }));
-        });
+        window.addEventListener('DOMContentLoaded', () => { setInterval(updateClockAndLayout, 1000); updateClockAndLayout(); gapi.load('client', () => gapi.client.init({ 'apiKey': API_KEY, 'discoveryDocs': ["https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"] }).then(() => { fetchCalendarData(); setInterval(fetchCalendarData, 300000); })); });
     </script>
 </body>
 </html>
