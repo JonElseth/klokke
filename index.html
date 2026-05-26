@@ -2,22 +2,17 @@
 <html lang="no">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Seniorkalender</title>
     <style>
-        :root { --bg: #f1f5f9; --text: #1e293b; --accent: #ef4444; }
-        body.night-mode { --bg: #0f172a; --text: #f8fafc; }
-        body { background: var(--bg); color: var(--text); font-family: sans-serif; padding: 40px; }
-        .digital-clock { font-size: 80px; font-weight: bold; }
-        #calendar-list { margin-top: 20px; font-size: 1.5rem; }
-        .event-item { margin-bottom: 15px; }
+        body { font-family: sans-serif; padding: 40px; background: #f1f5f9; color: #1e293b; }
+        .digital-clock { font-size: 80px; font-weight: bold; margin-bottom: 20px; }
+        .event-item { font-size: 1.5rem; margin-bottom: 15px; padding: 10px; background: white; border-radius: 8px; border-left: 5px solid #ef4444; }
     </style>
 </head>
 <body>
     <div id="digital-clock" class="digital-clock">00:00</div>
-    <div id="live-status-bar">Laster status...</div>
     <h2>Dette skjer:</h2>
-    <div id="calendar-list">Laster avtaler fra Google...</div>
+    <div id="calendar-list">Laster avtaler...</div>
 
     <script src="https://apis.google.com/js/api.js"></script>
     <script>
@@ -26,42 +21,31 @@
 
         function start() {
             gapi.load('client', () => {
-                gapi.client.init({
-                    apiKey: API_KEY,
-                    discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"]
-                }).then(() => {
-                    console.log("API initialisert");
-                    fetchEvents();
-                    setInterval(fetchEvents, 60000); // Oppdater hvert minutt
-                }).catch(e => document.getElementById('calendar-list').innerText = "Init feil: " + e.message);
+                gapi.client.init({apiKey: API_KEY, discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"]})
+                .then(() => fetchEvents());
             });
         }
 
         function fetchEvents() {
             gapi.client.calendar.events.list({
-                'calendarId': CALENDAR_ID,
-                'timeMin': new Date().toISOString(),
-                'singleEvents': true,
-                'orderBy': 'startTime'
+                calendarId: CALENDAR_ID,
+                timeMin: new Date().toISOString(),
+                singleEvents: true,
+                orderBy: 'startTime'
             }).then(res => {
                 const list = document.getElementById('calendar-list');
                 list.innerHTML = '';
-                const items = res.result.items || [];
-                if (items.length === 0) { list.innerText = "Ingen avtaler funnet."; return; }
-                
-                items.forEach(ev => {
-                    let time = ev.start.dateTime ? new Date(ev.start.dateTime).toLocaleTimeString('no-NO', {hour:'2-digit', minute:'2-digit'}) : "Hele dagen";
-                    list.innerHTML += `<div class='event-item'><b>${time}</b>: ${ev.summary}</div>`;
+                (res.result.items || []).forEach(ev => {
+                    let tid = ev.start.dateTime ? new Date(ev.start.dateTime).toLocaleTimeString('no-NO', {hour:'2-digit', minute:'2-digit'}) : "Hele dagen";
+                    list.innerHTML += `<div class='event-item'><b>${tid}</b>: ${ev.summary}</div>`;
                 });
             }).catch(e => {
-                document.getElementById('calendar-list').innerText = "Kunne ikke hente avtaler. Sjekk at kalenderen er offentlig.";
+                document.getElementById('calendar-list').innerText = "Feil: " + e.message;
             });
         }
 
         setInterval(() => {
-            const n = new Date();
-            document.getElementById('digital-clock').textContent = n.toLocaleTimeString('no-NO', {hour:'2-digit', minute:'2-digit'});
-            document.body.classList.toggle('night-mode', n.getHours() < 7 || n.getHours() >= 22);
+            document.getElementById('digital-clock').textContent = new Date().toLocaleTimeString('no-NO', {hour:'2-digit', minute:'2-digit'});
         }, 1000);
 
         start();
