@@ -441,10 +441,10 @@
                             const morgenTime = new Date(førsteIAvtaleIMorgen.computedStart).getHours();
                             let periodeTekst = "i morgen";
                             
-                            if (morgenTime >= 7 && morgenTime < 9) periodeTekst = "i morgen tidlig";
-                            else if (morgenTime >= 9 && morgenTime < 12) periodeTekst = "i morgen formiddag";
-                            else if (morgenTime >= 12 && morgenTime < 18) periodeTekst = "i morgen ettermiddag";
-                            else if (morgenTime >= 18 && morgenTime < 23) periodeTekst = "i morgen kveld";
+                            if (morgenTime >= 7 && morgenTime < 9) periodeTekst = "i dag tidlig";
+                            else if (morgenTime >= 9 && morgenTime < 12) periodeTekst = "i formiddag";
+                            else if (morgenTime >= 12 && morgenTime < 18) periodeTekst = "i ettermiddag";
+                            else if (morgenTime >= 18 && morgenTime < 23) periodeTekst = "i kveld";
                             
                             boksHTML += `Det er natt, og det er ingen flere avtaler før <span class="status-box-highlight">${periodeTekst}</span>.`;
                         } else {
