@@ -237,7 +237,7 @@
         ];
 
         const API_KEY = 'AIzaSyDabiLiH6tR1bonxhjgNqq9PoTSa9wogzE';
-        const CALENDAR_ID = 'primary'; 
+        const CALENDAR_ID = '6836a3463ada75841f11c52afbd588f7467b5c7014a9ac8118e24205f42d301c@group.calendar.google.com'; 
         const HOLIDAY_CALENDAR_ID = 'no.norwegian#holiday@group.v.calendar.google.com'; 
 
         const ukeDager = ["Søndag", "Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag", "Lørdag"];
@@ -356,7 +356,7 @@
                 iMorgen.setDate(today.getDate() + 1);
                 const morgenKey = iMorgen.toLocaleDateString('sv-SE', {timeZone: 'Europe/Oslo'});
 
-                for (let i = 0; i < 60; i++) {
+                for (let i = 0; i < 185; i++) {
                     const currentDay = new Date();
                     currentDay.setDate(today.getDate() + i);
                     const dateKey = currentDay.toLocaleDateString('sv-SE', {timeZone: 'Europe/Oslo'});
@@ -470,7 +470,8 @@ function updateClockAndLayout() {
                 gapi.client.calendar.events.list({ 'calendarId': HOLIDAY_CALENDAR_ID, 'timeMin': start.toISOString(), 'timeMax': end.toISOString(), 'singleEvents': true })
             ]).then(res => {
                 globalEventsCache = {}; 
-                res[0].result.items.forEach(ev => {
+		res[0].result.items.forEach(ev => {
+                    console.log("Fant avtale:", ev.summary, "Dato:", ev.start.dateTime || ev.start.date); // <-- Denne linjen legger vi til
                     const k = new Date(ev.start.dateTime || ev.start.date).toLocaleDateString('sv-SE', {timeZone: 'Europe/Oslo'});
                     if (!globalEventsCache[k]) globalEventsCache[k] = [];
                     ev.computedStart = (ev.start.dateTime || ev.start.date);
