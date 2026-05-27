@@ -3,18 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    
+
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <meta name="robots" content="noindex, nofollow">
-    
+
     <title>Eksklusiv Seniorkalender</title>
-    
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
-    
+
     <style>
         :root {
             --bg-color: #f1f5f9;
@@ -25,7 +25,7 @@
             --shadow: rgba(0, 0, 0, 0.05);
             --box-bg: #ffffff;
             --box-border: #cbd5e1;
-            --highlight-text: #0066cc; 
+            --highlight-text: #0066cc;
             --time-of-day-color: #0f172a;
         }
 
@@ -39,7 +39,7 @@
             --shadow: rgba(0, 0, 0, 0.3);
             --box-bg: #1e293b;
             --box-border: #334155;
-            --highlight-text: #38bdf8; 
+            --highlight-text: #38bdf8;
             --time-of-day-color: #f8fafc;
         }
 
@@ -56,33 +56,33 @@
             flex-direction: column;
             overflow-y: auto;
             overflow-x: hidden;
-            scrollbar-width: none; 
-            padding: 79px 60px 74px 60px; 
+            scrollbar-width: none;
+            padding: 79px 60px 74px 60px;
             transition: background 1s ease, color 1s ease;
         }
 
         body::-webkit-scrollbar { display: none; }
 
         header {
-            height: 110px; 
+            height: 110px;
             display: flex;
-            justify-content: space-between; 
+            justify-content: space-between;
             background-color: var(--bg-color);
             transition: background 1s ease;
-            margin-bottom: 40px; 
-            position: relative; 
+            margin-bottom: 40px;
+            position: relative;
             flex-shrink: 0;
         }
 
         .header-clocks-left { display: flex; align-items: flex-end; flex-shrink: 0; height: 110px; }
 
         .digital-clock-big {
-            font-size: 142px; 
-            font-weight: 500;  
+            font-size: 142px;
+            font-weight: 500;
             letter-spacing: -5px;
-            line-height: 0.72; 
+            line-height: 0.72;
             display: inline-block;
-            margin-bottom: -5px; 
+            margin-bottom: -5px;
         }
 
         .time-of-day-wrapper {
@@ -102,7 +102,7 @@
 
         .header-date-right {
             font-size: 2.0rem;
-            font-weight: 500;  
+            font-weight: 500;
             color: var(--text-muted);
             line-height: 1.0;
             margin-top: 15px;
@@ -139,15 +139,13 @@
         .info-item { white-space: nowrap; line-height: 1.4; display: flex; align-items: flex-start; }
         .info-bullet { flex-shrink: 0; margin-right: 10px; line-height: 1.4; }
         .info-time { color: var(--clock-accent); font-weight: 700; margin-right: 5px; }
-        
+
         .day-section { width: 100%; margin-bottom: 35px; padding-bottom: 30px; border-bottom: 2px dashed var(--box-border); }
-        
-        /* NYTT: Dimming av dager lenger frem */
+
         .day-section.future-day { opacity: 0.5; transition: opacity 0.3s ease; }
-        /* NYTT: Dimming av passert avtale */
         .event-item.passed-event { opacity: 0.4; transition: opacity 0.3s ease; }
         .passed-text { font-size: 0.9em; font-style: italic; color: var(--text-muted); margin-left: 5px; }
-        
+
         .day-title { display: flex; justify-content: flex-start; align-items: center; gap: 15px; font-family: 'Poppins', sans-serif; font-size: 1.75rem; font-weight: 400; margin-bottom: 14px; padding-left: 40px; }
         .holiday-text { font-size: 1.25rem; color: var(--clock-accent); font-weight: 400; font-style: normal; margin-top: -8px; margin-bottom: 14px; text-transform: uppercase; padding-left: 40px; }
         .event-list { display: flex; flex-direction: column; gap: 28px; padding-left: 80px; }
@@ -204,6 +202,7 @@
     <script src="https://apis.google.com/js/api.js"></script>
 
     <script>
+        // Definerer faste rutiner for ulike dager
         const fasteRutinerHverdag = [
             { tid: "07.30", tekst: "Frokost" },
             { tid: "08.00", tekst: "Ta medisiner" },
@@ -248,6 +247,7 @@
         let wakeLock = null;
         let inactivityTimeout = null;
 
+        // Nullstiller tidtakeren for inaktivitet og scroller til toppen hvis brukeren ikke har interagert
         function resetInactivityTimer() {
             clearTimeout(inactivityTimeout);
             inactivityTimeout = setTimeout(function() {
@@ -255,6 +255,7 @@
             }, 180000); 
         }
 
+        // Setter opp lytting etter interaksjon for å holde siden aktiv og resette scroll-timer
         function setupInactivityListeners() {
             window.addEventListener('scroll', resetInactivityTimer);
             window.addEventListener('touchstart', resetInactivityTimer, true);
@@ -263,6 +264,7 @@
             resetInactivityTimer();
         }
 
+        // Genererer HTML for listen med faste daglige rutiner
         function genererRutineHTML(rutineListe) {
             let html = "";
             rutineListe.forEach(item => {
@@ -271,6 +273,7 @@
             return html;
         }
 
+        // Oppdaterer statusboksen øverst med informasjon om neste kommende avtale
         function oppdaterLiveStatusBoks() {
             const statusEl = document.getElementById('live-status-bar');
             if (!statusEl) return;
@@ -323,6 +326,7 @@
             }
         }
 
+        // Formaterer teksten i en avtale for å legge til fargekoder (badges) basert på navn
         function formatEventSummary(summary) {
             if (!summary) return '';
             let html = summary;
@@ -332,6 +336,7 @@
             return html;
         }
 
+        // Hjelpefunksjon for å finne klokkeslett inne i en tekststreng
         function hentKlokkeslettFraTekst(summary) {
             if (!summary) return null;
             const match = summary.match(/(?:^|\s)([0-2][0-9])[\.:]([0-5][0-9])(?:\s|$)/);
@@ -344,6 +349,7 @@
             return null;
         }
 
+        // Bygger selve kalenderlisten visuelt i høyre kolonne
         function renderCalendarList() {
             try {
                 const container = document.getElementById('calendar-list');
@@ -435,12 +441,18 @@
             } catch (e) { console.error(e); }
         }
 
-function updateClockAndLayout() {
+        // Hovedfunksjon for å oppdatere klokke, dato og layout hvert sekund
+        function updateClockAndLayout() {
             const now = new Date();
             
             // Oppdater umiddelbart ved midnatt
             if (now.getHours() === 0 && now.getMinutes() === 0 && now.getSeconds() === 0) {
                 fetchCalendarData();
+            }
+
+            // Hard reset av siden klokken 03:00 hver natt for å sikre fersk data og minnefrigjøring
+            if (now.getHours() === 3 && now.getMinutes() === 0 && now.getSeconds() === 0) {
+                window.location.reload();
             }
 
             // Tving oppdatering av kalenderlisten hvert minutt for å vise "Tid passert" korrekt
@@ -460,8 +472,10 @@ function updateClockAndLayout() {
             oppdaterLiveStatusBoks();
         }
 
+        // Holder skjermen våken på nettbrettet
         async function requestWakeLock() { try { if ('wakeLock' in navigator) await navigator.wakeLock.request('screen'); } catch (e) {} }
 
+        // Henter data fra Google Kalender via API
         function fetchCalendarData() {
             if (typeof gapi === 'undefined' || !gapi.client) return;
             const start = new Date(); start.setHours(0,0,0,0); const end = new Date(); end.setDate(end.getDate() + 185);
@@ -470,8 +484,8 @@ function updateClockAndLayout() {
                 gapi.client.calendar.events.list({ 'calendarId': HOLIDAY_CALENDAR_ID, 'timeMin': start.toISOString(), 'timeMax': end.toISOString(), 'singleEvents': true })
             ]).then(res => {
                 globalEventsCache = {}; 
-		res[0].result.items.forEach(ev => {
-                    console.log("Fant avtale:", ev.summary, "Dato:", ev.start.dateTime || ev.start.date); // <-- Denne linjen legger vi til
+                res[0].result.items.forEach(ev => {
+                    console.log("Fant avtale:", ev.summary, "Dato:", ev.start.dateTime || ev.start.date); 
                     const k = new Date(ev.start.dateTime || ev.start.date).toLocaleDateString('sv-SE', {timeZone: 'Europe/Oslo'});
                     if (!globalEventsCache[k]) globalEventsCache[k] = [];
                     ev.computedStart = (ev.start.dateTime || ev.start.date);
@@ -481,10 +495,14 @@ function updateClockAndLayout() {
                 renderCalendarList();
             });
         }
+        
+        // Initialiserer applikasjonen når siden er lastet
         window.addEventListener('DOMContentLoaded', () => { 
             setupInactivityListeners(); requestWakeLock(); setInterval(updateClockAndLayout, 1000); updateClockAndLayout(); 
             gapi.load('client', () => gapi.client.init({ 'apiKey': API_KEY, 'discoveryDocs': ["https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"] }).then(() => { fetchCalendarData(); setInterval(fetchCalendarData, 300000); })); 
         });
+        
+        // Ber om WakeLock på nytt hvis nettbrettet blir synlig igjen
         document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') requestWakeLock(); });
     </script>
 </body>
