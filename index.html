@@ -116,7 +116,7 @@
         /* Boks for "Neste avtale"-status */
         .status-box-container {
             width: 100%;
-            margin-bottom: 40px;
+            margin-bottom: 10px;
             padding: 30px;
             background-color: var(--box-bg);
             border: 1px solid var(--box-border);
@@ -142,9 +142,9 @@
         .right-column { flex: 1; background-color: var(--bg-color); }
         
         /* Typografi for titler og innhold */
-        .info-title, .calendar-title { font-size: 2.4rem; font-weight: 500; margin-bottom: 14px; color: var(--text-main); }
-        .info-day-title { font-family: 'Poppins', sans-serif; font-size: 1.75rem; font-weight: 400; margin-bottom: 14px; padding-left: 40px; text-transform: lowercase; }
-        .info-content { display: flex; flex-direction: column; gap: 6px; font-family: 'Lato', sans-serif; font-size: 1.55rem; color: var(--text-main); padding-left: 80px; }
+        .info-title, .calendar-title { font-size: 2.4rem; font-weight: 500; margin-bottom: 4px; color: var(--text-main); }
+        .info-day-title { font-family: 'Poppins', sans-serif; font-size: 1.75rem; font-weight: 400; margin-bottom: 4px; padding-left: 40px; text-transform: lowercase; }
+        .info-content { display: flex; flex-direction: column; gap: 8px; font-family: 'Lato', sans-serif; font-size: 1.55rem; color: var(--text-main); padding-left: 80px; }
         .info-item { white-space: nowrap; line-height: 1.4; display: flex; align-items: flex-start; }
         .info-bullet { flex-shrink: 0; margin-right: 10px; line-height: 1.4; }
         .info-time { color: var(--clock-accent); font-weight: 700; margin-right: 5px; }
@@ -154,12 +154,20 @@
 
         /* Visuelle effekter for fremtidige dager og passerte hendelser */
         .day-section.future-day { opacity: 0.5; transition: opacity 0.3s ease; }
-        .event-item.passed-event { opacity: 0.4; transition: opacity 0.3s ease; }
-        .passed-text { font-size: 0.9em; font-style: italic; color: var(--text-muted); margin-left: 5px; }
+.event-item.passed-event { 
+    opacity: 1; /* Full synlighet */
+    color: var(--text-muted); /* Gjør teksten grålig for å vise at den er "gammel" */
+}
+.passed-text { 
+    font-size: 1.0em;       /* Gjør den litt større */
+    font-weight: 700;       /* Gjør den fet for å skille den ut */
+    color: var(--clock-accent); /* Bruker den røde "klokke-fargen" for å gi varsel-effekt */
+    margin-left: 10px;      /* Litt mer avstand fra selve avtaleteksten */
+}
 
-        .day-title { display: flex; justify-content: flex-start; align-items: center; gap: 15px; font-family: 'Poppins', sans-serif; font-size: 1.75rem; font-weight: 400; margin-bottom: 14px; padding-left: 40px; }
+        .day-title { display: flex; justify-content: flex-start; align-items: center; gap: 15px; font-family: 'Poppins', sans-serif; font-size: 1.75rem; font-weight: 400; margin-bottom: 4px; padding-left: 40px; }
         .holiday-text { font-size: 1.25rem; color: var(--clock-accent); font-weight: 400; font-style: normal; margin-top: -8px; margin-bottom: 14px; text-transform: uppercase; padding-left: 40px; }
-        .event-list { display: flex; flex-direction: column; gap: 28px; padding-left: 80px; }
+        .event-list { display: flex; flex-direction: column; gap: 8px; padding-left: 80px; }
         .event-item { font-family: 'Lato', sans-serif; font-size: 1.55rem; line-height: 1.4; color: var(--text-main); display: flex; align-items: flex-start; }
         .event-bullet { flex-shrink: 0; margin-right: 10px; line-height: 1.4; }
         .event-text-container { flex: 1; }
