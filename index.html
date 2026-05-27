@@ -63,7 +63,6 @@
             overflow-y: auto;
             overflow-x: hidden;
             scrollbar-width: none;
-            /* Justert padding for toppmargin */
             padding: 56px 60px 74px 60px;
             transition: background 1s ease, color 1s ease;
         }
@@ -407,13 +406,47 @@
     <script src="https://apis.google.com/js/api.js"></script>
 
     <script>
-        const fasteRutinerHverdag = [{ tid: "07.30", tekst: "Frokost" }, { tid: "08.00", tekst: "Ta medisiner" }, { tid: "09.00", tekst: "Tur med hunden" }, { tid: "11.30", tekst: "Lunsj" }, { tid: "14.00", tekst: "Sjekke meldinger" }, { tid: "15.30", tekst: "Middag" }, { tid: "19.30", tekst: "Gå tur med hunden" }, { tid: "20.30", tekst: "Kveldsmat" }];
-        const fasteRutinerLoerdag = [{ tid: "07.30", tekst: "Frokost" }, { tid: "08.00", tekst: "Ta medisiner" }, { tid: "09.00", tekst: "Tur med hunden" }, { tid: "12.00", tekst: "Gjerne varm lunsj" }, { tid: "14.00", tekst: "Sjekke meldinger" }, { tid: "15.30", tekst: "Middag" }, { tid: "19.30", tekst: "Gå tur med hunden" }, { tid: "20.30", tekst: "Kveldsmat" }];
-        const fasteRutinerSoendag = [{ tid: "07.30", tekst: "Frokost" }, { tid: "08.00", tekst: "Ta medisiner" }, { tid: "09.00", tekst: "Tur med hunden" }, { tid: "13.00", tekst: "Middag" }, { tid: "14.00", tekst: "Sjekke meldinger" }, { tid: "19.30", tekst: "Gå tur med hunden" }, { tid: "20.30", tekst: "Kveldsmat" }];
+        /* ==========================================================================
+           KONFIGURASJON - Endre dine faste rutiner her
+           ========================================================================== */
+        const RUTINER = {
+            hverdag: [
+                { tid: "07.30", tekst: "Frokost" },
+                { tid: "08.00", tekst: "Ta medisiner" },
+                { tid: "09.00", tekst: "Tur med hunden" },
+                { tid: "11.30", tekst: "Lunsj" },
+                { tid: "14.00", tekst: "Sjekke meldinger" },
+                { tid: "15.30", tekst: "Middag" },
+                { tid: "19.30", tekst: "Gå tur med hunden" },
+                { tid: "20.30", tekst: "Kveldsmat" }
+            ],
+            loerdag: [
+                { tid: "07.30", tekst: "Frokost" },
+                { tid: "08.00", tekst: "Ta medisiner" },
+                { tid: "09.00", tekst: "Tur med hunden" },
+                { tid: "12.00", tekst: "Gjerne varm lunsj" },
+                { tid: "14.00", tekst: "Sjekke meldinger" },
+                { tid: "15.30", tekst: "Middag" },
+                { tid: "19.30", tekst: "Gå tur med hunden" },
+                { tid: "20.30", tekst: "Kveldsmat" }
+            ],
+            soendag: [
+                { tid: "07.30", tekst: "Frokost" },
+                { tid: "08.00", tekst: "Ta medisiner" },
+                { tid: "09.00", tekst: "Tur med hunden" },
+                { tid: "13.00", tekst: "Middag" },
+                { tid: "14.00", tekst: "Sjekke meldinger" },
+                { tid: "19.30", tekst: "Gå tur med hunden" },
+                { tid: "20.30", tekst: "Kveldsmat" }
+            ]
+        };
 
         const API_KEY = 'AIzaSyDabiLiH6tR1bonxhjgNqq9PoTSa9wogzE';
         const CALENDAR_ID = '6836a3463ada75841f11c52afbd588f7467b5c7014a9ac8118e24205f42d301c@group.calendar.google.com';
         const HOLIDAY_CALENDAR_ID = 'no.norwegian#holiday@group.v.calendar.google.com';
+        /* ==========================================================================
+           SLUTT PÅ KONFIGURASJON
+           ========================================================================== */
 
         const ukeDager = ["Søndag", "Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag", "Lørdag"];
         const maaneder = ["Januar", "Februar", "Mars", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Desember"];
@@ -474,17 +507,10 @@
         function formatEventSummary(summary) {
             if (!summary) return '';
             let html = summary;
-            html = html.replace(/^(Mamma\s*&\s*[pP]appa:|Mamma\s+og\s+[pP]appa:)\s*/g, '<span class="badge-navn badge-begge">Mamma & pappa</span> ');
+            html = html.replace(/^(Mamma\s*&\s*[pP]appa:|Mamma\s+og\s*[pP]appa:)\s*/g, '<span class="badge-navn badge-begge">Mamma & pappa</span> ');
             html = html.replace(/^[mM]amma:\s*/g, '<span class="badge-navn badge-mamma">Mamma</span> ');
             html = html.replace(/^[pP]appa:\s*/g, '<span class="badge-navn badge-pappa">Pappa</span> ');
             return html;
-        }
-
-        function hentKlokkeslettFraTekst(summary) {
-            if (!summary) return null;
-            const match = summary.match(/(?:^|\s)([0-2][0-9])[\.:]([0-5][0-9])(?:\s|$)/);
-            if (match) return { timer: parseInt(match[1], 10), minutter: parseInt(match[2], 10) };
-            return null;
         }
 
         function renderCalendarList() {
@@ -539,9 +565,16 @@
             const periods = ["natt", "morgen", "formiddag", "ettermiddag", "kveld"];
             document.getElementById('time-of-day-label').innerText = periods[now.getHours() < 6 ? 0 : now.getHours() < 9 ? 1 : now.getHours() < 12 ? 2 : now.getHours() < 18 ? 3 : 4];
             document.getElementById('complete-date-string').textContent = `${ukeDager[now.getDay()].toLowerCase()} ${now.getDate()}. ${maaneder[now.getMonth()].toLowerCase()} ${now.getFullYear()}`;
+
+            // Hent rutiner fra KONFIGURASJON-objektet
             const dayOfWeek = now.getDay();
+            let dagensRutine;
+            if (dayOfWeek === 6) dagensRutine = RUTINER.loerdag;
+            else if (dayOfWeek === 0) dagensRutine = RUTINER.soendag;
+            else dagensRutine = RUTINER.hverdag;
+
             document.getElementById('info-day-heading').innerText = dayOfWeek === 6 ? "lørdag" : dayOfWeek === 0 ? "søndag" : "mandag - fredag";
-            document.getElementById('info-text').innerHTML = genererRutineHTML(dayOfWeek === 6 ? fasteRutinerLoerdag : dayOfWeek === 0 ? fasteRutinerSoendag : fasteRutinerHverdag);
+            document.getElementById('info-text').innerHTML = genererRutineHTML(dagensRutine);
             oppdaterLiveStatusBoks();
         }
 
