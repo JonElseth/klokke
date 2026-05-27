@@ -438,9 +438,14 @@
 function updateClockAndLayout() {
             const now = new Date();
             
-            // Oppdater umiddelbart ved midnatt
+// Oppdater umiddelbart ved midnatt
             if (now.getHours() === 0 && now.getMinutes() === 0 && now.getSeconds() === 0) {
                 fetchCalendarData();
+            }
+
+            // Hard reset klokken 03:00
+            if (now.getHours() === 3 && now.getMinutes() === 0 && now.getSeconds() === 0) {
+                window.location.reload();
             }
 
             // Tving oppdatering av kalenderlisten hvert minutt for å vise "Tid passert" korrekt
