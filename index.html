@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -16,6 +15,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
 
     <style>
+        /* Her defineres fargetemaet. Endre verdiene her for å justere utseendet på hele siden */
         :root {
             --bg-color: #f1f5f9;
             --text-main: #1e293b;
@@ -29,6 +29,7 @@
             --time-of-day-color: #0f172a;
         }
 
+        /* Nattmodus: Aktiveres automatisk av logikken i JS basert på klokkeslett */
         body.night-mode {
             --bg-color: #0f172a;
             --text-main: #f8fafc;
@@ -43,6 +44,7 @@
             --time-of-day-color: #f8fafc;
         }
 
+        /* Grunnleggende oppsett som fjerner standard marger og setter font */
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
@@ -61,6 +63,7 @@
             transition: background 1s ease, color 1s ease;
         }
 
+        /* Skjuler scrollbar for en renere "kiosk"-look */
         body::-webkit-scrollbar { display: none; }
 
         header {
@@ -76,6 +79,7 @@
 
         .header-clocks-left { display: flex; align-items: flex-end; flex-shrink: 0; height: 110px; }
 
+        /* Stil for den store digitale klokken */
         .digital-clock-big {
             font-size: 142px;
             font-weight: 500;
@@ -92,6 +96,7 @@
             justify-content: flex-start;
         }
 
+        /* Etikett for tid på døgnet (f.eks. "morgen") */
         .time-of-day-label {
             font-size: 3.5rem;
             font-weight: 700;
@@ -108,6 +113,7 @@
             margin-top: 15px;
         }
 
+        /* Boks for "Neste avtale"-status */
         .status-box-container {
             width: 100%;
             margin-bottom: 40px;
@@ -129,10 +135,13 @@
             transition: color 1s ease;
         }
 
+        /* Layout for venstre (rutiner) og høyre (kalender) kolonne */
         main { flex: 1; display: flex; }
         .column { padding-top: 10px; }
         .left-column { width: max-content; background-color: var(--bg-color); padding-right: 60px; margin-right: 60px; border-right: 1px dashed var(--text-muted); }
         .right-column { flex: 1; background-color: var(--bg-color); }
+        
+        /* Typografi for titler og innhold */
         .info-title, .calendar-title { font-size: 2.4rem; font-weight: 500; margin-bottom: 14px; color: var(--text-main); }
         .info-day-title { font-family: 'Poppins', sans-serif; font-size: 1.75rem; font-weight: 400; margin-bottom: 14px; padding-left: 40px; text-transform: lowercase; }
         .info-content { display: flex; flex-direction: column; gap: 6px; font-family: 'Lato', sans-serif; font-size: 1.55rem; color: var(--text-main); padding-left: 80px; }
@@ -140,8 +149,10 @@
         .info-bullet { flex-shrink: 0; margin-right: 10px; line-height: 1.4; }
         .info-time { color: var(--clock-accent); font-weight: 700; margin-right: 5px; }
 
+        /* Stil for hver dag-seksjon i kalenderen */
         .day-section { width: 100%; margin-bottom: 35px; padding-bottom: 30px; border-bottom: 2px dashed var(--box-border); }
 
+        /* Visuelle effekter for fremtidige dager og passerte hendelser */
         .day-section.future-day { opacity: 0.5; transition: opacity 0.3s ease; }
         .event-item.passed-event { opacity: 0.4; transition: opacity 0.3s ease; }
         .passed-text { font-size: 0.9em; font-style: italic; color: var(--text-muted); margin-left: 5px; }
@@ -153,11 +164,14 @@
         .event-bullet { flex-shrink: 0; margin-right: 10px; line-height: 1.4; }
         .event-text-container { flex: 1; }
         .event-time { color: var(--clock-accent); font-weight: 700; margin-right: 6px; }
+        
+        /* Fargekoder for Mamma/Pappa-merker */
         .badge-navn { display: inline-block; padding: 2px 10px 4px 10px; border-radius: 6px; font-weight: 700; color: #ffffff !important; margin-right: 6px; line-height: 1.2; font-size: 18px; vertical-align: middle; }
         .badge-mamma { background-color: #16a34a; } .badge-pappa { background-color: #d97706; } .badge-begge { background-color: #0891b2; }
         body.night-mode .badge-mamma { background-color: #166534; } body.night-mode .badge-pappa { background-color: #9a3412; } body.night-mode .badge-begge { background-color: #155e75; }
         .no-events-text { font-family: 'Lato', sans-serif; font-size: 1.55rem; color: var(--text-muted); padding-left: 40px; }
 
+        /* Media queries for mobil/nettbrett (responsive design) */
         @media (max-width: 900px) or (orientation: portrait) {
             body { padding: 30px 20px 40px 20px; }
             header { flex-direction: column; height: auto; gap: 15px; text-align: center; margin-bottom: 20px; align-items: center; }
@@ -202,6 +216,8 @@
     <script src="https://apis.google.com/js/api.js"></script>
 
     <script>
+        // --- HER ENDRER DU RUTINENE ---
+        // Du kan fritt endre teksten eller legge til flere linjer her i listene.
         const fasteRutinerHverdag = [
             { tid: "07.30", tekst: "Frokost" },
             { tid: "08.00", tekst: "Ta medisiner" },
@@ -234,6 +250,7 @@
             { tid: "20.30", tekst: "Kveldsmat" }
         ];
 
+        // API-nøkler og Kalender-ID (Hent disse fra Google Cloud Console hvis du bytter kalender)
         const API_KEY = 'AIzaSyDabiLiH6tR1bonxhjgNqq9PoTSa9wogzE';
         const CALENDAR_ID = '6836a3463ada75841f11c52afbd588f7467b5c7014a9ac8118e24205f42d301c@group.calendar.google.com'; 
         const HOLIDAY_CALENDAR_ID = 'no.norwegian#holiday@group.v.calendar.google.com'; 
@@ -246,13 +263,15 @@
         let wakeLock = null;
         let inactivityTimeout = null;
 
+        // Funksjon: Resetter timer for inaktivitet (hvis brukeren ikke rører skjermen, scroller den til toppen)
         function resetInactivityTimer() {
             clearTimeout(inactivityTimeout);
             inactivityTimeout = setTimeout(function() {
                 window.scrollTo({ top: 0, behavior: 'smooth' });
-            }, 180000); 
+            }, 180000); // 3 minutter inaktivitet før auto-scroll
         }
 
+        // Funksjon: Registrerer berøring/scroll for å holde siden aktiv
         function setupInactivityListeners() {
             window.addEventListener('scroll', resetInactivityTimer);
             window.addEventListener('touchstart', resetInactivityTimer, true);
@@ -261,6 +280,7 @@
             resetInactivityTimer();
         }
 
+        // Funksjon: Setter opp rutine-listen basert på hvilken dag det er
         function genererRutineHTML(rutineListe) {
             let html = "";
             rutineListe.forEach(item => {
@@ -269,6 +289,7 @@
             return html;
         }
 
+        // Funksjon: Finner neste avtale fra Google Kalender og viser den i "status-bar"
         function oppdaterLiveStatusBoks() {
             const statusEl = document.getElementById('live-status-bar');
             if (!statusEl) return;
@@ -301,6 +322,7 @@
                     let hvem = "Neste avtale er";
                     let renSummary = summary;
 
+                    // Logikk for å gi ulike merkelapper (badges) til avtaler
                     if (/^(Mamma\s*&\s*Pappa:|Mamma\s+og\s+Pappa:)/i.test(summary)) {
                         hvem = "Neste avtale er til mamma og pappa:";
                         renSummary = summary.replace(/^(Mamma\s*&\s*Pappa:|Mamma\s+og\s+Pappa:)\s*/i, '');
@@ -321,6 +343,7 @@
             }
         }
 
+        // Funksjon: Omdanner navn i kalender-teksten til fargede "badges" (merkelapper)
         function formatEventSummary(summary) {
             if (!summary) return '';
             let html = summary;
@@ -330,6 +353,7 @@
             return html;
         }
 
+        // Funksjon: Leser ut et klokkeslett (f.eks. "14.30") hvis det står i avtaleteksten
         function hentKlokkeslettFraTekst(summary) {
             if (!summary) return null;
             const match = summary.match(/(?:^|\s)([0-2][0-9])[\.:]([0-5][0-9])(?:\s|$)/);
@@ -342,6 +366,7 @@
             return null;
         }
 
+        // Funksjon: Tegner hele kalenderlisten med alle avtaler for de neste 185 dagene
         function renderCalendarList() {
             try {
                 const container = document.getElementById('calendar-list');
@@ -433,15 +458,16 @@
             } catch (e) { console.error(e); }
         }
 
+        // Funksjon: Oppdaterer klokken, dato og layout (kjøres hvert sekund)
         function updateClockAndLayout() {
             const now = new Date();
             
-            // Oppdater umiddelbart ved midnatt
+            // Oppdater umiddelbart ved midnatt (henter nye data fra Google)
             if (now.getHours() === 0 && now.getMinutes() === 0 && now.getSeconds() === 0) {
                 fetchCalendarData();
             }
 
-            // Hard reset klokken 03:00
+            // Hard reset av siden klokken 03:00 hver natt for å sikre fersk data og minnefrigjøring
             if (now.getHours() === 3 && now.getMinutes() === 0 && now.getSeconds() === 0) {
                 window.location.reload();
             }
@@ -451,20 +477,31 @@
                 renderCalendarList();
             }
 
+            // Oppdaterer selve klokkeslettet i header
             document.getElementById('digital-clock').textContent = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+            
+            // Bytter mellom dag- og natt-modus basert på tidspunkt
             if (now.getHours() >= 7 && now.getHours() < 22) document.body.classList.remove('night-mode'); else document.body.classList.add('night-mode');
+            
+            // Setter etiketten for tid på døgnet (natt/morgen/osv)
             const periods = ["natt", "morgen", "formiddag", "ettermiddag", "kveld"];
             document.getElementById('time-of-day-label').innerText = periods[now.getHours() < 6 ? 0 : now.getHours() < 9 ? 1 : now.getHours() < 12 ? 2 : now.getHours() < 18 ? 3 : 4];
+            
+            // Setter datoen i header
             document.getElementById('complete-date-string').textContent = `${ukeDager[now.getDay()].toLowerCase()} ${now.getDate()}. ${maaneder[now.getMonth()].toLowerCase()} ${now.getFullYear()}`;
             
+            // Oppdaterer rutine-listen for aktuell dag
             const dayOfWeek = now.getDay(); 
             document.getElementById('info-day-heading').innerText = dayOfWeek === 6 ? "lørdag" : dayOfWeek === 0 ? "søndag" : "mandag - fredag";
             document.getElementById('info-text').innerHTML = genererRutineHTML(dayOfWeek === 6 ? fasteRutinerLoerdag : dayOfWeek === 0 ? fasteRutinerSoendag : fasteRutinerHverdag);
+            
             oppdaterLiveStatusBoks();
         }
 
+        // Funksjon: Prøver å holde skjermen på (WakeLock)
         async function requestWakeLock() { try { if ('wakeLock' in navigator) await navigator.wakeLock.request('screen'); } catch (e) {} }
 
+        // Funksjon: Kommuniserer med Google Kalender for å hente avtaler
         function fetchCalendarData() {
             if (typeof gapi === 'undefined' || !gapi.client) return;
             const start = new Date(); start.setHours(0,0,0,0); const end = new Date(); end.setDate(end.getDate() + 185);
@@ -484,10 +521,18 @@
                 renderCalendarList();
             });
         }
+        
+        // Initialiserer applikasjonen når siden er lastet
         window.addEventListener('DOMContentLoaded', () => { 
-            setupInactivityListeners(); requestWakeLock(); setInterval(updateClockAndLayout, 1000); updateClockAndLayout(); 
+            setupInactivityListeners(); 
+            requestWakeLock(); 
+            setInterval(updateClockAndLayout, 1000); 
+            updateClockAndLayout(); 
+            // Laster Google Client og henter data hvert 5. minutt
             gapi.load('client', () => gapi.client.init({ 'apiKey': API_KEY, 'discoveryDocs': ["https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"] }).then(() => { fetchCalendarData(); setInterval(fetchCalendarData, 300000); })); 
         });
+        
+        // Ber om WakeLock på nytt hvis nettbrettet blir synlig igjen
         document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') requestWakeLock(); });
     </script>
 </body>
