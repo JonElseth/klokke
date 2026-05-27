@@ -136,11 +136,11 @@
     transition: background 1s ease, border 1s ease, box-shadow 1s ease;
 }
 
-        .status-box-highlight {
-            color: var(--highlight-text);
-            font-weight: 700;
-            transition: color 1s ease;
-        }
+.status-box-highlight {
+    color: var(--text-main); /* Endret fra var(--highlight-text) til sort/hvit */
+    font-weight: 700;
+    transition: color 1s ease;
+}
 
         /* Layout for venstre (rutiner) og høyre (kalender) kolonne */
         main { flex: 1; display: flex; }
@@ -315,64 +315,61 @@
         }
 
         // Funksjon: Finner neste avtale fra Google Kalender og viser den i "status-bar"
-        function oppdaterLiveStatusBoks() {
-            const statusEl = document.getElementById('live-status-bar');
-            if (!statusEl) return;
+ function oppdaterLiveStatusBoks() {
+    const statusEl = document.getElementById('live-status-bar');
+    if (!statusEl) return;
 
-            try {
-                const nå = new Date();
-                const dagensNøkkel = nå.toLocaleDateString('sv-SE', {timeZone: 'Europe/Oslo'});
-                const iMorgen = new Date();
-                iMorgen.setDate(nå.getDate() + 1);
-                const morgendagensNøkkel = iMorgen.toLocaleDateString('sv-SE', {timeZone: 'Europe/Oslo'});
+    try {
+        const nå = new Date();
+        const dagensNøkkel = nå.toLocaleDateString('sv-SE', {timeZone: 'Europe/Oslo'});
+        const iMorgen = new Date();
+        iMorgen.setDate(nå.getDate() + 1);
+        const morgendagensNøkkel = iMorgen.toLocaleDateString('sv-SE', {timeZone: 'Europe/Oslo'});
 
-                const alleAktuelleHendelser = [
-                    ...(globalEventsCache[dagensNøkkel] || []),
-                    ...(globalEventsCache[morgendagensNøkkel] || [])
-                ];
+        const alleAktuelleHendelser = [
+            ...(globalEventsCache[dagensNøkkel] || []),
+            ...(globalEventsCache[morgendagensNøkkel] || [])
+        ];
 
-                const sorterteHendelser = alleAktuelleHendelser
-                    .filter(ev => ev.computedStart && new Date(ev.computedStart) > nå)
-                    .sort((a, b) => new Date(a.computedStart).getTime() - new Date(b.computedStart).getTime());
+        const sorterteHendelser = alleAktuelleHendelser
+            .filter(ev => ev.computedStart && new Date(ev.computedStart) > nå)
+            .sort((a, b) => new Date(a.computedStart).getTime() - new Date(b.computedStart).getTime());
 
-                const nesteAvtale = sorterteHendelser[0];
+        const nesteAvtale = sorterteHendelser[0];
 
-                if (nesteAvtale) {
-                    const startTid = new Date(nesteAvtale.computedStart);
-                    const nesteTid = startTid.toLocaleTimeString('no-NO', {hour: '2-digit', minute:'2-digit', timeZone: 'Europe/Oslo'});
-                    const erIIdag = startTid.toLocaleDateString('sv-SE', {timeZone: 'Europe/Oslo'}) === dagensNøkkel;
-                    const tidPrefix = erIIdag ? "kl." : "i morgen kl.";
-                    
-                    let summary = nesteAvtale.summary || "";
-                    let hvem = "Neste avtale er";
-                    let renSummary = summary;
+        if (nesteAvtale) {
+            const startTid = new Date(nesteAvtale.computedStart);
+            const nesteTid = startTid.toLocaleTimeString('no-NO', {hour: '2-digit', minute:'2-digit', timeZone: 'Europe/Oslo'});
+            const erIIdag = startTid.toLocaleDateString('sv-SE', {timeZone: 'Europe/Oslo'}) === dagensNøkkel;
+            const tidPrefix = erIIdag ? "kl." : "i morgen kl.";
+            
+            let summary = nesteAvtale.summary || "";
+            let hvem = "";
+            let renSummary = summary;
 
-                    // Logikk for å gi ulike merkelapper (badges) til avtaler
-// --- NY KODE ---
-// --- SETT INN DENNE BLOKKEN ---
-// --- OPPDATERT KODE UTEN "TIL" OG MED BINDESTEK ---
-if (/^(Mamma\s*&\s*Pappa:|Mamma\s+og\s+Pappa:)/i.test(summary)) {
-    hvem = "<span class='badge-navn badge-begge'>Mamma & pappa</span> - ";
-    renSummary = summary.replace(/^(Mamma\s*&\s*Pappa:|Mamma\s+og\s+Pappa:)\s*/i, '');
-} else if (/^Mamma:/i.test(summary)) {
-    hvem = "<span class='badge-navn badge-mamma'>Mamma</span> - ";
-    renSummary = summary.replace(/^Mamma:\s*/i, '');
-} else if (/^Pappa:/i.test(summary)) {
-    hvem = "<span class='badge-navn badge-pappa'>Pappa</span> - ";
-    renSummary = summary.replace(/^Pappa:\s*/i, '');
-} else {
-    hvem = "Neste avtale:";
-}
-
-                    statusEl.innerHTML = `${hvem} <span class="status-box-highlight">${renSummary}</span> ${tidPrefix} <span class="status-box-highlight">${nesteTid}</span>.`;
-                } else {
-                    statusEl.innerHTML = `Ingen flere planlagte avtaler de nærmeste timene.`;
-                }
-            } catch (feil) {
-                statusEl.innerHTML = `Avventer kalenderdata...`;
+            // Logikk for badges og bindestrek
+            if (/^(Mamma\s*&\s*Pappa:|Mamma\s+og\s+Pappa:)/i.test(summary)) {
+                hvem = "<span class='badge-navn badge-begge'>Mamma & pappa</span> - ";
+                renSummary = summary.replace(/^(Mamma\s*&\s*Pappa:|Mamma\s+og\s+Pappa:)\s*/i, '');
+            } else if (/^Mamma:/i.test(summary)) {
+                hvem = "<span class='badge-navn badge-mamma'>Mamma</span> - ";
+                renSummary = summary.replace(/^Mamma:\s*/i, '');
+            } else if (/^Pappa:/i.test(summary)) {
+                hvem = "<span class='badge-navn badge-pappa'>Pappa</span> - ";
+                renSummary = summary.replace(/^Pappa:\s*/i, '');
+            } else {
+                hvem = "Neste avtale:";
             }
-        }
 
+            // Utskrift hvor alt har normal vekt (ingen 'status-box-highlight' med fet skrift), kun klokkeslettet er uthevet
+statusEl.innerHTML = `${hvem} <span style="font-weight: 700;">${renSummary} ${tidPrefix} ${nesteTid}.</span>`;
+        } else {
+            statusEl.innerHTML = `Ingen flere planlagte avtaler de nærmeste timene.`;
+        }
+    } catch (feil) {
+        statusEl.innerHTML = `Avventer kalenderdata...`;
+    }
+}
         // Funksjon: Omdanner navn i kalender-teksten til fargede "badges" (merkelapper)
         function formatEventSummary(summary) {
             if (!summary) return '';
