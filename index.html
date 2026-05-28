@@ -607,7 +607,7 @@
 
                     const list = document.createElement('div'); list.className = 'event-list';
                     // Her sørger vi for at event-listen er trukket ekstra langt inn
-                    list.style.paddingLeft = "120px";
+                    list.style.paddingLeft = "80px";
 
                     råHendelser.sort((a, b) => new Date(a.computedStart) - new Date(b.computedStart)).forEach(ev => {
                         const li = document.createElement('div'); li.className = 'event-item';
