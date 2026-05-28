@@ -214,6 +214,12 @@
             transition: opacity 0.3s ease;
         }
 
+        .day-section.tomorrow-day {
+            opacity: 0.5;
+            /* Dimmer morgendagens avtaler */
+            transition: opacity 0.3s ease;
+        }
+
         .day-title {
             display: flex;
             justify-content: flex-start;
@@ -310,6 +316,12 @@
             border-bottom: 2px solid var(--clock-accent);
         }
 
+        .today-highlight {
+            font-weight: 800 !important;
+            color: inherit !important;
+            border-bottom: none !important;
+        }
+
         @media (max-width: 900px) or (orientation: portrait) {
             body {
                 padding: 7px 20px 40px 20px;
@@ -376,6 +388,8 @@
             .event-list {
                 padding-left: 40px;
             }
+
+
         }
     </style>
 </head>
@@ -513,7 +527,7 @@
             return html;
         }
 
-        // Funksjon: Henter hendelser fra cachen og rendrer hele kalenderlisten i høyre kolonne
+        // Funksjon: Henter hendelser fra cachen og rendrer hele kalenderlisten
         function renderCalendarList() {
             try {
                 const container = document.getElementById('calendar-list');
@@ -524,18 +538,34 @@
                 const todayKey = today.toLocaleDateString('sv-SE', { timeZone: 'Europe/Oslo' });
                 const iMorgen = new Date(); iMorgen.setDate(today.getDate() + 1);
                 const morgenKey = iMorgen.toLocaleDateString('sv-SE', { timeZone: 'Europe/Oslo' });
+
                 for (let i = 0; i < 185; i++) {
                     const currentDay = new Date(); currentDay.setDate(today.getDate() + i);
                     const dateKey = currentDay.toLocaleDateString('sv-SE', { timeZone: 'Europe/Oslo' });
                     const råHendelser = (globalEventsCache[dateKey] || []).filter(ev => new Date(ev.computedStart) > tiMinutterSiden);
                     const hasHoliday = globalHolidaysCache[dateKey];
                     if (råHendelser.length === 0 && !hasHoliday) continue;
+
                     const daySection = document.createElement('div');
                     daySection.className = 'day-section';
-                    if (i >= 2) daySection.classList.add('future-day');
+
+                    // Logikk for dimming av fremtid, og utheving av I dag
+                    if (dateKey === morgenKey) {
+                        daySection.classList.add('tomorrow-day');
+                    } else if (i >= 2) {
+                        daySection.classList.add('future-day');
+                    }
+
                     let prefix = (dateKey === todayKey) ? "I dag, " : (dateKey === morgenKey) ? "I morgen, " : "";
                     let dagNavn = prefix === "" ? ukeDager[currentDay.getDay()].charAt(0).toUpperCase() + ukeDager[currentDay.getDay()].slice(1).toLowerCase() : ukeDager[currentDay.getDay()].toLowerCase();
-                    daySection.innerHTML = `<div class="day-title">${prefix}${dagNavn} ${currentDay.getDate()}. ${maaneder[currentDay.getMonth()].toLowerCase()}</div>`;
+
+                    // Sjekk om det er i dag for å legge til uthevingsklassen
+                    let titleClass = (dateKey === todayKey) ? "day-title today-title" : "day-title";
+                    // Endret linje som setter HTML for tittelen
+                    // Legg merke til at kommaet nå står helt inntil span-taggen
+                    // Denne tvinger kommaet til å være en del av den uthevede teksten uten mellomrom
+                    let dagensTekst = (dateKey === todayKey) ? `<span class="today-highlight">I dag,</span> ${dagNavn} ${currentDay.getDate()}.` : `${prefix}${dagNavn} ${currentDay.getDate()}.`;
+                    daySection.innerHTML = `<div class="day-title">${dagensTekst} ${maaneder[currentDay.getMonth()].toLowerCase()}</div>`;
                     if (hasHoliday) {
                         const holDiv = document.createElement('div'); holDiv.className = 'holiday-text';
                         holDiv.textContent = hasHoliday; daySection.appendChild(holDiv);
@@ -551,9 +581,7 @@
                     container.appendChild(daySection);
                 }
             } catch (e) { console.error(e); }
-        }
-
-        // Funksjon: Oppdaterer klokken, dagens periode-tekst, datoen og daglige rutiner
+        }        // Funksjon: Oppdaterer klokken, dagens periode-tekst, datoen og daglige rutiner
         function updateClockAndLayout() {
             const now = new Date();
             if (now.getHours() === 0 && now.getMinutes() === 0 && now.getSeconds() === 0) fetchCalendarData();
