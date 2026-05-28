@@ -579,8 +579,15 @@
                     const daySection = document.createElement('div');
                     daySection.className = 'day-section';
 
-                    // Nå blir både "I morgen" (i=1) og "Senere" (i>=2) dempet
-                    if (i >= 1) daySection.classList.add('future-day');
+                    // NY LOGIKK: Dimmer kun hvis dagen er ETTER i morgen
+                    const tomorrow = new Date();
+                    tomorrow.setDate(today.getDate() + 1);
+                    const dagensNøkkel = today.toLocaleDateString('sv-SE', { timeZone: 'Europe/Oslo' });
+                    const tomorrowKey = tomorrow.toLocaleDateString('sv-SE', { timeZone: 'Europe/Oslo' });
+
+                    if (dateKey !== dagensNøkkel && dateKey !== tomorrowKey) {
+                        daySection.classList.add('future-day');
+                    }
 
                     // 1. Overskrift (I dag, I morgen, Senere)
                     if (i === 0 || i === 1 || i === 2) {
@@ -602,11 +609,15 @@
                     dateEl.innerText = `${dagNavnStor} ${datoTekst}`;
                     daySection.appendChild(dateEl);
 
-                    // 3. Avtaler (Trukket mot høyre)
+                    // 3. Avtaler
+                    if (hasHoliday) {
+                        const holDiv = document.createElement('div'); holDiv.className = 'holiday-text';
+                        holDiv.textContent = hasHoliday;
+                        daySection.appendChild(holDiv);
+                    }
 
-
-                    const list = document.createElement('div'); list.className = 'event-list';
-                    // Her sørger vi for at event-listen er trukket ekstra langt inn
+                    const list = document.createElement('div');
+                    list.className = 'event-list';
                     list.style.paddingLeft = "80px";
 
                     råHendelser.sort((a, b) => new Date(a.computedStart) - new Date(b.computedStart)).forEach(ev => {
