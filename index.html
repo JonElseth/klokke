@@ -115,7 +115,8 @@
             font-size: 3.5rem;
             font-weight: 700;
             color: var(--time-of-day-color);
-            text-transform: capitalize;
+            text-transform: none;
+            /* VIKTIG: Sett denne til 'none' for å bruke store/små bokstaver fra JS */
             line-height: 1.0;
         }
 
@@ -636,14 +637,37 @@
             if (now.getHours() === 0 && now.getMinutes() === 0 && now.getSeconds() === 0) fetchCalendarData();
             if (now.getHours() === 3 && now.getMinutes() === 0 && now.getSeconds() === 0) window.location.reload();
             if (now.getSeconds() === 0) renderCalendarList();
+
             document.getElementById('digital-clock').textContent = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+
             if (now.getHours() >= 7 && now.getHours() < 22) document.body.classList.remove('night-mode'); else document.body.classList.add('night-mode');
-            const periods = ["natt", "morgen", "formiddag", "ettermiddag", "kveld"];
-            document.getElementById('time-of-day-label').innerText = periods[now.getHours() < 6 ? 0 : now.getHours() < 9 ? 1 : now.getHours() < 12 ? 2 : now.getHours() < 18 ? 3 : 4];
+
+            // --- HER LIMER DU INN DEN NYE LOGIKKEN ---
+            // Oppdatert logikk for korrekt setningsbygging
+            const time = now.getHours();
+            let tekst = "";
+
+            if (time < 6) {
+                tekst = "Det er natt";
+            } else if (time < 9) {
+                tekst = "Det er morgen";
+            } else if (time < 12) {
+                tekst = "Det er formiddag";
+            } else if (time < 18) {
+                tekst = "Det er ettermiddag";
+            } else {
+                tekst = "Det er kveld";
+            }
+
+            document.getElementById('time-of-day-label').innerText = tekst;
+            // ------------------------------------------
+
             document.getElementById('complete-date-string').textContent = `${ukeDager[now.getDay()]} ${now.getDate()}. ${maaneder[now.getMonth()]}`;
+
             const dayOfWeek = now.getDay();
             document.getElementById('info-day-heading').innerText = dayOfWeek === 6 ? "lørdag" : dayOfWeek === 0 ? "søndag" : "mandag - fredag";
             document.getElementById('info-text').innerHTML = genererRutineHTML(dayOfWeek === 6 ? fasteRutinerLoerdag : dayOfWeek === 0 ? fasteRutinerSoendag : fasteRutinerHverdag);
+
             oppdaterLiveStatusBoks();
         }
 
