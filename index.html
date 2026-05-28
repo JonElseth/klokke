@@ -597,14 +597,21 @@
 
                     if (dateKey !== dagensNøkkel && dateKey !== tomorrowKey) { daySection.classList.add('future-day'); }
 
-                    if (i === 0 || i === 1 || i === 2) {
-                        const titleEl = document.createElement('div');
-                        titleEl.className = 'day-title';
-                        titleEl.style.fontWeight = "700";
-                        titleEl.style.marginBottom = "5px";
-                        titleEl.innerText = (i === 0) ? "I dag:" : (i === 1) ? "I morgen:" : "Senere:";
-                        daySection.appendChild(titleEl);
+                    // 1. Overskrift (I dag, I morgen, Senere)
+                    const titleEl = document.createElement('div');
+                    titleEl.className = 'day-title';
+                    titleEl.style.fontWeight = "700";
+                    titleEl.style.marginBottom = "5px";
+
+                    if (i === 0) {
+                        titleEl.innerText = "I dag:";
+                    } else if (i === 1) {
+                        titleEl.innerText = "I morgen:";
+                    } else {
+                        // Alt som er 2 dager eller mer frem i tid får "Senere:"
+                        titleEl.innerText = "Senere:";
                     }
+                    daySection.appendChild(titleEl);
 
                     let dagNavnStor = ukeDager[currentDay.getDay()].charAt(0).toUpperCase() + ukeDager[currentDay.getDay()].slice(1);
                     let datoTekst = `${currentDay.getDate()}. ${maaneder[currentDay.getMonth()]}`;
