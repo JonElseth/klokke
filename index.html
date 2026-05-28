@@ -178,9 +178,9 @@
             font-size: 3.2rem;
             font-weight: 800;
             margin-bottom: 5px;
-            /* Redusert fra 25px til 5px for mindre luft */
             color: var(--text-main);
             letter-spacing: -0.5px;
+
         }
 
         .info-day-title {
@@ -255,7 +255,7 @@
             font-family: 'Poppins', sans-serif;
             font-size: 1.75rem;
             font-weight: 400;
-            padding-left: 20px;
+            padding-left: 40px;
             /* Litt mindre innrykk her */
         }
 
@@ -264,9 +264,9 @@
             display: flex;
             flex-direction: column;
             gap: 8px;
-            padding-left: 100px;
-            /* Økt fra 80px til 100px for å skape avstanden */
-            margin-top: 10px;
+            padding-left: 80px
+                /* Økt fra 80px til 100px for å skape avstanden */
+                margin-top: 10px;
             /* Litt luft under overskriften */
         }
 
@@ -598,20 +598,16 @@
 
                     const dateEl = document.createElement('div');
                     dateEl.className = 'day-title';
-                    dateEl.style.paddingLeft = "50px";
+                    dateEl.style.paddingLeft = "80px";
                     dateEl.innerText = `${dagNavnStor} ${datoTekst}`;
                     daySection.appendChild(dateEl);
 
                     // 3. Avtaler (Trukket mot høyre)
-                    if (hasHoliday) {
-                        const holDiv = document.createElement('div'); holDiv.className = 'holiday-text';
-                        holDiv.textContent = hasHoliday;
-                        daySection.appendChild(holDiv);
-                    }
+
 
                     const list = document.createElement('div'); list.className = 'event-list';
                     // Her sørger vi for at event-listen er trukket ekstra langt inn
-                    list.style.paddingLeft = "100px";
+                    list.style.paddingLeft = "120px";
 
                     råHendelser.sort((a, b) => new Date(a.computedStart) - new Date(b.computedStart)).forEach(ev => {
                         const li = document.createElement('div'); li.className = 'event-item';
@@ -645,9 +641,16 @@
         function fetchCalendarData() {
             if (typeof gapi === 'undefined' || !gapi.client) return;
             const start = new Date(); start.setHours(0, 0, 0, 0); const end = new Date(); end.setDate(end.getDate() + 185);
+
+            // Vi fjerner alt som har med den andre kalenderen å gjøre
             Promise.all([
-                gapi.client.calendar.events.list({ 'calendarId': CALENDAR_ID, 'timeMin': start.toISOString(), 'timeMax': end.toISOString(), 'singleEvents': true, 'orderBy': 'startTime' }),
-                gapi.client.calendar.events.list({ 'calendarId': HOLIDAY_CALENDAR_ID, 'timeMin': start.toISOString(), 'timeMax': end.toISOString(), 'singleEvents': true })
+                gapi.client.calendar.events.list({
+                    'calendarId': CALENDAR_ID,
+                    'timeMin': start.toISOString(),
+                    'timeMax': end.toISOString(),
+                    'singleEvents': true,
+                    'orderBy': 'startTime'
+                })
             ]).then(res => {
                 globalEventsCache = {};
                 res[0].result.items.forEach(ev => {
@@ -656,7 +659,10 @@
                     ev.computedStart = (ev.start.dateTime || ev.start.date);
                     globalEventsCache[k].push(ev);
                 });
-                globalHolidaysCache = {}; res[1].result.items.forEach(h => globalHolidaysCache[(h.start.date || h.start.dateTime.split('T')[0])] = h.summary);
+
+                // globalHolidaysCache skal være tom og trengs ikke lenger
+                globalHolidaysCache = {};
+
                 renderCalendarList();
             });
         }
