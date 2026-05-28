@@ -581,6 +581,9 @@
                 const today = new Date();
                 const tiMinutterSiden = new Date(today.getTime() - 600000);
 
+                // Hukommelses-variabel: Har vi allerede skrevet "Senere:"?
+                let harSkrevetUtSenere = false;
+
                 for (let i = 0; i < 185; i++) {
                     const currentDay = new Date(); currentDay.setDate(today.getDate() + i);
                     const dateKey = currentDay.toLocaleDateString('sv-SE', { timeZone: 'Europe/Oslo' });
@@ -597,22 +600,25 @@
 
                     if (dateKey !== dagensNøkkel && dateKey !== tomorrowKey) { daySection.classList.add('future-day'); }
 
-                    // 1. Overskrift (I dag, I morgen, Senere)
-                    const titleEl = document.createElement('div');
-                    titleEl.className = 'day-title';
-                    titleEl.style.fontWeight = "700";
-                    titleEl.style.marginBottom = "5px";
+                    // LOGIKK FOR OVERSKRIFTER
+                    if (i === 0 || i === 1 || (!harSkrevetUtSenere && i >= 2)) {
+                        const titleEl = document.createElement('div');
+                        titleEl.className = 'day-title';
+                        titleEl.style.fontWeight = "700";
+                        titleEl.style.marginBottom = "5px";
 
-                    if (i === 0) {
-                        titleEl.innerText = "I dag:";
-                    } else if (i === 1) {
-                        titleEl.innerText = "I morgen:";
-                    } else {
-                        // Alt som er 2 dager eller mer frem i tid får "Senere:"
-                        titleEl.innerText = "Senere:";
+                        if (i === 0) {
+                            titleEl.innerText = "I dag:";
+                        } else if (i === 1) {
+                            titleEl.innerText = "I morgen:";
+                        } else {
+                            titleEl.innerText = "Senere:";
+                            harSkrevetUtSenere = true; // Marker at vi har skrevet det
+                        }
+                        daySection.appendChild(titleEl);
                     }
-                    daySection.appendChild(titleEl);
 
+                    // Datoen
                     let dagNavnStor = ukeDager[currentDay.getDay()].charAt(0).toUpperCase() + ukeDager[currentDay.getDay()].slice(1);
                     let datoTekst = `${currentDay.getDate()}. ${maaneder[currentDay.getMonth()]}`;
                     const dateEl = document.createElement('div');
@@ -620,6 +626,7 @@
                     dateEl.innerText = `${dagNavnStor} ${datoTekst}`;
                     daySection.appendChild(dateEl);
 
+                    // Avtaler
                     const list = document.createElement('div'); list.className = 'event-list';
                     råHendelser.sort((a, b) => new Date(a.computedStart) - new Date(b.computedStart)).forEach(ev => {
                         const li = document.createElement('div'); li.className = 'event-item';
@@ -632,7 +639,6 @@
                 }
             } catch (e) { console.error("Feil i renderCalendarList:", e); }
         }
-
         /* 5. KLOKKE & INITIALISERING */
         function updateClockAndLayout() {
             const now = new Date();
