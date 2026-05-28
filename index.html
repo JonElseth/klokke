@@ -532,7 +532,7 @@
                     else if (/^Pappa:/i.test(summary)) { hvem = "<span class='badge-navn badge-pappa'>Pappa</span> - "; renSummary = summary.replace(/^Pappa:\s*/i, ''); }
                     else { hvem = "Neste avtale:"; }
                     statusEl.innerHTML = `${hvem} <span style="font-weight: 700;">${renSummary} ${tidPrefix} ${nesteTid}.</span>`;
-                } else { statusEl.innerHTML = `Ingen flere avtaler registrert i dag eller i morgen.`; }
+                } else { statusEl.innerHTML = `Ingen flere avtaler i dag eller i morgen.`; }
             } catch (feil) { statusEl.innerHTML = `Avventer kalenderdata...`; }
         }
 
