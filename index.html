@@ -27,7 +27,6 @@
             --shadow: rgba(0, 0, 0, 0.05);
             --box-bg: #ffffff;
             --box-border: #cbd5e1;
-            --highlight-text: #0066cc;
             --time-of-day-color: #0f172a;
         }
 
@@ -41,7 +40,6 @@
             --shadow: rgba(0, 0, 0, 0.3);
             --box-bg: #1e293b;
             --box-border: #334155;
-            --highlight-text: #38bdf8;
             --time-of-day-color: #f8fafc;
         }
 
@@ -109,7 +107,7 @@
             font-size: 3.5rem;
             font-weight: 700;
             color: var(--time-of-day-color);
-            text-transform: capitalize;
+            text-transform: none;
             line-height: 1.0;
         }
 
@@ -124,7 +122,7 @@
         .status-box-container {
             width: 100%;
             margin-bottom: 20px;
-            padding: 35px 30px;
+            padding: 53px 30px;
             background-color: var(--box-bg);
             border: 3px solid var(--accent-color);
             border-radius: 16px;
@@ -232,7 +230,6 @@
             font-size: 1.25rem;
             color: var(--clock-accent);
             font-weight: 400;
-            font-style: normal;
             margin-top: -8px;
             margin-bottom: 14px;
             text-transform: uppercase;
@@ -273,13 +270,13 @@
 
         .badge-navn {
             display: inline-block;
-            padding: 2px 10px 4px 10px;
+            padding: 2px 10px;
             border-radius: 6px;
             font-weight: 700;
             color: #ffffff !important;
-            margin-right: 6px;
+            margin-right: 10px;
             line-height: 1.2;
-            font-size: 0.8em;
+            font-size: 0.95em;
             vertical-align: middle;
         }
 
@@ -305,6 +302,12 @@
 
         body.night-mode .badge-begge {
             background-color: #155e75;
+        }
+
+        .active-time {
+            font-weight: 800 !important;
+            color: var(--clock-accent) !important;
+            border-bottom: 2px solid var(--clock-accent);
         }
 
         @media (max-width: 900px) or (orientation: portrait) {
@@ -378,7 +381,6 @@
 </head>
 
 <body>
-
     <header>
         <div class="header-clocks-left">
             <div class="digital-clock-big" id="digital-clock">00:00</div>
@@ -406,37 +408,20 @@
     <script src="https://apis.google.com/js/api.js"></script>
 
     <script>
-        /* ==========================================================================
-           KONFIGURASJON - Endre dine faste rutiner her
-           ========================================================================== */
         const RUTINER = {
             hverdag: [
-                { tid: "07.30", tekst: "Frokost" },
-                { tid: "08.00", tekst: "Ta medisiner" },
-                { tid: "09.00", tekst: "Tur med hunden" },
-                { tid: "11.30", tekst: "Lunsj" },
-                { tid: "14.00", tekst: "Sjekke meldinger" },
-                { tid: "15.30", tekst: "Middag" },
-                { tid: "19.30", tekst: "Gå tur med hunden" },
-                { tid: "20.30", tekst: "Kveldsmat" }
+                { tid: "07.30", tekst: "Frokost" }, { tid: "08.00", tekst: "Ta medisiner" }, { tid: "09.00", tekst: "Tur med hunden" },
+                { tid: "11.30", tekst: "Lunsj" }, { tid: "14.00", tekst: "Sjekke meldinger" }, { tid: "15.30", tekst: "Middag" },
+                { tid: "19.30", tekst: "Gå tur med hunden" }, { tid: "20.30", tekst: "Kveldsmat" }
             ],
             loerdag: [
-                { tid: "07.30", tekst: "Frokost" },
-                { tid: "08.00", tekst: "Ta medisiner" },
-                { tid: "09.00", tekst: "Tur med hunden" },
-                { tid: "12.00", tekst: "Gjerne varm lunsj" },
-                { tid: "14.00", tekst: "Sjekke meldinger" },
-                { tid: "15.30", tekst: "Middag" },
-                { tid: "19.30", tekst: "Gå tur med hunden" },
-                { tid: "20.30", tekst: "Kveldsmat" }
+                { tid: "07.30", tekst: "Frokost" }, { tid: "08.00", tekst: "Ta medisiner" }, { tid: "09.00", tekst: "Tur med hunden" },
+                { tid: "12.00", tekst: "Gjerne varm lunsj" }, { tid: "14.00", tekst: "Sjekke meldinger" }, { tid: "15.30", tekst: "Middag" },
+                { tid: "19.30", tekst: "Gå tur med hunden" }, { tid: "20.30", tekst: "Kveldsmat" }
             ],
             soendag: [
-                { tid: "07.30", tekst: "Frokost" },
-                { tid: "08.00", tekst: "Ta medisiner" },
-                { tid: "09.00", tekst: "Tur med hunden" },
-                { tid: "13.00", tekst: "Middag" },
-                { tid: "14.00", tekst: "Sjekke meldinger" },
-                { tid: "19.30", tekst: "Gå tur med hunden" },
+                { tid: "07.30", tekst: "Frokost" }, { tid: "08.00", tekst: "Ta medisiner" }, { tid: "09.00", tekst: "Tur med hunden" },
+                { tid: "13.00", tekst: "Middag" }, { tid: "14.00", tekst: "Sjekke meldinger" }, { tid: "19.30", tekst: "Gå tur med hunden" },
                 { tid: "20.30", tekst: "Kveldsmat" }
             ]
         };
@@ -444,9 +429,6 @@
         const API_KEY = 'AIzaSyDabiLiH6tR1bonxhjgNqq9PoTSa9wogzE';
         const CALENDAR_ID = '6836a3463ada75841f11c52afbd588f7467b5c7014a9ac8118e24205f42d301c@group.calendar.google.com';
         const HOLIDAY_CALENDAR_ID = 'no.norwegian#holiday@group.v.calendar.google.com';
-        /* ==========================================================================
-           SLUTT PÅ KONFIGURASJON
-           ========================================================================== */
 
         const ukeDager = ["Søndag", "Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag", "Lørdag"];
         const maaneder = ["Januar", "Februar", "Mars", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Desember"];
@@ -456,11 +438,13 @@
         let wakeLock = null;
         let inactivityTimeout = null;
 
+        // Funksjon: Tilbakestiller timer for inaktivitet for å automatisk rulle siden til toppen
         function resetInactivityTimer() {
             clearTimeout(inactivityTimeout);
             inactivityTimeout = setTimeout(function () { window.scrollTo({ top: 0, behavior: 'smooth' }); }, 180000);
         }
 
+        // Funksjon: Legger til lytttere for ulike brukerhendelser for å oppdage aktivitet
         function setupInactivityListeners() {
             window.addEventListener('scroll', resetInactivityTimer);
             window.addEventListener('touchstart', resetInactivityTimer, true);
@@ -469,12 +453,29 @@
             resetInactivityTimer();
         }
 
+        // Funksjon: Genererer HTML-struktur for de definerte rutinene basert på dag
         function genererRutineHTML(rutineListe) {
             let html = "";
-            rutineListe.forEach(item => { html += `<div class='info-item'><span class='info-bullet'>•</span><span class='info-time'>${item.tid}:</span> ${item.tekst}</div>`; });
+            const nå = new Date();
+            const nåTidMinutter = nå.getHours() * 60 + nå.getMinutes();
+
+            let aktivIndex = -1;
+            for (let i = 0; i < rutineListe.length; i++) {
+                const deler = rutineListe[i].tid.split('.');
+                const timer = parseInt(deler[0]);
+                const minutter = parseInt(deler[1]);
+                const rutineTidMinutter = timer * 60 + minutter;
+                if (nåTidMinutter >= rutineTidMinutter) { aktivIndex = i; }
+            }
+
+            rutineListe.forEach((item, index) => {
+                const erAktiv = (index === aktivIndex) ? "active-time" : "";
+                html += `<div class='info-item'><span class='info-bullet'>•</span><span class='info-time ${erAktiv}'>${item.tid}:</span> ${item.tekst}</div>`;
+            });
             return html;
         }
 
+        // Funksjon: Beregner og oppdaterer tekstboksen som viser neste planlagte avtale
         function oppdaterLiveStatusBoks() {
             const statusEl = document.getElementById('live-status-bar');
             if (!statusEl) return;
@@ -484,11 +485,9 @@
                 const dagensNøkkel = nå.toLocaleDateString('sv-SE', { timeZone: 'Europe/Oslo' });
                 const iMorgen = new Date(); iMorgen.setDate(nå.getDate() + 1);
                 const morgendagensNøkkel = iMorgen.toLocaleDateString('sv-SE', { timeZone: 'Europe/Oslo' });
-
                 const alleAktuelleHendelser = [...(globalEventsCache[dagensNøkkel] || []), ...(globalEventsCache[morgendagensNøkkel] || [])];
                 const sorterteHendelser = alleAktuelleHendelser.filter(ev => new Date(ev.computedStart) > tiMinutterSiden).sort((a, b) => new Date(a.computedStart).getTime() - new Date(b.computedStart).getTime());
                 const nesteAvtale = sorterteHendelser[0];
-
                 if (nesteAvtale) {
                     const startTid = new Date(nesteAvtale.computedStart);
                     const nesteTid = startTid.toLocaleTimeString('no-NO', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Oslo' });
@@ -504,6 +503,7 @@
             } catch (feil) { statusEl.innerHTML = `Avventer kalenderdata...`; }
         }
 
+        // Funksjon: Hjelpefunksjon som formaterer avtalebeskrivelser med visuelle merkelapper
         function formatEventSummary(summary) {
             if (!summary) return '';
             let html = summary;
@@ -513,6 +513,7 @@
             return html;
         }
 
+        // Funksjon: Henter hendelser fra cachen og rendrer hele kalenderlisten i høyre kolonne
         function renderCalendarList() {
             try {
                 const container = document.getElementById('calendar-list');
@@ -523,21 +524,18 @@
                 const todayKey = today.toLocaleDateString('sv-SE', { timeZone: 'Europe/Oslo' });
                 const iMorgen = new Date(); iMorgen.setDate(today.getDate() + 1);
                 const morgenKey = iMorgen.toLocaleDateString('sv-SE', { timeZone: 'Europe/Oslo' });
-
                 for (let i = 0; i < 185; i++) {
                     const currentDay = new Date(); currentDay.setDate(today.getDate() + i);
                     const dateKey = currentDay.toLocaleDateString('sv-SE', { timeZone: 'Europe/Oslo' });
                     const råHendelser = (globalEventsCache[dateKey] || []).filter(ev => new Date(ev.computedStart) > tiMinutterSiden);
                     const hasHoliday = globalHolidaysCache[dateKey];
                     if (råHendelser.length === 0 && !hasHoliday) continue;
-
                     const daySection = document.createElement('div');
                     daySection.className = 'day-section';
                     if (i >= 2) daySection.classList.add('future-day');
                     let prefix = (dateKey === todayKey) ? "I dag, " : (dateKey === morgenKey) ? "I morgen, " : "";
                     let dagNavn = prefix === "" ? ukeDager[currentDay.getDay()].charAt(0).toUpperCase() + ukeDager[currentDay.getDay()].slice(1).toLowerCase() : ukeDager[currentDay.getDay()].toLowerCase();
                     daySection.innerHTML = `<div class="day-title">${prefix}${dagNavn} ${currentDay.getDate()}. ${maaneder[currentDay.getMonth()].toLowerCase()}</div>`;
-
                     if (hasHoliday) {
                         const holDiv = document.createElement('div'); holDiv.className = 'holiday-text';
                         holDiv.textContent = hasHoliday; daySection.appendChild(holDiv);
@@ -555,6 +553,7 @@
             } catch (e) { console.error(e); }
         }
 
+        // Funksjon: Oppdaterer klokken, dagens periode-tekst, datoen og daglige rutiner
         function updateClockAndLayout() {
             const now = new Date();
             if (now.getHours() === 0 && now.getMinutes() === 0 && now.getSeconds() === 0) fetchCalendarData();
@@ -562,24 +561,23 @@
             if (now.getSeconds() === 0) renderCalendarList();
             document.getElementById('digital-clock').textContent = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
             if (now.getHours() >= 7 && now.getHours() < 22) document.body.classList.remove('night-mode'); else document.body.classList.add('night-mode');
-            const periods = ["natt", "morgen", "formiddag", "ettermiddag", "kveld"];
+            const periods = ["Det er natt", "Det er morgen", "Det er formiddag", "Det er ettermiddag", "Det er kveld"];
             document.getElementById('time-of-day-label').innerText = periods[now.getHours() < 6 ? 0 : now.getHours() < 9 ? 1 : now.getHours() < 12 ? 2 : now.getHours() < 18 ? 3 : 4];
             document.getElementById('complete-date-string').textContent = `${ukeDager[now.getDay()].toLowerCase()} ${now.getDate()}. ${maaneder[now.getMonth()].toLowerCase()} ${now.getFullYear()}`;
-
-            // Hent rutiner fra KONFIGURASJON-objektet
             const dayOfWeek = now.getDay();
             let dagensRutine;
             if (dayOfWeek === 6) dagensRutine = RUTINER.loerdag;
             else if (dayOfWeek === 0) dagensRutine = RUTINER.soendag;
             else dagensRutine = RUTINER.hverdag;
-
             document.getElementById('info-day-heading').innerText = dayOfWeek === 6 ? "lørdag" : dayOfWeek === 0 ? "søndag" : "mandag - fredag";
             document.getElementById('info-text').innerHTML = genererRutineHTML(dagensRutine);
             oppdaterLiveStatusBoks();
         }
 
+        // Funksjon: Forsøker å låse skjermen på (Wake Lock) slik at den ikke går i dvale
         async function requestWakeLock() { try { if ('wakeLock' in navigator) await navigator.wakeLock.request('screen'); } catch (e) { } }
 
+        // Funksjon: Henter data fra Google Calendar API og lagrer dem i globale cacher
         function fetchCalendarData() {
             if (typeof gapi === 'undefined' || !gapi.client) return;
             const start = new Date(); start.setHours(0, 0, 0, 0); const end = new Date(); end.setDate(end.getDate() + 185);
@@ -599,6 +597,7 @@
             });
         }
 
+        // Lytter: Initialiserer alt når siden er ferdig lastet
         window.addEventListener('DOMContentLoaded', () => {
             setupInactivityListeners(); requestWakeLock(); setInterval(updateClockAndLayout, 1000); updateClockAndLayout();
             gapi.load('client', () => gapi.client.init({ 'apiKey': API_KEY, 'discoveryDocs': ["https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"] }).then(() => { fetchCalendarData(); setInterval(fetchCalendarData, 300000); }));
