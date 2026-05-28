@@ -352,6 +352,21 @@
             padding-left: 40px;
         }
 
+        .time-marker-line {
+            border-top: 3px solid var(--clock-accent);
+            /* Rød strek */
+            margin: 15px 0;
+            width: 100%;
+        }
+
+        .rutine-strek {
+            border-bottom: 2px solid var(--clock-accent);
+            /* Rød farge */
+            display: block;
+            margin-bottom: 8px;
+            /* Avstanden du ønsker under linjen */
+        }
+
         @media (max-width: 900px) or (orientation: portrait) {
             body {
                 padding: 17px 20px 40px 20px;
@@ -481,7 +496,25 @@
 
         function genererRutineHTML(rutineListe) {
             let html = "";
-            rutineListe.forEach(item => { html += `<div class='info-item'><span class='info-bullet'>•</span><span class='info-time'>${item.tid}:</span> ${item.tekst}</div>`; });
+            const nå = new Date();
+            const nåTidMinutter = nå.getHours() * 60 + nå.getMinutes();
+
+            // Finn indeksen til det rutinepunktet vi er i nå/sist passert
+            let aktivIndex = -1;
+            for (let i = 0; i < rutineListe.length; i++) {
+                const [t, m] = rutineListe[i].tid.split('.').map(Number);
+                if (nåTidMinutter >= (t * 60 + m)) {
+                    aktivIndex = i;
+                }
+            }
+
+            rutineListe.forEach((item, index) => {
+                // Vi setter både font-weight til 900 og øker størrelsen litt for mer "tyngde"
+                const erAktiv = (index === aktivIndex);
+                const stil = erAktiv ? 'style="font-weight: 900; font-size: 1.1em;"' : '';
+
+                html += `<div class='info-item' ${stil}><span class='info-bullet'>•</span><span class='info-time'>${item.tid}:</span> ${item.tekst}</div>`;
+            });
             return html;
         }
 
