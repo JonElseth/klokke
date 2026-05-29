@@ -683,12 +683,13 @@
                     }
 
                     // Overskrifter
+                    // Overskrifter
                     if (dateKey === todayStr || dateKey === tomorrowStr) {
                         const titleEl = document.createElement('div');
                         titleEl.className = 'day-header';
                         titleEl.innerText = (dateKey === todayStr)
-                            ? "Avtaler i dag, " + now.toLocaleDateString('no-NO', { weekday: 'long', day: 'numeric', month: 'long' }) + ":"
-                            : "Avtaler i morgen, " + tomorrow.toLocaleDateString('no-NO', { day: 'numeric', month: 'long' }) + ":";
+                            ? "Avtaler i dag:"
+                            : "Avtaler i morgen:";
                         daySection.appendChild(titleEl);
                     } else {
                         if (!harSkrevetUtSenereHeader) {
