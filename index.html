@@ -739,9 +739,7 @@
 
             document.getElementById('complete-date-string').textContent = `${ukeDager[now.getDay()]} ${now.getDate()}. ${maaneder[now.getMonth()]}`;
             const dayOfWeek = now.getDay();
-            // Henter navnet på dagen i dag med stor forbokstav
-            const dagensNavn = ukeDager[dayOfWeek].toLowerCase();
-            document.getElementById('info-day-heading').innerHTML = "<strong>Rutiner " + dagensNavn + ":</strong>";        // Hvis det er helg, vis helgerutiner, ellers vis hverdag
+            document.getElementById('info-day-heading').innerHTML = "<strong>Rutiner i dag:</strong>";
             document.getElementById('info-text').innerHTML = genererRutineHTML((dayOfWeek === 6 || dayOfWeek === 0) ? (dayOfWeek === 6 ? fasteRutinerLoerdag : fasteRutinerSoendag) : fasteRutinerHverdag);
 
             oppdaterLiveStatusBoks();
