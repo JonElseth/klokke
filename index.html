@@ -18,6 +18,7 @@
         rel="stylesheet">
 
     <style>
+        /* :root definerer fargevariabler som brukes i hele stilen for enkel endring */
         :root {
             --bg-color: #f1f5f9;
             --text-main: #1e293b;
@@ -31,6 +32,7 @@
             --time-of-day-color: #0f172a;
         }
 
+        /* body.night-mode brukes for å invertere farger automatisk når det er sent */
         body.night-mode {
             --bg-color: #0f172a;
             --text-main: #f8fafc;
@@ -51,6 +53,7 @@
             padding: 0;
         }
 
+        /* body: Hovedbeholderen, setter grunnfont og layout */
         body {
             min-height: 100vh;
             width: 100vw;
@@ -71,6 +74,7 @@
             display: none;
         }
 
+        /* header: Holder klokken og datoen på toppen */
         header {
             height: 110px;
             display: flex;
@@ -121,6 +125,7 @@
             margin-top: 15px;
         }
 
+        /* status-box-container: Rammen rundt neste avtale-feltet */
         .status-box-container {
             width: 100%;
             margin-bottom: 20px;
@@ -137,6 +142,7 @@
             transition: background 1s ease, border 1s ease, box-shadow 1s ease;
         }
 
+        /* status-fete-typer: Klassestil for å sikre at teksten i statusboksen er stor og fet */
         .status-fete-typer {
             font-weight: 900 !important;
             font-size: 2.4rem !important;
@@ -146,6 +152,10 @@
         main {
             flex: 1;
             display: flex;
+        }
+
+        .column {
+            padding-top: 10px;
         }
 
         .left-column {
@@ -179,6 +189,7 @@
             opacity: 1 !important;
         }
 
+        /* info-content: Styling for rutinelistene */
         .info-content {
             display: flex;
             flex-direction: column;
@@ -229,6 +240,7 @@
             opacity: 1 !important;
         }
 
+        /* event-item: Individuelle avtaler fra Google Kalender */
         .event-item {
             font-family: 'Lato', sans-serif;
             font-size: 1.55rem;
@@ -268,6 +280,7 @@
             margin-top: 10px;
         }
 
+        /* Badges for å fargekode avtaler */
         .badge-navn {
             display: inline-flex;
             align-items: center;
@@ -294,18 +307,7 @@
             background-color: #0891b2;
         }
 
-        body.night-mode .badge-mamma {
-            background-color: #166534;
-        }
-
-        body.night-mode .badge-pappa {
-            background-color: #9a3412;
-        }
-
-        body.night-mode .badge-begge {
-            background-color: #155e75;
-        }
-
+        /* aktiv-boks: Fremhever en pågående rutine */
         .aktiv-boks {
             background-color: var(--box-bg);
             border: 3px solid var(--accent-color);
@@ -317,6 +319,7 @@
             font-weight: 900;
         }
 
+        /* Media-spørring: Justerer design for mobil (maks 900px bredde) */
         @media (max-width: 900px) or (orientation: portrait) {
             body {
                 padding: 17px 20px 40px 20px;
@@ -397,7 +400,9 @@
             <div class="header-date-right" id="complete-date-string">Laster dato...</div>
         </div>
     </header>
+
     <div class="status-box-container" id="live-status-bar">Laster neste avtale...</div>
+
     <main>
         <div class="column left-column">
             <div class="info-day-title" id="info-day-heading">--</div>
@@ -410,39 +415,11 @@
 
     <script src="https://apis.google.com/js/api.js"></script>
     <script>
-        // --- RUTINE-KONFIGURASJON ---
-        const fasteRutinerHverdag = [
-            { tid: "07:30", tekst: "Frokost" },
-            { tid: "08:00", tekst: "Ta medisiner" },
-            { tid: "09:00", tekst: "Tur med Borghild" },
-            { tid: "11:30", tekst: "Lunsj" },
-            { tid: "14:00", tekst: "Sjekke meldinger" },
-            { tid: "15:30", tekst: "Middag" },
-            { tid: "19:30", tekst: "Tur med Borghild" },
-            { tid: "20:30", tekst: "Kveldsmat" }
-        ];
-
-        const fasteRutinerLoerdag = [
-            { tid: "07:30", tekst: "Frokost" },
-            { tid: "08:00", tekst: "Ta medisiner" },
-            { tid: "09:00", tekst: "Tur med Borghild" },
-            { tid: "12:00", tekst: "Ofte varm lunsj" },
-            { tid: "14:00", tekst: "Sjekke meldinger" },
-            { tid: "15:30", tekst: "Middag" },
-            { tid: "19:30", tekst: "Tur med Borghild" },
-            { tid: "20:30", tekst: "Kveldsmat" }
-        ];
-
-        const fasteRutinerSoendag = [
-            { tid: "07:30", tekst: "Frokost" },
-            { tid: "08:00", tekst: "Ta medisiner" },
-            { tid: "09:00", tekst: "Tur med Borghild" },
-            { tid: "13:00", tekst: "Søndagsmiddag" },
-            { tid: "14:00", tekst: "Sjekke meldinger" },
-            { tid: "19:30", tekst: "Tur med Borghild" },
-            { tid: "20:30", tekst: "Kveldsmat" }
-        ];
-        // -----------------------------
+        /* --- RUTINE-KONFIGURASJON --- */
+        // Her kan du endre rutiner. Legg til/slett elementer i disse listene.
+        const fasteRutinerHverdag = [{ tid: "07:30", tekst: "Frokost" }, { tid: "08:00", tekst: "Ta medisiner" }, { tid: "09:00", tekst: "Tur med Borghild" }, { tid: "11:30", tekst: "Lunsj" }, { tid: "14:00", tekst: "Sjekke meldinger" }, { tid: "15:30", tekst: "Middag" }, { tid: "19:30", tekst: "Tur med Borghild" }, { tid: "20:30", tekst: "Kveldsmat" }];
+        const fasteRutinerLoerdag = [{ tid: "07:30", tekst: "Frokost" }, { tid: "08:00", tekst: "Ta medisiner" }, { tid: "09:00", tekst: "Tur med Borghild" }, { tid: "12:00", tekst: "Ofte varm lunsj" }, { tid: "14:00", tekst: "Sjekke meldinger" }, { tid: "15:30", tekst: "Middag" }, { tid: "19:30", tekst: "Tur med Borghild" }, { tid: "20:30", tekst: "Kveldsmat" }];
+        const fasteRutinerSoendag = [{ tid: "07:30", tekst: "Frokost" }, { tid: "08:00", tekst: "Ta medisiner" }, { tid: "09:00", tekst: "Tur med Borghild" }, { tid: "13:00", tekst: "Søndagsmiddag" }, { tid: "14:00", tekst: "Sjekke meldinger" }, { tid: "19:30", tekst: "Tur med Borghild" }, { tid: "20:30", tekst: "Kveldsmat" }];
 
         const API_KEY = 'AIzaSyDabiLiH6tR1bonxhjgNqq9PoTSa9wogzE';
         const CALENDAR_ID = '6836a3463ada75841f11c52afbd588f7467b5c7014a9ac8118e24205f42d301c@group.calendar.google.com';
@@ -450,15 +427,19 @@
         const maaneder = ["Januar", "Februar", "Mars", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Desember"];
         let globalEventsCache = {};
 
+        /* formatTimeManual: Tvinger kolon i klokkeslett for å unngå punktum-problemer */
         function formatTimeManual(d) { return `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`; }
 
+        /* setupInactivityListeners: Håndterer automatisk scrolling ved inaktivitet */
         function setupInactivityListeners() {
             let t; const reset = () => { clearTimeout(t); t = setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 180000); };
             window.addEventListener('scroll', reset); window.addEventListener('touchstart', reset, true); window.addEventListener('touchmove', reset, true); window.addEventListener('mousedown', reset, true); reset();
         }
 
+        /* requestWakeLock: Prøver å hindre skjermdvale */
         async function requestWakeLock() { try { if ('wakeLock' in navigator) await navigator.wakeLock.request('screen'); } catch (e) { } }
 
+        /* oppdaterLiveStatusBoks: Finner den neste kommende kalenderhendelsen og viser den i boksen */
         function oppdaterLiveStatusBoks() {
             const statusEl = document.getElementById('live-status-bar');
             if (!statusEl) return;
@@ -489,6 +470,7 @@
             } catch (feil) { statusEl.innerHTML = `<span class="status-fete-typer">Avventer kalenderdata...</span>`; }
         }
 
+        /* genererRutineHTML: Bygger HTML for de daglige faste rutinene */
         function genererRutineHTML(rutineListe) {
             let html = ""; const nå = new Date(); const nåTidMin = nå.getHours() * 60 + nå.getMinutes();
             rutineListe.forEach(item => {
@@ -501,6 +483,7 @@
             return html || "<div class='info-item'>Ingen flere rutiner i dag.</div>";
         }
 
+        /* updateClockAndLayout: Hovedfunksjon som kjører hvert sekund og oppdaterer alt innhold */
         function updateClockAndLayout() {
             const now = new Date();
             if (now.getHours() === 0 && now.getMinutes() === 0 && now.getSeconds() === 0) fetchCalendarData();
@@ -516,6 +499,7 @@
             oppdaterLiveStatusBoks();
         }
 
+        /* fetchCalendarData: Henter rådata fra Google Kalender */
         function fetchCalendarData() {
             if (typeof gapi === 'undefined' || !gapi.client) return;
             gapi.client.calendar.events.list({ 'calendarId': CALENDAR_ID, 'timeMin': new Date().toISOString(), 'singleEvents': true, 'orderBy': 'startTime' }).then(res => {
@@ -530,6 +514,7 @@
             });
         }
 
+        /* formatEventSummary: Hjelpefunksjon for å vaske avtale-tittel og legge til badges */
         function formatEventSummary(summary) {
             if (!summary) return '';
             return summary.replace(/^(Mamma\s*&\s*[pP]appa:|Mamma\s+og\s+[pP]appa:)\s*/g, '<span class="badge-navn badge-begge">Mamma & pappa</span> ')
@@ -537,6 +522,7 @@
                 .replace(/^[pP]appa:\s*/g, '<span class="badge-navn badge-pappa">Pappa</span> ');
         }
 
+        /* renderCalendarList: Tegner opp alle fremtidige avtaler i høyre kolonne */
         function renderCalendarList() {
             const container = document.getElementById('calendar-list');
             if (!container) return; container.innerHTML = '';
@@ -561,6 +547,7 @@
             }
         }
 
+        /* window.addEventListener: Initialiserer siden når den er lastet */
         window.addEventListener('DOMContentLoaded', () => {
             setupInactivityListeners();
             requestWakeLock();
