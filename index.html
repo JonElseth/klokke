@@ -14,7 +14,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700&family=Lato:wght@300;400;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700;900&family=Lato:wght@300;400;700&display=swap"
         rel="stylesheet">
 
     <style>
@@ -181,11 +181,20 @@
 
         .info-day-title {
             font-family: 'Poppins', sans-serif;
-            font-size: 1.75rem;
-            font-weight: 400;
-            margin-bottom: 4px;
-            padding-left: 40px;
-            text-transform: lowercase;
+            font-size: 2.2rem;
+            font-weight: 900;
+            /* Endret fra 800 til 900 */
+            margin-bottom: 15px;
+            padding-left: 0px;
+        }
+
+        .day-header {
+            padding-left: 0px !important;
+            font-size: 2.2rem;
+            font-weight: 900;
+            /* Endret fra 800 til 900 */
+            margin-bottom: 10px;
+            color: var(--text-main);
         }
 
         .info-content {
@@ -223,6 +232,19 @@
             margin-bottom: 35px;
             padding-bottom: 30px;
             border-bottom: 2px dashed var(--box-border);
+        }
+
+        /* Denne sikrer dimming når vi scroller */
+        .dimmed {
+            opacity: 0.25;
+            /* Endret fra 0.4 til 0.25 for kraftigere dimming */
+            transition: opacity 0.5s ease-in-out;
+            /* Litt lengre animasjon for en mykere effekt */
+        }
+
+        /* Denne klassen trigger du via JavaScript når brukeren scroller */
+        .no-dimming .dimmed {
+            opacity: 1 !important;
         }
 
         .day-section.future-day {
@@ -283,12 +305,7 @@
         }
 
 
-        .day-header {
-            padding-left: 40px !important;
-            font-size: 1.75rem;
-            font-weight: 700;
-            margin-bottom: 5px;
-        }
+
 
         .day-date {
             padding-left: 40px !important;
@@ -369,15 +386,25 @@
             margin-bottom: 8px;
         }
 
-        .day-header {
-            padding-left: 40px !important;
-            font-size: 1.75rem;
-        }
+
 
         .day-date {
             padding-left: 40px !important;
             font-size: 1.75rem;
             font-family: 'Poppins', sans-serif;
+        }
+
+
+        .aktiv-boks {
+            background-color: var(--box-bg);
+            /* Sett denne til 4px eller 5px for å matche ønsket tykkelse */
+            border: 3px solid var(--accent-color);
+            border-radius: 16px;
+            padding: 8px 15px;
+            margin-left: -15px;
+            margin-right: 10px;
+            box-shadow: 0 4px 8px var(--shadow);
+            font-weight: 900;
         }
 
         /* --- RESPONSIVT OPPSETT (MOBIL/ORIENTERING) --- */
@@ -445,7 +472,7 @@
             .event-list,
             .holiday-text,
             .no-events-text {
-                padding-left: 20px !important;
+                padding-left: 0px !important;
             }
         }
     </style>
@@ -466,12 +493,10 @@
 
     <main>
         <div class="column left-column">
-            <div class="info-title">Rutiner:</div>
             <div class="info-day-title" id="info-day-heading">--</div>
             <div class="info-content" id="info-text">Laster faste rutiner...</div>
         </div>
         <div class="column right-column">
-            <div class="calendar-title">Avtaler:</div>
             <div id="calendar-list">Google Kalender...</div>
         </div>
     </main>
@@ -479,6 +504,27 @@
     <script src="https://apis.google.com/js/api.js"></script>
 
     <script>
+
+
+
+        // Legg til denne i en av dine eksisterende <script>-blokker
+        window.addEventListener('scroll', () => {
+            const calendarList = document.getElementById('calendar-list');
+
+            // Hvis brukeren har scrollet ned mer enn f.eks. 50 piksler, fjern dimming
+            if (window.scrollY > 50) {
+                calendarList.classList.add('no-dimming');
+            } else {
+                // Hvis brukeren er helt på toppen, aktiver dimming igjen
+                calendarList.classList.remove('no-dimming');
+            }
+        });
+
+
+
+
+
+
         /* 1. KONFIGURASJON & DATA-STRUKTURER */
         const fasteRutinerHverdag = [
             { tid: "07.30", tekst: "Frokost" },
@@ -553,8 +599,13 @@
 
             rutineListe.forEach((item, index) => {
                 const erAktiv = (index === aktivIndex);
-                const stil = erAktiv ? 'style="font-weight: 900; font-size: 1.1em;"' : '';
-                html += `<div class='info-item' ${stil}><span class='info-bullet'>•</span><span class='info-time'>${item.tid}:</span> ${item.tekst}</div>`;
+                // Vi beholder 'info-item' for basis-styling, og legger til 'aktiv-boks' hvis aktiv
+                const klasse = erAktiv ? 'info-item aktiv-boks' : 'info-item';
+
+                html += `<div class='${klasse}'>
+                    <span class='info-bullet'>•</span>
+                    <span class='info-time'>${item.tid}:</span> ${item.tekst}
+                 </div>`;
             });
             return html;
         }
@@ -587,7 +638,7 @@
                     else if (/^Pappa:/i.test(summary)) { hvem = "<span class='badge-navn badge-pappa'>Pappa</span> - "; renSummary = summary.replace(/^Pappa:\s*/i, ''); }
                     else { hvem = "Neste avtale:"; }
                     statusEl.innerHTML = `${hvem} <span style="font-weight: 700;">${renSummary} ${tidPrefix} ${nesteTid}.</span>`;
-                } else { statusEl.innerHTML = `Ingen flere planlagte avtaler de nærmeste timene.`; }
+                } else { statusEl.innerHTML = `Ingen planlagte avtaler de nærmeste timene.`; }
             } catch (feil) { statusEl.innerHTML = `Avventer kalenderdata...`; }
         }
 
@@ -606,64 +657,72 @@
                 const container = document.getElementById('calendar-list');
                 if (!container) return;
                 container.innerHTML = '';
-                const today = new Date();
-                const tiMinutterSiden = new Date(today.getTime() - 600000);
-                let harSkrevetUtSenere = false;
+
+                const now = new Date();
+                const todayStr = now.toLocaleDateString('sv-SE', { timeZone: 'Europe/Oslo' });
+                const tomorrow = new Date(now);
+                tomorrow.setDate(now.getDate() + 1);
+                const tomorrowStr = tomorrow.toLocaleDateString('sv-SE', { timeZone: 'Europe/Oslo' });
+
+                let harSkrevetUtSenereHeader = false;
 
                 for (let i = 0; i < 185; i++) {
-                    const currentDay = new Date(); currentDay.setDate(today.getDate() + i);
+                    const currentDay = new Date();
+                    currentDay.setDate(now.getDate() + i);
                     const dateKey = currentDay.toLocaleDateString('sv-SE', { timeZone: 'Europe/Oslo' });
-                    const råHendelser = (globalEventsCache[dateKey] || []).filter(ev => new Date(ev.computedStart) > tiMinutterSiden);
+                    const råHendelser = (globalEventsCache[dateKey] || []).filter(ev => new Date(ev.computedStart) > new Date(now.getTime() - 600000));
+
                     if (råHendelser.length === 0) continue;
 
                     const daySection = document.createElement('div');
                     daySection.className = 'day-section';
 
-                    const tomorrow = new Date();
-                    tomorrow.setDate(today.getDate() + 1);
-                    const dagensNøkkel = today.toLocaleDateString('sv-SE', { timeZone: 'Europe/Oslo' });
-                    const tomorrowKey = tomorrow.toLocaleDateString('sv-SE', { timeZone: 'Europe/Oslo' });
-
-                    if (dateKey !== dagensNøkkel && dateKey !== tomorrowKey) { daySection.classList.add('future-day'); }
-
-                    // Overskrift (I dag, I morgen, Senere)
-                    if (i === 0 || i === 1 || (!harSkrevetUtSenere && i >= 2)) {
-                        const titleEl = document.createElement('div');
-                        titleEl.className = 'day-header'; // Endret klasse
-                        titleEl.style.fontWeight = "700";
-                        titleEl.style.marginBottom = "5px";
-
-                        if (i === 0) {
-                            titleEl.innerText = "I dag:";
-                        } else if (i === 1) {
-                            titleEl.innerText = "I morgen:";
-                        } else {
-                            titleEl.innerText = "Senere:";
-                            harSkrevetUtSenere = true;
-                        }
-                        daySection.appendChild(titleEl);
+                    // Dim alt som IKKE er i dag
+                    if (dateKey !== todayStr) {
+                        daySection.classList.add('dimmed');
                     }
 
-                    // Datoen
-                    let dagNavnStor = ukeDager[currentDay.getDay()].charAt(0).toUpperCase() + ukeDager[currentDay.getDay()].slice(1);
-                    let datoTekst = `${currentDay.getDate()}. ${maaneder[currentDay.getMonth()]}`;
-                    const dateEl = document.createElement('div');
-                    dateEl.className = 'day-date'; // Endret klasse
-                    dateEl.innerText = `${dagNavnStor} ${datoTekst}`;
-                    daySection.appendChild(dateEl);
+                    // Overskrifter
+                    if (dateKey === todayStr || dateKey === tomorrowStr) {
+                        const titleEl = document.createElement('div');
+                        titleEl.className = 'day-header';
+                        titleEl.innerText = (dateKey === todayStr)
+                            ? "Avtaler i dag, " + now.toLocaleDateString('no-NO', { weekday: 'long', day: 'numeric', month: 'long' }) + ":"
+                            : "Avtaler i morgen, " + tomorrow.toLocaleDateString('no-NO', { day: 'numeric', month: 'long' }) + ":";
+                        daySection.appendChild(titleEl);
+                    } else {
+                        if (!harSkrevetUtSenereHeader) {
+                            const headerSection = document.createElement('div');
+                            headerSection.className = 'dimmed'; // Ingen day-section her for å unngå ekstra luft
+                            const headerEl = document.createElement('div');
+                            headerEl.className = 'day-header';
+                            headerEl.innerText = "Avtaler senere:";
+                            headerSection.appendChild(headerEl);
+                            container.appendChild(headerSection);
+                            harSkrevetUtSenereHeader = true;
+                        }
+                        const dateEl = document.createElement('div');
+                        dateEl.className = 'day-date';
+                        dateEl.innerText = `${ukeDager[currentDay.getDay()].charAt(0).toUpperCase() + ukeDager[currentDay.getDay()].slice(1)} ${currentDay.getDate()}. ${maaneder[currentDay.getMonth()]}`;
+                        daySection.appendChild(dateEl);
+                    }
 
-                    const list = document.createElement('div'); list.className = 'event-list';
+                    const list = document.createElement('div');
+                    list.className = 'event-list';
                     råHendelser.sort((a, b) => new Date(a.computedStart) - new Date(b.computedStart)).forEach(ev => {
-                        const li = document.createElement('div'); li.className = 'event-item';
+                        const li = document.createElement('div');
+                        li.className = 'event-item';
                         let timeStr = ev.isAllDay ? 'Hele dagen' : new Date(ev.computedStart).toLocaleTimeString('no-NO', { hour: '2-digit', minute: '2-digit' });
                         li.innerHTML = `<span class="event-bullet">•</span><div class="event-text-container">${timeStr ? `<span class="event-time">${timeStr}:</span>` : ""} ${formatEventSummary(ev.summary)}</div>`;
                         list.appendChild(li);
                     });
+
                     daySection.appendChild(list);
                     container.appendChild(daySection);
                 }
             } catch (e) { console.error("Feil i renderCalendarList:", e); }
-        }        /* 5. KLOKKE & INITIALISERING */
+        }
+
         function updateClockAndLayout() {
             const now = new Date();
             if (now.getHours() === 0 && now.getMinutes() === 0 && now.getSeconds() === 0) fetchCalendarData();
@@ -679,8 +738,10 @@
 
             document.getElementById('complete-date-string').textContent = `${ukeDager[now.getDay()]} ${now.getDate()}. ${maaneder[now.getMonth()]}`;
             const dayOfWeek = now.getDay();
-            document.getElementById('info-day-heading').innerText = dayOfWeek === 6 ? "lørdag" : dayOfWeek === 0 ? "søndag" : "mandag - fredag";
-            document.getElementById('info-text').innerHTML = genererRutineHTML(dayOfWeek === 6 ? fasteRutinerLoerdag : dayOfWeek === 0 ? fasteRutinerSoendag : fasteRutinerHverdag);
+            // Henter navnet på dagen i dag med stor forbokstav
+            const dagensNavn = ukeDager[dayOfWeek].toLowerCase();
+            document.getElementById('info-day-heading').innerHTML = "<strong>Rutiner " + dagensNavn + ":</strong>";        // Hvis det er helg, vis helgerutiner, ellers vis hverdag
+            document.getElementById('info-text').innerHTML = genererRutineHTML((dayOfWeek === 6 || dayOfWeek === 0) ? (dayOfWeek === 6 ? fasteRutinerLoerdag : fasteRutinerSoendag) : fasteRutinerHverdag);
 
             oppdaterLiveStatusBoks();
         }
@@ -708,8 +769,33 @@
         }
 
         window.addEventListener('DOMContentLoaded', () => {
-            setupInactivityListeners(); requestWakeLock(); setInterval(updateClockAndLayout, 1000); updateClockAndLayout();
-            gapi.load('client', () => gapi.client.init({ 'apiKey': API_KEY, 'discoveryDocs': ["https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"] }).then(() => { fetchCalendarData(); setInterval(fetchCalendarData, 300000); }));
+            setupInactivityListeners();
+            requestWakeLock();
+            setInterval(updateClockAndLayout, 1000);
+            updateClockAndLayout();
+
+            // Tving kalenderen til å starte med dimming PÅ
+            const calendarList = document.getElementById('calendar-list');
+            if (calendarList) calendarList.classList.remove('no-dimming');
+
+            gapi.load('client', () => gapi.client.init({
+                'apiKey': API_KEY,
+                'discoveryDocs': ["https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"]
+            }).then(() => {
+                fetchCalendarData();
+                setInterval(fetchCalendarData, 300000);
+            }));
+        });
+
+        // Legg til denne funksjonen rett etter blokken over
+        window.addEventListener('scroll', () => {
+            const calendarList = document.getElementById('calendar-list');
+            if (!calendarList) return;
+            if (window.scrollY > 100) {
+                calendarList.classList.add('no-dimming');
+            } else {
+                calendarList.classList.remove('no-dimming');
+            }
         });
 
         document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') requestWakeLock(); });
