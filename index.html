@@ -538,7 +538,7 @@
             const container = document.getElementById('calendar-list');
             if (!container) return; container.innerHTML = '';
             const now = new Date(); const todayStr = now.toLocaleDateString('sv-SE', { timeZone: 'Europe/Oslo' });
-            for (let i = 0; i < 30; i++) {
+            for (let i = 0; i < 185; i++) {
                 const d = new Date(); d.setDate(now.getDate() + i); const k = d.toLocaleDateString('sv-SE', { timeZone: 'Europe/Oslo' });
                 const evs = (globalEventsCache[k] || []).filter(ev => new Date(ev.computedStart) > new Date(now.getTime() - 600000));
                 if (evs.length === 0) continue;
