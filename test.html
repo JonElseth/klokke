@@ -14,7 +14,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700&family=Lato:wght@300;400;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700;900&family=Lato:wght@300;400;700&display=swap"
         rel="stylesheet">
 
     <style>
@@ -182,11 +182,19 @@
         .info-day-title {
             font-family: 'Poppins', sans-serif;
             font-size: 2.2rem;
-            /* Økt fra 1.75rem */
-            font-weight: 800;
-            /* Gjort fetere */
+            font-weight: 900;
+            /* Endret fra 800 til 900 */
             margin-bottom: 15px;
             padding-left: 0px;
+        }
+
+        .day-header {
+            padding-left: 0px !important;
+            font-size: 2.2rem;
+            font-weight: 900;
+            /* Endret fra 800 til 900 */
+            margin-bottom: 10px;
+            color: var(--text-main);
         }
 
         .info-content {
@@ -297,15 +305,7 @@
         }
 
 
-        .day-header {
-            padding-left: 0px !important;
-            font-size: 2.2rem;
-            /* Økt fra 1.75rem */
-            font-weight: 800;
-            /* Gjort fetere */
-            margin-bottom: 10px;
-            color: var(--text-main);
-        }
+
 
         .day-date {
             padding-left: 40px !important;
@@ -397,13 +397,13 @@
 
         .aktiv-boks {
             background-color: var(--box-bg);
-            border: 2px solid var(--accent-color);
-            /* Tynn blå ramme */
-            border-radius: 12px;
+            /* Sett denne til 4px eller 5px for å matche ønsket tykkelse */
+            border: 3px solid var(--accent-color);
+            border-radius: 16px;
             padding: 8px 15px;
             margin-left: -15px;
-            /* Trekker boksen til venstre */
-            box-shadow: 0 2px 4px var(--shadow);
+            margin-right: 10px;
+            box-shadow: 0 4px 8px var(--shadow);
             font-weight: 900;
         }
 
@@ -739,9 +739,8 @@
             document.getElementById('complete-date-string').textContent = `${ukeDager[now.getDay()]} ${now.getDate()}. ${maaneder[now.getMonth()]}`;
             const dayOfWeek = now.getDay();
             // Henter navnet på dagen i dag med stor forbokstav
-            // Endret versjon (fjerner tvungen stor bokstav):
             const dagensNavn = ukeDager[dayOfWeek].toLowerCase();
-            document.getElementById('info-day-heading').innerHTML = "<strong>Rutiner " + dagensNavn + ":</strong>";         // Hvis det er helg, vis helgerutiner, ellers vis hverdag
+            document.getElementById('info-day-heading').innerHTML = "<strong>Rutiner " + dagensNavn.charAt(0).toUpperCase() + dagensNavn.slice(1) + ":</strong>";         // Hvis det er helg, vis helgerutiner, ellers vis hverdag
             document.getElementById('info-text').innerHTML = genererRutineHTML((dayOfWeek === 6 || dayOfWeek === 0) ? (dayOfWeek === 6 ? fasteRutinerLoerdag : fasteRutinerSoendag) : fasteRutinerHverdag);
 
             oppdaterLiveStatusBoks();
