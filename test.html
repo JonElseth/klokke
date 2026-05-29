@@ -227,7 +227,8 @@
         }
 
         .dimmed {
-            opacity: 0.6;
+            opacity: 0.4;
+            transition: opacity 0.3s ease;
         }
 
         .day-section.future-day {
@@ -392,9 +393,8 @@
             /* Tynn blå ramme */
             border-radius: 12px;
             padding: 8px 15px;
-            /* Litt mindre padding for å matche resten */
             margin-left: -15px;
-            /* Trekker boksen til venstre slik at kulen flukter */
+            /* Trekker boksen til venstre */
             box-shadow: 0 2px 4px var(--shadow);
             font-weight: 900;
         }
@@ -648,15 +648,13 @@
                     const daySection = document.createElement('div');
                     daySection.className = 'day-section';
 
-                    // 1. Logikk for "Senere" (dimming)
-                    const erSenere = (dateKey !== todayStr && dateKey !== tomorrowStr);
-                    if (erSenere) {
+                    // Dim alt som IKKE er i dag
+                    if (dateKey !== todayStr) {
                         daySection.classList.add('dimmed');
                     }
 
-                    // 2. Overskrifter
-                    if (!erSenere) {
-                        // I dag eller I morgen
+                    // Overskrifter
+                    if (dateKey === todayStr || dateKey === tomorrowStr) {
                         const titleEl = document.createElement('div');
                         titleEl.className = 'day-header';
                         titleEl.innerText = (dateKey === todayStr)
@@ -664,22 +662,23 @@
                             : "Avtaler i morgen, " + tomorrow.toLocaleDateString('no-NO', { day: 'numeric', month: 'long' }) + ":";
                         daySection.appendChild(titleEl);
                     } else {
-                        // "Senere" - Skriv header kun første gang
+                        // Seksjon for "Avtaler senere" - lagt til i containeren for å arve dimming
                         if (!harSkrevetUtSenereHeader) {
+                            const headerSection = document.createElement('div');
+                            headerSection.className = 'day-section dimmed';
                             const headerEl = document.createElement('div');
                             headerEl.className = 'day-header';
                             headerEl.innerText = "Avtaler senere:";
-                            container.appendChild(headerEl);
+                            headerSection.appendChild(headerEl);
+                            container.appendChild(headerSection);
                             harSkrevetUtSenereHeader = true;
                         }
-                        // Dato under "Senere"
                         const dateEl = document.createElement('div');
                         dateEl.className = 'day-date';
                         dateEl.innerText = `${ukeDager[currentDay.getDay()].charAt(0).toUpperCase() + ukeDager[currentDay.getDay()].slice(1)} ${currentDay.getDate()}. ${maaneder[currentDay.getMonth()]}`;
                         daySection.appendChild(dateEl);
                     }
 
-                    // 3. Selve listen med avtaler
                     const list = document.createElement('div');
                     list.className = 'event-list';
                     råHendelser.sort((a, b) => new Date(a.computedStart) - new Date(b.computedStart)).forEach(ev => {
@@ -694,7 +693,10 @@
                     container.appendChild(daySection);
                 }
             } catch (e) { console.error("Feil i renderCalendarList:", e); }
-        } function updateClockAndLayout() {
+        }
+
+
+        function updateClockAndLayout() {
             const now = new Date();
             if (now.getHours() === 0 && now.getMinutes() === 0 && now.getSeconds() === 0) fetchCalendarData();
             if (now.getHours() === 3 && now.getMinutes() === 0 && now.getSeconds() === 0) window.location.reload();
