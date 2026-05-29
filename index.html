@@ -109,7 +109,7 @@
         }
 
         .time-of-day-label {
-            font-size: 3.5rem;
+            font-size: 3.0rem;
             font-weight: 700;
             color: var(--time-of-day-color);
             text-transform: none;
@@ -134,7 +134,7 @@
             border-radius: 16px;
             box-shadow: 0 10px 20px var(--shadow);
             font-family: 'Poppins', sans-serif;
-            font-size: 2.4rem;
+            font-size: 3.0rem;
             font-weight: 500;
             line-height: 1.4;
             transition: background 1s ease, border 1s ease, box-shadow 1s ease;
@@ -181,9 +181,8 @@
 
         .info-day-title {
             font-family: 'Poppins', sans-serif;
-            font-size: 2.2rem;
+            font-size: 2.0rem;
             font-weight: 900;
-            /* Endret fra 800 til 900 */
             margin-bottom: 15px;
             padding-left: 0px;
         }
@@ -191,10 +190,11 @@
         .day-header {
             padding-left: 0px !important;
             font-size: 2.2rem;
-            font-weight: 900;
-            /* Endret fra 800 til 900 */
+            font-weight: 900 !important;
             margin-bottom: 10px;
             color: var(--text-main);
+            opacity: 1 !important;
+            /* Sikrer at denne aldri dimmes */
         }
 
         .info-content {
@@ -586,28 +586,36 @@
         }
 
         /* 3. RUTINER & STATUS-VISNING */
+        /* 3. RUTINER & STATUS-VISNING */
         function genererRutineHTML(rutineListe) {
             let html = "";
             const nå = new Date();
             const nåTidMinutter = nå.getHours() * 60 + nå.getMinutes();
 
-            let aktivIndex = -1;
-            for (let i = 0; i < rutineListe.length; i++) {
-                const [t, m] = rutineListe[i].tid.split('.').map(Number);
-                if (nåTidMinutter >= (t * 60 + m)) { aktivIndex = i; }
-            }
+            rutineListe.forEach((item) => {
+                const [t, m] = item.tid.split('.').map(Number);
+                const rutineTidMinutter = (t * 60 + m);
 
-            rutineListe.forEach((item, index) => {
-                const erAktiv = (index === aktivIndex);
-                // Vi beholder 'info-item' for basis-styling, og legger til 'aktiv-boks' hvis aktiv
-                const klasse = erAktiv ? 'info-item aktiv-boks' : 'info-item';
+                // Behold rutinen i 29 minutter etter at tiden har passert
+                if (rutineTidMinutter + 29 >= nåTidMinutter) {
 
-                html += `<div class='${klasse}'>
-                    <span class='info-bullet'>•</span>
-                    <span class='info-time'>${item.tid}:</span> ${item.tekst}
-                 </div>`;
+                    // Markér som aktiv hvis det er mindre enn 30 minutter til start,
+                    // eller hvis tiden allerede har passert (men er under 29 minutter over)
+                    const erAktiv = (rutineTidMinutter - nåTidMinutter <= 30 && rutineTidMinutter + 29 >= nåTidMinutter);
+
+                    const klasse = erAktiv ? 'event-item aktiv-boks' : 'info-item';
+
+                    html += `
+                    <div class='${klasse}'>
+                        <span class='info-bullet'>•</span>
+                        <div class='event-text-container'>
+                            <span class='info-time'>kl. ${item.tid}:</span> ${item.tekst}
+                        </div>
+                    </div>`;
+                }
             });
-            return html;
+
+            return html || "<div class='info-item'>Ingen flere rutiner i dag.</div>";
         }
 
         function oppdaterLiveStatusBoks() {
