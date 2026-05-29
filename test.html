@@ -609,7 +609,7 @@
                     else if (/^Pappa:/i.test(summary)) { hvem = "<span class='badge-navn badge-pappa'>Pappa</span> - "; renSummary = summary.replace(/^Pappa:\s*/i, ''); }
                     else { hvem = "Neste avtale:"; }
                     statusEl.innerHTML = `${hvem} <span style="font-weight: 700;">${renSummary} ${tidPrefix} ${nesteTid}.</span>`;
-                } else { statusEl.innerHTML = `Ingen flere planlagte avtaler de nærmeste timene.`; }
+                } else { statusEl.innerHTML = `Ingen planlagte avtaler de nærmeste timene.`; }
             } catch (feil) { statusEl.innerHTML = `Avventer kalenderdata...`; }
         }
 
@@ -662,10 +662,10 @@
                             : "Avtaler i morgen, " + tomorrow.toLocaleDateString('no-NO', { day: 'numeric', month: 'long' }) + ":";
                         daySection.appendChild(titleEl);
                     } else {
-                        // Seksjon for "Avtaler senere" - lagt til i containeren for å arve dimming
+                        // Seksjon for "Avtaler senere" - lagt til uten 'day-section' for å fjerne unødvendig luft
                         if (!harSkrevetUtSenereHeader) {
                             const headerSection = document.createElement('div');
-                            headerSection.className = 'day-section dimmed';
+                            headerSection.className = 'dimmed'; // Kun dimmed, ingen day-section (som har margin)
                             const headerEl = document.createElement('div');
                             headerEl.className = 'day-header';
                             headerEl.innerText = "Avtaler senere:";
