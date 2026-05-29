@@ -630,9 +630,9 @@
                     const tidPrefix = erIIdag ? "kl." : "i morgen kl.";
 
                     let summary = nesteAvtale.summary || "", hvem = "", renSummary = summary;
-                    if (/^(Mamma\s*&\s*Pappa:|Mamma\s+og\s+Pappa:)/i.test(summary)) { hvem = "<span class='badge-navn badge-begge'>Mamma & pappa</span> - "; renSummary = summary.replace(/^(Mamma\s*&\s*Pappa:|Mamma\s+og\s+Pappa:)\s*/i, ''); }
-                    else if (/^Mamma:/i.test(summary)) { hvem = "<span class='badge-navn badge-mamma'>Mamma</span> - "; renSummary = summary.replace(/^Mamma:\s*/i, ''); }
-                    else if (/^Pappa:/i.test(summary)) { hvem = "<span class='badge-navn badge-pappa'>Pappa</span> - "; renSummary = summary.replace(/^Pappa:\s*/i, ''); }
+                    if (/^(Mamma\s*&\s*Pappa:|Mamma\s+og\s+Pappa:)/i.test(summary)) { hvem = "<span class='badge-navn badge-begge'>Mamma & pappa</span> "; renSummary = summary.replace(/^(Mamma\s*&\s*Pappa:|Mamma\s+og\s+Pappa:)\s*/i, ''); }
+                    else if (/^Mamma:/i.test(summary)) { hvem = "<span class='badge-navn badge-mamma'>Mamma</span> "; renSummary = summary.replace(/^Mamma:\s*/i, ''); }
+                    else if (/^Pappa:/i.test(summary)) { hvem = "<span class='badge-navn badge-pappa'>Pappa</span> "; renSummary = summary.replace(/^Pappa:\s*/i, ''); }
                     else { hvem = "Neste avtale:"; }
 
                     // Her tvinger vi hele innholdet inn i status-fete-typer-klassen
