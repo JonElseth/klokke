@@ -18,7 +18,7 @@
         rel="stylesheet">
 
     <style>
-        /* --- TEMA & VARIABLER --- */
+        /* CSS-variabler for enkel temahåndtering (lys/mørk modus) */
         :root {
             --bg-color: #f1f5f9;
             --text-main: #1e293b;
@@ -32,6 +32,7 @@
             --time-of-day-color: #0f172a;
         }
 
+        /* Overskriver variabler når nattmodus er aktiv */
         body.night-mode {
             --bg-color: #0f172a;
             --text-main: #f8fafc;
@@ -46,13 +47,13 @@
             --time-of-day-color: #f8fafc;
         }
 
-        /* --- GLOBAL LAYOUT --- */
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
 
+        /* Hovedstruktur for hele siden */
         body {
             min-height: 100vh;
             width: 100vw;
@@ -69,11 +70,12 @@
             transition: background 1s ease, color 1s ease;
         }
 
+        /* Skjuler scrollbar i nettleseren */
         body::-webkit-scrollbar {
             display: none;
         }
 
-        /* --- HEADER (KLOKKE & DATO) --- */
+        /* Toppseksjon med klokke og hilsen */
         header {
             height: 110px;
             display: flex;
@@ -124,7 +126,7 @@
             margin-top: 15px;
         }
 
-        /* --- STATUSBOKS --- */
+        /* Boks for neste kommende avtale */
         .status-box-container {
             width: 100%;
             margin-bottom: 20px;
@@ -146,7 +148,7 @@
             transition: color 1s ease;
         }
 
-        /* --- HOVEDINNHOLD (KOLONNER) --- */
+        /* Layout for hovedinnhold med to kolonner */
         main {
             flex: 1;
             display: flex;
@@ -169,7 +171,7 @@
             background-color: var(--bg-color);
         }
 
-        /* --- RUTINER & KALENDER-TYPOGRAFI --- */
+        /* Typografi for overskrifter i lister */
         .info-title,
         .calendar-title {
             font-size: 3.2rem;
@@ -194,7 +196,6 @@
             margin-bottom: 10px;
             color: var(--text-main);
             opacity: 1 !important;
-            /* Sikrer at denne aldri dimmes */
         }
 
         .info-content {
@@ -226,7 +227,7 @@
             margin-right: 5px;
         }
 
-        /* --- KALENDER-SEKSJONER --- */
+        /* Seksjonsoppdeling i kalenderen */
         .day-section {
             width: 100%;
             margin-bottom: 35px;
@@ -234,15 +235,12 @@
             border-bottom: 2px dashed var(--box-border);
         }
 
-        /* Denne sikrer dimming når vi scroller */
+        /* Effekt for dimming av fremtidige dager ved scrolling */
         .dimmed {
             opacity: 0.25;
-            /* Endret fra 0.4 til 0.25 for kraftigere dimming */
             transition: opacity 0.5s ease-in-out;
-            /* Litt lengre animasjon for en mykere effekt */
         }
 
-        /* Denne klassen trigger du via JavaScript når brukeren scroller */
         .no-dimming .dimmed {
             opacity: 1 !important;
         }
@@ -264,10 +262,6 @@
             margin-left: 10px;
         }
 
-
-
-
-
         .holiday-text {
             font-size: 1.25rem;
             color: var(--clock-accent);
@@ -279,6 +273,7 @@
             padding-left: 40px;
         }
 
+        /* Stil for enkeltstående avtaler */
         .event-item {
             font-family: 'Lato', sans-serif;
             font-size: 1.55rem;
@@ -304,9 +299,6 @@
             margin-right: 6px;
         }
 
-
-
-
         .day-date {
             padding-left: 40px !important;
             font-size: 1.75rem;
@@ -322,25 +314,19 @@
             margin-top: 10px;
         }
 
-
-
-        /* --- BADGES (MAMMA/PAPPA) --- */
+        /* Fargekoder for ulike brukere (badges) */
         .badge-navn {
             display: inline-flex;
             align-items: center;
-            /* Sentrerer teksten vertikalt */
             justify-content: center;
             padding: 0px 10px 2px 10px;
-            /* Endre her: 0px oppe, 2px nede - mer padding i bunn dytter teksten opp */
             border-radius: 6px;
             font-weight: 700;
             color: #ffffff !important;
             margin-right: 10px;
             font-size: 1em;
             height: 1.6em;
-            /* Fast høyde gjør at den ikke 'danser' */
             margin-bottom: 2px;
-            /* Løfter selve badgen litt opp fra linjen */
         }
 
         .badge-mamma {
@@ -386,18 +372,14 @@
             margin-bottom: 8px;
         }
 
-
-
         .day-date {
             padding-left: 40px !important;
             font-size: 1.75rem;
             font-family: 'Poppins', sans-serif;
         }
 
-
         .aktiv-boks {
             background-color: var(--box-bg);
-            /* Sett denne til 4px eller 5px for å matche ønsket tykkelse */
             border: 3px solid var(--accent-color);
             border-radius: 16px;
             padding: 8px 15px;
@@ -407,8 +389,7 @@
             font-weight: 900;
         }
 
-        /* --- RESPONSIVT OPPSETT (MOBIL/ORIENTERING) --- */
-        /* --- RESPONSIVT OPPSETT (MOBIL/ORIENTERING) --- */
+        /* Responsiv tilpasning for mindre skjermer */
         @media (max-width: 900px) or (orientation: portrait) {
             body {
                 padding: 17px 20px 40px 20px;
@@ -464,7 +445,6 @@
                 border-right: none;
             }
 
-            /* --- HER ER DEN SAMLEDE MOBIL-LISTEN --- */
             .info-content,
             .info-day-title,
             .day-header,
@@ -504,26 +484,15 @@
     <script src="https://apis.google.com/js/api.js"></script>
 
     <script>
-
-
-
-        // Legg til denne i en av dine eksisterende <script>-blokker
+        // Logikk for å fjerne dimming av kalenderliste ved scrolling
         window.addEventListener('scroll', () => {
             const calendarList = document.getElementById('calendar-list');
-
-            // Hvis brukeren har scrollet ned mer enn f.eks. 50 piksler, fjern dimming
             if (window.scrollY > 50) {
                 calendarList.classList.add('no-dimming');
             } else {
-                // Hvis brukeren er helt på toppen, aktiver dimming igjen
                 calendarList.classList.remove('no-dimming');
             }
         });
-
-
-
-
-
 
         /* 1. KONFIGURASJON & DATA-STRUKTURER */
         const fasteRutinerHverdag = [
@@ -557,6 +526,7 @@
             { tid: "19.30", tekst: "Tur med Borghild" },
             { tid: "20.30", tekst: "Kveldsmat" }
         ];
+
         const API_KEY = 'AIzaSyDabiLiH6tR1bonxhjgNqq9PoTSa9wogzE';
         const CALENDAR_ID = '6836a3463ada75841f11c52afbd588f7467b5c7014a9ac8118e24205f42d301c@group.calendar.google.com';
 
@@ -568,11 +538,13 @@
         let inactivityTimeout = null;
 
         /* 2. HÅNDTERING AV KIOSK-MODUS & AKTIVITET */
+        // Automatisk scrolling til toppen ved inaktivitet
         function resetInactivityTimer() {
             clearTimeout(inactivityTimeout);
             inactivityTimeout = setTimeout(function () { window.scrollTo({ top: 0, behavior: 'smooth' }); }, 180000);
         }
 
+        // Lytt etter brukeraktivitet for å hindre timeout
         function setupInactivityListeners() {
             window.addEventListener('scroll', resetInactivityTimer);
             window.addEventListener('touchstart', resetInactivityTimer, true);
@@ -581,12 +553,13 @@
             resetInactivityTimer();
         }
 
+        // Prøver å holde skjermen våken
         async function requestWakeLock() {
             try { if ('wakeLock' in navigator) await navigator.wakeLock.request('screen'); } catch (e) { }
         }
 
         /* 3. RUTINER & STATUS-VISNING */
-        /* 3. RUTINER & STATUS-VISNING */
+        // Genererer HTML for dagens rutiner med filtrering
         function genererRutineHTML(rutineListe) {
             let html = "";
             const nå = new Date();
@@ -596,13 +569,11 @@
                 const [t, m] = item.tid.split('.').map(Number);
                 const rutineTidMinutter = (t * 60 + m);
 
-                // Behold rutinen i 29 minutter etter at tiden har passert
+                // Viser rutiner frem til 29 minutter etter at de har startet
                 if (rutineTidMinutter + 29 >= nåTidMinutter) {
 
-                    // Markér som aktiv hvis det er mindre enn 30 minutter til start,
-                    // eller hvis tiden allerede har passert (men er under 29 minutter over)
+                    // Markerer rutinen som aktiv hvis det er 30 min før eller under 29 min etter
                     const erAktiv = (rutineTidMinutter - nåTidMinutter <= 30 && rutineTidMinutter + 29 >= nåTidMinutter);
-
                     const klasse = erAktiv ? 'event-item aktiv-boks' : 'info-item';
 
                     html += `
@@ -618,6 +589,7 @@
             return html || "<div class='info-item'>Ingen flere rutiner i dag.</div>";
         }
 
+        // Henter neste kommende avtale og oppdaterer statusboksen
         function oppdaterLiveStatusBoks() {
             const statusEl = document.getElementById('live-status-bar');
             if (!statusEl) return;
@@ -641,6 +613,7 @@
                     const tidPrefix = erIIdag ? "kl." : "i morgen kl.";
 
                     let summary = nesteAvtale.summary || "", hvem = "", renSummary = summary;
+                    // Håndterer merking av avtaler basert på navn i tittelen
                     if (/^(Mamma\s*&\s*Pappa:|Mamma\s+og\s+Pappa:)/i.test(summary)) { hvem = "<span class='badge-navn badge-begge'>Mamma & pappa</span> - "; renSummary = summary.replace(/^(Mamma\s*&\s*Pappa:|Mamma\s+og\s+Pappa:)\s*/i, ''); }
                     else if (/^Mamma:/i.test(summary)) { hvem = "<span class='badge-navn badge-mamma'>Mamma</span> - "; renSummary = summary.replace(/^Mamma:\s*/i, ''); }
                     else if (/^Pappa:/i.test(summary)) { hvem = "<span class='badge-navn badge-pappa'>Pappa</span> - "; renSummary = summary.replace(/^Pappa:\s*/i, ''); }
@@ -651,6 +624,7 @@
         }
 
         /* 4. FORMATERING & KALENDER-RENDER */
+        // Hjelpefunksjon for å formatere avtale-tittel med riktig badge
         function formatEventSummary(summary) {
             if (!summary) return '';
             let html = summary;
@@ -660,6 +634,7 @@
             return html;
         }
 
+        // Henter og rendrer kalenderhendelser i listeformat
         function renderCalendarList() {
             try {
                 const container = document.getElementById('calendar-list');
@@ -685,13 +660,12 @@
                     const daySection = document.createElement('div');
                     daySection.className = 'day-section';
 
-                    // Dim alt som IKKE er i dag
+                    // Dimmer dager som ikke er i dag
                     if (dateKey !== todayStr) {
                         daySection.classList.add('dimmed');
                     }
 
-                    // Overskrifter
-                    // Overskrifter
+                    // Lager overskrifter for dager
                     if (dateKey === todayStr || dateKey === tomorrowStr) {
                         const titleEl = document.createElement('div');
                         titleEl.className = 'day-header';
@@ -702,7 +676,7 @@
                     } else {
                         if (!harSkrevetUtSenereHeader) {
                             const headerSection = document.createElement('div');
-                            headerSection.className = 'dimmed'; // Ingen day-section her for å unngå ekstra luft
+                            headerSection.className = 'dimmed';
                             const headerEl = document.createElement('div');
                             headerEl.className = 'day-header';
                             headerEl.innerText = "Avtaler senere:";
@@ -732,13 +706,17 @@
             } catch (e) { console.error("Feil i renderCalendarList:", e); }
         }
 
+        // Hovedfunksjon for å oppdatere klokke, rutiner og layout hvert sekund
         function updateClockAndLayout() {
             const now = new Date();
+            // Oppdaterer data ved midnatt
             if (now.getHours() === 0 && now.getMinutes() === 0 && now.getSeconds() === 0) fetchCalendarData();
+            // Reloades kl 03:00 for å være sikker på at systemet er friskt
             if (now.getHours() === 3 && now.getMinutes() === 0 && now.getSeconds() === 0) window.location.reload();
             if (now.getSeconds() === 0) renderCalendarList();
 
             document.getElementById('digital-clock').textContent = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+            // Bytt mellom natt- og dag-modus basert på klokkeslett
             if (now.getHours() >= 7 && now.getHours() < 22) document.body.classList.remove('night-mode'); else document.body.classList.add('night-mode');
 
             const time = now.getHours();
@@ -753,6 +731,7 @@
             oppdaterLiveStatusBoks();
         }
 
+        // Henter kalenderdata fra Google Calendar API
         function fetchCalendarData() {
             if (typeof gapi === 'undefined' || !gapi.client) return;
             const start = new Date(); start.setHours(0, 0, 0, 0); const end = new Date(); end.setDate(end.getDate() + 185);
@@ -775,16 +754,17 @@
             });
         }
 
+        // Initialisering av appen
         window.addEventListener('DOMContentLoaded', () => {
             setupInactivityListeners();
             requestWakeLock();
             setInterval(updateClockAndLayout, 1000);
             updateClockAndLayout();
 
-            // Tving kalenderen til å starte med dimming PÅ
             const calendarList = document.getElementById('calendar-list');
             if (calendarList) calendarList.classList.remove('no-dimming');
 
+            // Laster Google Calendar API
             gapi.load('client', () => gapi.client.init({
                 'apiKey': API_KEY,
                 'discoveryDocs': ["https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"]
@@ -794,7 +774,7 @@
             }));
         });
 
-        // Legg til denne funksjonen rett etter blokken over
+        // Eventlistener for scrolling
         window.addEventListener('scroll', () => {
             const calendarList = document.getElementById('calendar-list');
             if (!calendarList) return;
@@ -805,6 +785,7 @@
             }
         });
 
+        // Ber om WakeLock når siden blir synlig igjen
         document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') requestWakeLock(); });
     </script>
 </body>
