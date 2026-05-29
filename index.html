@@ -646,9 +646,9 @@
                     else { hvem = "Neste avtale:"; }
 
                     // Her tvinger vi hele innholdet inn i status-fete-typer-klassen
-                    statusEl.innerHTML = `<span class="status-fete-typer">${hvem} ${renSummary} ${tidPrefix} ${nesteTid}.</span>`;
+                    statusEl.innerHTML = `<span class="status-fete-typer">${hvem} ${renSummary} ${tidPrefix} ${nesteTid}</span>`;
                 } else {
-                    statusEl.innerHTML = `<span class="status-fete-typer">Ingen planlagte avtaler de nærmeste timene.</span>`;
+                    statusEl.innerHTML = `<span class="status-fete-typer">Ingen planlagte avtaler de nærmeste timene</span>`;
                 }
             } catch (feil) { statusEl.innerHTML = `Avventer kalenderdata...`; }
         }
