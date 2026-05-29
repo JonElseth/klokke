@@ -226,9 +226,17 @@
             border-bottom: 2px dashed var(--box-border);
         }
 
+        /* Denne sikrer dimming når vi scroller */
         .dimmed {
-            opacity: 0.4;
-            transition: opacity 0.3s ease;
+            opacity: 0.25;
+            /* Endret fra 0.4 til 0.25 for kraftigere dimming */
+            transition: opacity 0.5s ease-in-out;
+            /* Litt lengre animasjon for en mykere effekt */
+        }
+
+        /* Denne klassen trigger du via JavaScript når brukeren scroller */
+        .no-dimming .dimmed {
+            opacity: 1 !important;
         }
 
         .day-section.future-day {
@@ -496,6 +504,27 @@
     <script src="https://apis.google.com/js/api.js"></script>
 
     <script>
+
+
+
+        // Legg til denne i en av dine eksisterende <script>-blokker
+        window.addEventListener('scroll', () => {
+            const calendarList = document.getElementById('calendar-list');
+
+            // Hvis brukeren har scrollet ned mer enn f.eks. 50 piksler, fjern dimming
+            if (window.scrollY > 50) {
+                calendarList.classList.add('no-dimming');
+            } else {
+                // Hvis brukeren er helt på toppen, aktiver dimming igjen
+                calendarList.classList.remove('no-dimming');
+            }
+        });
+
+
+
+
+
+
         /* 1. KONFIGURASJON & DATA-STRUKTURER */
         const fasteRutinerHverdag = [
             { tid: "07.30", tekst: "Frokost" },
@@ -662,10 +691,9 @@
                             : "Avtaler i morgen, " + tomorrow.toLocaleDateString('no-NO', { day: 'numeric', month: 'long' }) + ":";
                         daySection.appendChild(titleEl);
                     } else {
-                        // Seksjon for "Avtaler senere" - lagt til uten 'day-section' for å fjerne unødvendig luft
                         if (!harSkrevetUtSenereHeader) {
                             const headerSection = document.createElement('div');
-                            headerSection.className = 'dimmed'; // Kun dimmed, ingen day-section (som har margin)
+                            headerSection.className = 'dimmed'; // Ingen day-section her for å unngå ekstra luft
                             const headerEl = document.createElement('div');
                             headerEl.className = 'day-header';
                             headerEl.innerText = "Avtaler senere:";
@@ -694,7 +722,6 @@
                 }
             } catch (e) { console.error("Feil i renderCalendarList:", e); }
         }
-
 
         function updateClockAndLayout() {
             const now = new Date();
@@ -742,8 +769,33 @@
         }
 
         window.addEventListener('DOMContentLoaded', () => {
-            setupInactivityListeners(); requestWakeLock(); setInterval(updateClockAndLayout, 1000); updateClockAndLayout();
-            gapi.load('client', () => gapi.client.init({ 'apiKey': API_KEY, 'discoveryDocs': ["https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"] }).then(() => { fetchCalendarData(); setInterval(fetchCalendarData, 300000); }));
+            setupInactivityListeners();
+            requestWakeLock();
+            setInterval(updateClockAndLayout, 1000);
+            updateClockAndLayout();
+
+            // Tving kalenderen til å starte med dimming PÅ
+            const calendarList = document.getElementById('calendar-list');
+            if (calendarList) calendarList.classList.remove('no-dimming');
+
+            gapi.load('client', () => gapi.client.init({
+                'apiKey': API_KEY,
+                'discoveryDocs': ["https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"]
+            }).then(() => {
+                fetchCalendarData();
+                setInterval(fetchCalendarData, 300000);
+            }));
+        });
+
+        // Legg til denne funksjonen rett etter blokken over
+        window.addEventListener('scroll', () => {
+            const calendarList = document.getElementById('calendar-list');
+            if (!calendarList) return;
+            if (window.scrollY > 100) {
+                calendarList.classList.add('no-dimming');
+            } else {
+                calendarList.classList.remove('no-dimming');
+            }
         });
 
         document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') requestWakeLock(); });
