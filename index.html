@@ -140,7 +140,7 @@
             font-size: 2.0rem;
             font-weight: 900;
             line-height: 1.5;
-            /* Økt fra 1.4 til 1.5 for bedre luft mellom linjene */
+            letter-spacing: -0.5px;
             transition: background 1s ease, border 1s ease, box-shadow 1s ease;
         }
 
@@ -442,6 +442,13 @@
                 font-size: 1.4rem;
                 padding: 20px;
                 margin-bottom: 25px;
+            }
+
+            .status-fete-typer {
+                font-size: 1.4rem !important;
+                /* Minsker størrelsen kraftig på mobil */
+                line-height: 1.2 !important;
+                /* Tetter linjene for å spare plass */
             }
 
             main {
