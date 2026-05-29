@@ -229,6 +229,15 @@
             margin-right: 5px;
         }
 
+
+        /* Denne gir kun fet vekt, uten å endre størrelsen (1.55rem er standard for rutiner) */
+        .fet-rutine {
+            font-weight: 900 !important;
+            font-size: 1.55rem !important;
+        }
+
+
+
         /* Seksjonsoppdeling i kalenderen */
         .day-section {
             width: 100%;
@@ -588,9 +597,10 @@
                 const rutineTidMinutter = (t * 60 + m);
 
                 if (rutineTidMinutter + 29 >= nåTidMinutter) {
-                    // Vi legger til 'status-fete-typer' her også
                     const erAktiv = (rutineTidMinutter - nåTidMinutter <= 30 && rutineTidMinutter + 29 >= nåTidMinutter);
-                    const klasse = erAktiv ? 'event-item aktiv-boks status-fete-typer' : 'info-item';
+
+                    // Bruk 'fet-rutine' her i stedet for 'status-fete-typer'
+                    const klasse = erAktiv ? 'event-item aktiv-boks fet-rutine' : 'info-item';
 
                     html += `
                     <div class='${klasse}'>
@@ -603,7 +613,6 @@
             });
             return html || "<div class='info-item'>Ingen flere rutiner i dag.</div>";
         }
-
         // Henter neste kommende avtale og oppdaterer statusboksen
         function oppdaterLiveStatusBoks() {
             const statusEl = document.getElementById('live-status-bar');
