@@ -138,8 +138,9 @@
             box-shadow: 0 10px 20px var(--shadow);
             font-family: 'Poppins', sans-serif;
             font-size: 2.0rem;
-            font-weight: 500;
-            line-height: 1.4;
+            font-weight: 900;
+            line-height: 1.5;
+            /* Økt fra 1.4 til 1.5 for bedre luft mellom linjene */
             transition: background 1s ease, border 1s ease, box-shadow 1s ease;
         }
 
@@ -320,13 +321,15 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            padding: 0px 10px 2px 10px;
+            padding: 2px 10px 2px 10px;
+            /* Litt mer padding i toppen */
+            height: 1.8em;
+            /* Økt fra 1.6em for å romme den fete teksten bedre */
             border-radius: 6px;
             font-weight: 700;
             color: #ffffff !important;
             margin-right: 10px;
             font-size: 1em;
-            height: 1.6em;
             margin-bottom: 2px;
         }
 
@@ -388,6 +391,13 @@
             margin-right: 10px;
             box-shadow: 0 4px 8px var(--shadow);
             font-weight: 900;
+        }
+
+        .status-fete-typer {
+            font-weight: 900 !important;
+            font-size: 2.4rem !important;
+            /* Juster denne hvis du vil ha den større/mindre */
+            color: var(--text-main);
         }
 
         /* Responsiv tilpasning for mindre skjermer */
@@ -570,12 +580,10 @@
                 const [t, m] = item.tid.split('.').map(Number);
                 const rutineTidMinutter = (t * 60 + m);
 
-                // Viser rutiner frem til 29 minutter etter at de har startet
                 if (rutineTidMinutter + 29 >= nåTidMinutter) {
-
-                    // Markerer rutinen som aktiv hvis det er 30 min før eller under 29 min etter
+                    // Vi legger til 'status-fete-typer' her også
                     const erAktiv = (rutineTidMinutter - nåTidMinutter <= 30 && rutineTidMinutter + 29 >= nåTidMinutter);
-                    const klasse = erAktiv ? 'event-item aktiv-boks' : 'info-item';
+                    const klasse = erAktiv ? 'event-item aktiv-boks status-fete-typer' : 'info-item';
 
                     html += `
                     <div class='${klasse}'>
@@ -586,7 +594,6 @@
                     </div>`;
                 }
             });
-
             return html || "<div class='info-item'>Ingen flere rutiner i dag.</div>";
         }
 
@@ -607,6 +614,8 @@
                     .sort((a, b) => new Date(a.computedStart).getTime() - new Date(b.computedStart).getTime());
 
                 const nesteAvtale = sorterteHendelser[0];
+
+                // Vi pakker inn innholdet i status-fete-typer i begge tilfeller
                 if (nesteAvtale) {
                     const startTid = new Date(nesteAvtale.computedStart);
                     const nesteTid = startTid.toLocaleTimeString('no-NO', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Oslo' });
@@ -614,16 +623,18 @@
                     const tidPrefix = erIIdag ? "kl." : "i morgen kl.";
 
                     let summary = nesteAvtale.summary || "", hvem = "", renSummary = summary;
-                    // Håndterer merking av avtaler basert på navn i tittelen
                     if (/^(Mamma\s*&\s*Pappa:|Mamma\s+og\s+Pappa:)/i.test(summary)) { hvem = "<span class='badge-navn badge-begge'>Mamma & pappa</span> - "; renSummary = summary.replace(/^(Mamma\s*&\s*Pappa:|Mamma\s+og\s+Pappa:)\s*/i, ''); }
                     else if (/^Mamma:/i.test(summary)) { hvem = "<span class='badge-navn badge-mamma'>Mamma</span> - "; renSummary = summary.replace(/^Mamma:\s*/i, ''); }
                     else if (/^Pappa:/i.test(summary)) { hvem = "<span class='badge-navn badge-pappa'>Pappa</span> - "; renSummary = summary.replace(/^Pappa:\s*/i, ''); }
                     else { hvem = "Neste avtale:"; }
-                    statusEl.innerHTML = `${hvem} <span style="font-weight: 700;">${renSummary} ${tidPrefix} ${nesteTid}.</span>`;
-                } else { statusEl.innerHTML = `Ingen planlagte avtaler de nærmeste timene.`; }
+
+                    // Her tvinger vi hele innholdet inn i status-fete-typer-klassen
+                    statusEl.innerHTML = `<span class="status-fete-typer">${hvem} ${renSummary} ${tidPrefix} ${nesteTid}.</span>`;
+                } else {
+                    statusEl.innerHTML = `<span class="status-fete-typer">Ingen planlagte avtaler de nærmeste timene.</span>`;
+                }
             } catch (feil) { statusEl.innerHTML = `Avventer kalenderdata...`; }
         }
-
         /* 4. FORMATERING & KALENDER-RENDER */
         // Hjelpefunksjon for å formatere avtale-tittel med riktig badge
         function formatEventSummary(summary) {
