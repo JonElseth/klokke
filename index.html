@@ -540,7 +540,15 @@
             const now = new Date(); const todayStr = now.toLocaleDateString('sv-SE', { timeZone: 'Europe/Oslo' });
             for (let i = 0; i < 185; i++) {
                 const d = new Date(); d.setDate(now.getDate() + i); const k = d.toLocaleDateString('sv-SE', { timeZone: 'Europe/Oslo' });
-                const evs = (globalEventsCache[k] || []).filter(ev => new Date(ev.computedStart) > new Date(now.getTime() - 600000));
+                // Vi henter alle dagens hendelser, men vi sorterer dem først
+                let evs = (globalEventsCache[k] || []).filter(ev => new Date(ev.computedStart) > new Date(now.getTime() - 600000));
+                evs.sort((a, b) => new Date(a.computedStart) - new Date(b.computedStart));
+
+                // Hvis det er i dag (todayStr === k), så fjerner vi den første avtalen fra listen
+                // fordi den allerede vises i statusboksen.
+                if (k === todayStr && evs.length > 0) {
+                    evs.shift();
+                }
                 if (evs.length === 0) continue;
                 const sec = document.createElement('div'); sec.className = 'day-section';
                 if (k !== todayStr) sec.classList.add('dimmed');
