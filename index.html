@@ -18,6 +18,43 @@
         rel="stylesheet">
 
     <style>
+        html {
+            width: 100%;
+            height: 100%;
+        }
+
+        body {
+            min-height: 100vh;
+            width: 100vw;
+            /* Endret fra 100% */
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'Poppins', sans-serif;
+            user-select: none;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            overflow-x: hidden;
+            /* Fjerner horisontal dra-bevegelse */
+            scrollbar-width: none;
+            padding: 50px 60px 74px 60px;
+            transition: background 1s ease, color 1s ease;
+            overscroll-behavior: none;
+            /* Stopper bounce */
+            -webkit-overflow-scrolling: touch;
+        }
+
+
+
+
+
+
+
+
+
+
+
+
         /* :root definerer fargevariabler som brukes i hele stilen for enkel endring */
         :root {
             --bg-color: #f1f5f9;
@@ -53,22 +90,7 @@
             padding: 0;
         }
 
-        /* body: Hovedbeholderen, setter grunnfont og layout */
-        body {
-            min-height: 100vh;
-            width: 100vw;
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            font-family: 'Poppins', sans-serif;
-            user-select: none;
-            display: flex;
-            flex-direction: column;
-            overflow-y: auto;
-            overflow-x: hidden;
-            scrollbar-width: none;
-            padding: 50px 60px 74px 60px;
-            transition: background 1s ease, color 1s ease;
-        }
+
 
         body::-webkit-scrollbar {
             display: none;
@@ -342,8 +364,12 @@
             }
 
             main {
+                display: block !important;
+                /* Tvinger Safari til å tegne innholdet riktig */
+                min-height: 100vh;
+                /* Sikrer høyde */
                 flex-direction: column;
-                /* Tvinger kolonnene under hverandre */
+                /* Beholder kolonnene under hverandre */
             }
 
             .right-column {
@@ -602,62 +628,58 @@
 
         function renderCalendarList() {
             const container = document.getElementById('calendar-list');
-            if (!container) return; container.innerHTML = '';
+            if (!container) return;
+            container.innerHTML = '';
+
             const now = new Date();
             const todayStr = now.toLocaleDateString('sv-SE', { timeZone: 'Europe/Oslo' });
             const bildeContainer = document.getElementById('beroligende-bilde-container');
+
+            // Nullstill bilde først
             if (bildeContainer) bildeContainer.style.display = 'none';
+
+            let fantAvtalerIDag = false;
 
             for (let i = 0; i < 185; i++) {
                 const d = new Date(); d.setDate(now.getDate() + i);
                 const k = d.toLocaleDateString('sv-SE', { timeZone: 'Europe/Oslo' });
+
+                // Bruk din originale filter-logikk
                 let evs = (globalEventsCache[k] || []).filter(ev => new Date(ev.computedStart) > new Date(now.getTime() - 600000));
 
                 if (k === todayStr && evs.length > 0 && nesteAvtaleID !== null && evs[0].id === nesteAvtaleID) {
                     evs.shift();
                 }
 
+                // Sjekk om vi fant noe
+                if (evs.length > 0) {
+                    if (k === todayStr) fantAvtalerIDag = true;
 
+                    const sec = document.createElement('div'); sec.className = 'day-section';
+                    if (k !== todayStr) sec.classList.add('dimmed');
 
+                    const head = document.createElement('div'); head.className = 'day-header';
+                    head.innerText = (k === todayStr) ? "Avtaler i dag:" : (i === 1 ? "Avtaler i morgen:" : `${ukeDager[d.getDay()]} ${d.getDate()}. ${maaneder[d.getMonth()]}`);
+                    sec.appendChild(head);
 
-
-
-                if (k === todayStr && evs.length === 0 && bildeContainer) {
-                    oppdaterDagensBilde(); // Oppdaterer bilde-filen basert på dag
-                    bildeContainer.style.display = 'block';
+                    const list = document.createElement('div'); list.className = 'event-list';
+                    evs.sort((a, b) => new Date(a.computedStart) - new Date(b.computedStart)).forEach(ev => {
+                        const li = document.createElement('div'); li.className = 'event-item';
+                        const t = ev.isAllDay ? '' : formatTimeManual(new Date(ev.computedStart));
+                        li.innerHTML = `<span class="event-bullet">•</span><div class="event-text-container">${t ? `<span class="event-time">${t}:</span>` : ""} ${formatEventSummary(ev.summary)}</div>`;
+                        list.appendChild(li);
+                    });
+                    sec.appendChild(list);
+                    container.appendChild(sec);
                 }
+            }
 
-
-
-
-
-
-
-
-
-                if (k === todayStr && evs.length === 0 && bildeContainer) {
-                    bildeContainer.style.display = 'block';
-                }
-
-                if (evs.length === 0) continue;
-
-                const sec = document.createElement('div'); sec.className = 'day-section';
-                if (k !== todayStr) sec.classList.add('dimmed');
-                const head = document.createElement('div'); head.className = 'day-header';
-                head.innerText = (k === todayStr) ? "Avtaler i dag:" : (i === 1 ? "Avtaler i morgen:" : `${ukeDager[d.getDay()]} ${d.getDate()}. ${maaneder[d.getMonth()]}`);
-                sec.appendChild(head);
-                const list = document.createElement('div'); list.className = 'event-list';
-                evs.sort((a, b) => new Date(a.computedStart) - new Date(b.computedStart)).forEach(ev => {
-                    const li = document.createElement('div'); li.className = 'event-item';
-                    const t = ev.isAllDay ? '' : formatTimeManual(new Date(ev.computedStart));
-                    li.innerHTML = `<span class="event-bullet">•</span><div class="event-text-container">${t ? `<span class="event-time">${t}:</span>` : ""} ${formatEventSummary(ev.summary)}</div>`;
-                    list.appendChild(li);
-                });
-                sec.appendChild(list); container.appendChild(sec);
+            // Vis bilde kun hvis listen for i dag var tom
+            if (!fantAvtalerIDag && bildeContainer) {
+                oppdaterDagensBilde();
+                bildeContainer.style.display = 'block';
             }
         }
-
-
 
         function oppdaterDagensBilde() {
             const imgElement = document.getElementById('dagens-bilde');
