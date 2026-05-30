@@ -440,8 +440,8 @@
 
         <div class="column right-column">
             <div id="beroligende-bilde-container" style="margin-bottom: 20px; display: none;">
-                <img src="1.jpg" alt="Rolig bilde"
-                    style="width: 100%; height: auto; border-radius: 16px; object-fit: cover; max-height: 370px;">
+                <img id="dagens-bilde" src="" alt="Dagens bilde"
+                    style="width: 100%; border-radius: 16px; max-height: 370px; object-fit: cover;">
             </div>
             <div id="calendar-list">Google Kalender...</div>
         </div>
@@ -617,6 +617,24 @@
                     evs.shift();
                 }
 
+
+
+
+
+
+                if (k === todayStr && evs.length === 0 && bildeContainer) {
+                    oppdaterDagensBilde(); // Oppdaterer bilde-filen basert på dag
+                    bildeContainer.style.display = 'block';
+                }
+
+
+
+
+
+
+
+
+
                 if (k === todayStr && evs.length === 0 && bildeContainer) {
                     bildeContainer.style.display = 'block';
                 }
@@ -638,6 +656,21 @@
                 sec.appendChild(list); container.appendChild(sec);
             }
         }
+
+
+
+        function oppdaterDagensBilde() {
+            const imgElement = document.getElementById('dagens-bilde');
+            if (!imgElement) return;
+
+            // Henter dagens nummer (0 = søndag, 1 = mandag, osv.)
+            const ukedag = new Date().getDay();
+
+            // Setter filnavnet basert på ukedagen
+            imgElement.src = ukedag + ".jpg";
+        }
+
+
 
         window.addEventListener('DOMContentLoaded', () => {
             setupInactivityListeners();
