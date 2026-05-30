@@ -447,10 +447,38 @@
     <script src="https://apis.google.com/js/api.js"></script>
     <script>
         /* --- RUTINE-KONFIGURASJON --- */
-        const fasteRutinerHverdag = [{ tid: "07:30", tekst: "Frokost" }, { tid: "08:00", tekst: "Ta medisiner" }, { tid: "09:00", tekst: "Tur med Borghild" }, { tid: "11:30", tekst: "Lunsj" }, { tid: "14:00", tekst: "Sjekke meldinger" }, { tid: "15:30", tekst: "Middag" }, { tid: "19:30", tekst: "Tur med Borghild" }, { tid: "20:30", tekst: "Kveldsmat" }];
-        const fasteRutinerLoerdag = [{ tid: "07:30", tekst: "Frokost" }, { tid: "08:00", tekst: "Ta medisiner" }, { tid: "09:00", tekst: "Tur med Borghild" }, { tid: "12:00", tekst: "Ofte varm lunsj" }, { tid: "14:00", tekst: "Sjekke meldinger" }, { tid: "15:30", tekst: "Middag" }, { tid: "19:30", tekst: "Tur med Borghild" }, { tid: "20:30", tekst: "Kveldsmat" }];
-        const fasteRutinerSoendag = [{ tid: "07:30", tekst: "Frokost" }, { tid: "08:00", tekst: "Ta medisiner" }, { tid: "09:00", tekst: "Tur med Borghild" }, { tid: "13:00", tekst: "Søndagsmiddag" }, { tid: "14:00", tekst: "Sjekke meldinger" }, { tid: "19:30", tekst: "Tur med Borghild" }, { tid: "20:30", tekst: "Kveldsmat" }];
+        /* --- RUTINE-KONFIGURASJON --- */
+        const fasteRutinerHverdag = [
+            { tid: "07:15", tekst: "Ta medisiner" },
+            { tid: "07:30", tekst: "Frokost" },
+            { tid: "10:00", tekst: "Tur med Borghild" },
+            { tid: "11:30", tekst: "Lunsj" },
+            { tid: "14:00", tekst: "Sjekke meldinger" },
+            { tid: "15:30", tekst: "Middag" },
+            { tid: "19:30", tekst: "Tur med Borghild" },
+            { tid: "20:30", tekst: "Kveldsmat" }
+        ];
 
+        const fasteRutinerLoerdag = [
+            { tid: "07:15", tekst: "Ta medisiner" },
+            { tid: "07:30", tekst: "Frokost" },
+            { tid: "10:00", tekst: "Tur med Borghild" },
+            { tid: "12:00", tekst: "Ofte varm lunsj" },
+            { tid: "14:00", tekst: "Sjekke meldinger" },
+            { tid: "15:30", tekst: "Middag" },
+            { tid: "19:30", tekst: "Tur med Borghild" },
+            { tid: "20:30", tekst: "Kveldsmat" }
+        ];
+
+        const fasteRutinerSoendag = [
+            { tid: "07:15", tekst: "Ta medisiner" },
+            { tid: "07:30", tekst: "Frokost" },
+            { tid: "10:00", tekst: "Tur med Borghild" },
+            { tid: "13:00", tekst: "Søndagsmiddag" },
+            { tid: "14:00", tekst: "Sjekke meldinger" },
+            { tid: "19:30", tekst: "Tur med Borghild" },
+            { tid: "20:30", tekst: "Kveldsmat" }
+        ];
         const API_KEY = 'AIzaSyDabiLiH6tR1bonxhjgNqq9PoTSa9wogzE';
         const CALENDAR_ID = '6836a3463ada75841f11c52afbd588f7467b5c7014a9ac8118e24205f42d301c@group.calendar.google.com';
         const ukeDager = ["Søndag", "Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag", "Lørdag"];
