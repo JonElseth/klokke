@@ -125,6 +125,12 @@
             margin-top: 15px;
         }
 
+        .natt-dimming {
+            opacity: 0.3;
+            filter: grayscale(80%);
+            transition: opacity 1s ease;
+        }
+
         /* status-box-container: Rammen rundt neste avtale-feltet */
         .status-box-container {
             width: 100%;
@@ -504,15 +510,32 @@
 
         function updateClockAndLayout() {
             const now = new Date();
+            const time = now.getHours();
+
+            // Definer hva som er "natt" (f.eks. før 07:00 og etter 22:00)
+            const isNight = (time < 7 || time >= 22);
+
             if (now.getHours() === 0 && now.getMinutes() === 0 && now.getSeconds() === 0) fetchCalendarData();
             if (now.getSeconds() === 0) renderCalendarList();
+
             document.getElementById('digital-clock').textContent = formatTimeManual(now);
-            document.body.classList.toggle('night-mode', now.getHours() < 7 || now.getHours() >= 22);
+
+            // Toggle night-mode på body
+            document.body.classList.toggle('night-mode', isNight);
+
+            // NY LOGIKK: Dimmer kalenderlisten om natten
+            const kalenderListe = document.getElementById('calendar-list');
+            if (kalenderListe) {
+                kalenderListe.classList.toggle('natt-dimming', isNight);
+            }
+
             document.getElementById('time-of-day-label').innerText = (now.getHours() < 6) ? "Det er natt" : (now.getHours() < 9) ? "Det er morgen" : (now.getHours() < 12) ? "Det er formiddag" : (now.getHours() < 18) ? "Det er ettermiddag" : "Det er kveld";
             document.getElementById('complete-date-string').textContent = `${ukeDager[now.getDay()]} ${now.getDate()}. ${maaneder[now.getMonth()]}`;
+
             const rutiner = (now.getDay() === 6) ? fasteRutinerLoerdag : (now.getDay() === 0 ? fasteRutinerSoendag : fasteRutinerHverdag);
             document.getElementById('info-day-heading').innerHTML = "<strong>Rutiner i dag:</strong>";
             document.getElementById('info-text').innerHTML = genererRutineHTML(rutiner);
+
             oppdaterLiveStatusBoks();
         }
 
