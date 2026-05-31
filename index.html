@@ -42,6 +42,9 @@
             overscroll-behavior: none;
             /* Stopper bounce */
             -webkit-overflow-scrolling: touch;
+            overscroll-behavior-y: none !important;
+            -webkit-overflow-scrolling: touch !important;
+
         }
 
 
@@ -472,6 +475,24 @@
                 font-size: 1.6rem !important;
                 font-weight: 700 !important;
             }
+
+
+            body {
+                /* Her setter du paddingen du ønsker for mobil */
+                /* Rekkefølge: topp, høyre, bunn, venstre */
+                padding: 20px 25px 20px 25px !important;
+
+                /* Behold din iPhone-stabilitet her inne */
+                touch-action: manipulation;
+            }
+
+
+
+
+
+
+
+
         }
     </style>
 </head>
