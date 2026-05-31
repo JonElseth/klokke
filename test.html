@@ -352,50 +352,56 @@
 
             /* Full kontroll over hele siden */
             body {
-                padding: 15px !important;
+                /* Topp: 30px, Sider: 15px, Bunn: 30px */
+                padding: 30px 15px 30px 15px !important;
                 width: 100vw !important;
                 overflow-x: hidden !important;
+                box-sizing: border-box !important;
             }
 
-            /* Header: Fjernet unødvendig margin og padding for å tette luften */
+            /* Header: Nullstiller marginer helt så paddingen i body styrer alt */
             header {
                 flex-direction: column !important;
                 align-items: center !important;
                 text-align: center !important;
                 height: auto !important;
                 padding: 0 !important;
-                /* Fjernet padding */
-                margin-bottom: 15px !important;
-                /* Redusert margin */
+                margin: 0 !important;
             }
 
             .header-clocks-left {
                 width: 100% !important;
                 justify-content: center !important;
-                margin-bottom: 0 !important;
-                /* Fjernet margin under klokken */
+                margin: 0 !important;
             }
 
             .digital-clock-big {
-                font-size: 4rem !important;
+                font-size: 3.5rem !important;
                 line-height: 1 !important;
-                letter-spacing: -1px !important;
+                margin: 0 !important;
             }
 
             .time-of-day-wrapper {
                 width: 100% !important;
                 align-items: center !important;
-                margin-top: 5px !important;
+                margin: 5px 0 !important;
             }
 
             .time-of-day-label {
-                font-size: 1.8rem !important;
+                font-size: 1.4rem !important;
                 font-weight: 700 !important;
+                margin: 0 !important;
             }
 
-            .header-date-right {
-                font-size: 1.4rem !important;
-                margin-top: 5px !important;
+            /* Rutineboks og Statusboks: Fast størrelse */
+            .status-box-container,
+            .aktiv-boks {
+                width: 100% !important;
+                box-sizing: border-box !important;
+                padding: 15px !important;
+                margin: 10px 0 0 0 !important;
+                font-size: 1.1rem !important;
+                line-height: 1.3 !important;
             }
 
             /* Main: Vertikal stabel */
@@ -404,46 +410,14 @@
                 flex-direction: column !important;
                 width: 100% !important;
                 gap: 15px !important;
+                margin-top: 10px !important;
             }
 
-            /* Kolonner */
-            .column {
-                width: 100% !important;
-                padding: 0 !important;
-                margin: 0 !important;
-                border: none !important;
-            }
-
-            /* Statusboks */
-            .status-box-container {
-                width: 100% !important;
-                box-sizing: border-box !important;
-                padding: 15px !important;
-                margin: 0 0 10px 0 !important;
-                font-size: 1.2rem !important;
-            }
-
-            /* Rutiner: Tvinger aktiv-boks til 100% bredde */
-            .aktiv-boks {
-                width: 100% !important;
-                box-sizing: border-box !important;
-                margin-left: 0 !important;
-                margin-right: 0 !important;
-                display: flex !important;
-            }
-
-            /* Sørger for at rutine-overskrift og liste følger bredden */
-            #info-text,
-            .info-content {
-                width: 100% !important;
-                padding-left: 0 !important;
-            }
-
+            /* Justering av titler */
             .info-day-title,
             .day-header {
-                font-size: 1.6rem !important;
-                margin-bottom: 8px !important;
-                padding-left: 0px !important;
+                font-size: 1.4rem !important;
+                margin: 0 0 5px 0 !important;
             }
         }
         }
