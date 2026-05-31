@@ -516,7 +516,19 @@
             }
 
 
-
+            .event-bullet,
+            .info-bullet {
+                display: inline-block !important;
+                /* Må være block for at vertikal justering skal virke */
+                vertical-align: middle !important;
+                /* Prøver automatisk sentrering */
+                margin-top: -2px !important;
+                /* Finjustering: Juster dette tallet (f.eks. -1, -2, -3) til den sitter perfekt */
+                line-height: 1 !important;
+                /* Fjerner ekstra luft rundt prikken */
+                margin-right: 8px !important;
+                /* Litt luft mellom prikk og tekst */
+            }
 
 
 
