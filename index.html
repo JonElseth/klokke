@@ -556,7 +556,7 @@
                     statusEl.innerHTML = `<span class="status-fete-typer">${hvem} ${renSummary} ${erIIdag ? "kl." : "i morgen kl."} ${nesteTid}</span>`;
                 } else {
                     nesteAvtaleID = null;
-                    statusEl.innerHTML = `<span class="status-fete-typer">Ingen planlagte avtaler de nærmeste timene</span>`;
+                    statusEl.innerHTML = `<span class="status-fete-typer">Rolig dag – ingen avtaler.</span>`;
                 }
             } catch (feil) { statusEl.innerHTML = `<span class="status-fete-typer">Avventer kalenderdata...</span>`; }
             renderCalendarList();
