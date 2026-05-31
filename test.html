@@ -198,18 +198,36 @@
             margin-right: 10px;
         }
 
+
+
+        
+
+.info-item,
+.event-item {
+  line-height: 1.4;
+  display: flex; /* Dette sørger for at ting står på rad */
+  align-items: flex-start;
+  font-size: 1.55rem;
+}
+
 .info-time,
 .event-time {
-    color: var(--clock-accent);
-    font-weight: 700;
-    margin-right: 6px;
-    
-    /* Nye linjer for å få alt på linje: */
-    font-family: 'Courier New', Courier, monospace; /* Tvinger lik bredde på tall */
-    display: inline-block;
-    width: 45px; /* Juster dette tallet hvis det blir for mye/lite luft */
-    text-align: left;
+  color: var(--clock-accent);
+  font-weight: 700;
+  margin-right: 6px;
+  
+  /* Fast bredde for at alt skal flukte vertikalt */
+  font-family: 'Courier New', Courier, monospace;
+  width: 90px; /* Øk denne hvis klokkeslettet fortsatt "dytter" teksten ned */
+  flex-shrink: 0; /* Hindrer at klokken blir klemt sammen */
 }
+
+
+
+
+
+
+        
 
         .day-section {
             width: 100%;
