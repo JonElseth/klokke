@@ -578,6 +578,10 @@
             const now = new Date();
             const time = now.getHours();
 
+            if (time === 3 && now.getMinutes() === 0 && now.getSeconds() === 0) {
+                window.location.reload(true);
+            }
+
             // Definer hva som er "natt" (f.eks. før 07:00 og etter 22:00)
             const isNight = (time < 7 || time >= 22);
 
