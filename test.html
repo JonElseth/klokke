@@ -18,7 +18,7 @@
         rel="stylesheet">
 
     <style>
-        /* --- Grunnleggende oppsett --- */
+        /* Definerer HTML-elementets basisstørrelse */
         html {
             width: 100%;
             height: 100%;
@@ -187,7 +187,7 @@
             line-height: 1.4;
             display: flex;
             align-items: flex-start;
-            font-size: 1.2rem !important;
+            font-size: 1.55rem !important;
         }
 
         .info-bullet,
@@ -253,11 +253,8 @@
             background-color: #0891b2;
         }
 
-        /* Media-spørring: Justerer design for mobil (maks 900px bredde) */
-        /* Media-spørring: Justerer design for mobil */
+        /* Media-spørring for mobil/portrett-modus */
         @media (max-width: 900px) or (orientation: portrait) {
-
-            /* 1. Global mobil-styling */
             body {
                 padding: 20px 25px 20px 25px !important;
                 touch-action: manipulation;
@@ -342,7 +339,6 @@
                 margin-bottom: 2px !important;
             }
 
-            /* Herfra tester jeg - Alt essensielt er beholdt */
             .left-column .aktiv-boks {
                 margin-left: 0px !important;
                 margin-right: 0px !important;
@@ -369,6 +365,7 @@
                 list-style: none !important;
                 margin-left: -20px !important;
                 padding-left: 20px !important;
+                font-size: 1.2rem !important;
             }
 
             .info-bullet {
@@ -378,20 +375,6 @@
                 line-height: 1 !important;
                 margin-right: 8px !important;
             }
-        }
-
-
-
-
-
-
-
-
-
-
-
-
-
         }
     </style>
 </head>
