@@ -44,6 +44,11 @@
             -webkit-overflow-scrolling: touch;
             overscroll-behavior-y: none !important;
             -webkit-overflow-scrolling: touch !important;
+            /* Legg til denne linjen: */
+            padding: env(safe-area-inset-top) 60px env(safe-area-inset-bottom) 60px !important;
+
+            /* Og legg til denne for å hindre at Safari "zoom-trikser" når man trykker på felt: */
+            touch-action: manipulation;
         }
 
 
