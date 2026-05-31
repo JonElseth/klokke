@@ -349,98 +349,51 @@
 
         /* Media-spørring: Justerer design for mobil (maks 900px bredde) */
         @media (max-width: 900px) or (orientation: portrait) {
+
+            /* Sikrer at ingenting flyter utover skjermen */
             body {
-                padding: 17px 20px 40px 20px;
-            }
-
-            .left-column .aktiv-boks {
-                margin-left: 0px !important;
-                margin-right: 0px !important;
-                padding-left: 25px !important;
-                border-left: 3px solid var(--accent-color) !important;
-                display: flex !important;
-                align-items: flex-start !important;
-
+                padding: 15px !important;
+                overflow-x: hidden !important;
+                width: 100vw !important;
             }
 
             main {
-                display: block !important;
-                /* Tvinger Safari til å tegne innholdet riktig */
-                min-height: 100vh;
-                /* Sikrer høyde */
-                flex-direction: column;
-                /* Beholder kolonnene under hverandre */
+                display: flex !important;
+                flex-direction: column !important;
+                width: 100% !important;
             }
 
+            /* Fjerner venstre-padding som ofte lager den "kanten" du ser til venstre */
+            .left-column,
             .right-column {
-                width: 100%;
-                /* Sørger for at kalenderen tar full bredde */
-                margin-top: 20px;
+                padding-left: 0 !important;
+                padding-right: 0 !important;
+                width: 100% !important;
+                margin-right: 0 !important;
+                border-right: none !important;
             }
 
-            header {
-                flex-direction: column;
-                height: auto;
-                gap: 15px;
-                text-align: center;
-                align-items: center;
-                margin-bottom: 20px;
+            /* Sikrer at rutine-innholdet er venstrestilt uten forskyvning */
+            .info-content {
+                padding-left: 10px !important;
             }
 
-            .header-clocks-left {
-                justify-content: center;
-                align-items: center;
-                width: 100%;
-                height: auto;
+            .event-list {
+                padding-left: 10px !important;
             }
 
+            /* Fikser statusboksen slik at den ikke presses ut */
+            .status-box-container {
+                width: 100% !important;
+                padding: 15px !important;
+                margin-bottom: 15px !important;
+            }
+
+            /* Justerer klokken for mobil */
             .digital-clock-big {
-                font-size: 5rem;
-                line-height: 1.0;
-                height: auto;
-                letter-spacing: -2px;
-                margin-bottom: 0;
+                font-size: 4rem !important;
             }
-
-            .time-of-day-wrapper {
-                align-items: center;
-                text-align: center;
-                margin-top: 10px;
-            }
-
-
-
-
-
-
-
-            .info-day-title,
-            .day-header {
-                font-size: 1.6rem !important;
-                margin-bottom: 8px !important;
-                padding-left: 0px !important;
-            }
-
-            .day-date,
-            .event-list,
-            .holiday-text,
-            .no-events-text {
-                padding-left: 0px !important;
-            }
-
-            .status-fete-typer {
-                font-size: 1.4rem !important;
-                font-weight: 700 !important;
-                /* Endret fra 900 til 500 for mindre fet tekst */
-                line-height: 1.2 !important;
-            }
-
-            .info-item,
-            .event-item {
-                line-height: 1.1 !important;
-                /* Presse linjer sammen */
-                margin-bottom: 2px !important;
-            }
+        }
         }
     </style>
 </head>
@@ -556,7 +509,7 @@
                     statusEl.innerHTML = `<span class="status-fete-typer">${hvem} ${renSummary} ${erIIdag ? "kl." : "i morgen kl."} ${nesteTid}</span>`;
                 } else {
                     nesteAvtaleID = null;
-                    statusEl.innerHTML = `<span class="status-fete-typer">Ingen planlagte avtaler de nærmeste timene</span>`;
+                    statusEl.innerHTML = `<span class="status-fete-typer">Rolig dag – ingen avtaler.</span>`;
                 }
             } catch (feil) { statusEl.innerHTML = `<span class="status-fete-typer">Avventer kalenderdata...</span>`; }
             renderCalendarList();
@@ -577,6 +530,10 @@
         function updateClockAndLayout() {
             const now = new Date();
             const time = now.getHours();
+
+            if (time === 3 && now.getMinutes() === 0 && now.getSeconds() === 0) {
+                window.location.reload(true);
+            }
 
             // Definer hva som er "natt" (f.eks. før 07:00 og etter 22:00)
             const isNight = (time < 7 || time >= 22);
