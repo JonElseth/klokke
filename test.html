@@ -198,12 +198,18 @@
             margin-right: 10px;
         }
 
-        .info-time,
-        .event-time {
-            color: var(--clock-accent); /* Bruker din definerte rødfarge */
-            font-weight: 700;
-            margin-right: 6px;
-        }
+.info-time,
+.event-time {
+    color: var(--clock-accent);
+    font-weight: 700;
+    margin-right: 6px;
+    
+    /* Nye linjer for å få alt på linje: */
+    font-family: 'Courier New', Courier, monospace; /* Tvinger lik bredde på tall */
+    display: inline-block;
+    width: 65px; /* Juster dette tallet hvis det blir for mye/lite luft */
+    text-align: left;
+}
 
         .day-section {
             width: 100%;
