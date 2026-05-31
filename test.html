@@ -351,39 +351,18 @@
         }
 
         /* Media-spørring: Justerer design for mobil (maks 900px bredde) */
+        /* Media-spørring: Justerer design for mobil */
         @media (max-width: 900px) or (orientation: portrait) {
+
+            /* 1. Global mobil-styling */
             body {
-                padding: 17px 20px 40px 20px;
-            }
-
-            .left-column .aktiv-boks {
-                margin-left: 0px !important;
-                margin-right: 0px !important;
-                padding-left: 25px !important;
-                border-left: 3px solid var(--accent-color) !important;
-                display: flex !important;
-                align-items: flex-start !important;
-
-            }
-
-            main {
-                display: block !important;
-                /* Tvinger Safari til å tegne innholdet riktig */
-                min-height: 100vh;
-                /* Sikrer høyde */
-                flex-direction: column;
-                /* Beholder kolonnene under hverandre */
-            }
-
-            .right-column {
-                width: 100%;
-                /* Sørger for at kalenderen tar full bredde */
-                margin-top: 20px;
+                padding: 20px 25px 20px 25px !important;
+                touch-action: manipulation;
             }
 
             header {
                 flex-direction: column;
-                height: auto;
+                height: auto !important;
                 gap: 15px;
                 text-align: center;
                 align-items: center;
@@ -399,54 +378,31 @@
 
             .digital-clock-big {
                 font-size: 5rem;
-                line-height: 1.0;
-                height: auto;
+                margin-bottom: 0px !important;
+                padding-bottom: 0px !important;
                 letter-spacing: -2px;
-                margin-bottom: 0;
             }
 
             .time-of-day-wrapper {
                 align-items: center;
                 text-align: center;
-                margin-top: 10px;
+                margin-top: 0px !important;
             }
 
-
-
-
-
-
-
-            .info-day-title,
-            .day-header {
-                font-size: 1.2rem !important;
-                margin-bottom: 8px !important;
-                padding-left: 0px !important;
-            }
-
-            .day-date,
-            .event-list,
-            .holiday-text,
-            .no-events-text {
-                padding-left: 0px !important;
-            }
-
-            .status-fete-typer {
-                font-size: 1.4rem !important;
+            .time-of-day-label {
+                font-size: 2.2rem !important;
                 font-weight: 700 !important;
-                /* Endret fra 900 til 500 for mindre fet tekst */
-                line-height: 1.2 !important;
             }
 
-            .info-item,
-            .event-item {
-                line-height: 1.1 !important;
-                /* Presse linjer sammen */
-                margin-bottom: 2px !important;
+            .header-date-right {
+                font-size: 1.4rem !important;
+                margin-top: 5px !important;
             }
 
-            /* Herfra tester jeg */
-
+            main {
+                display: block !important;
+                min-height: 100vh;
+            }
 
             .left-column,
             .right-column {
@@ -457,101 +413,69 @@
                 border-right: none !important;
             }
 
-
-
             .status-box-container {
                 width: 100% !important;
-                box-sizing: border-box !important;
                 padding: 15px !important;
                 margin: 0 0 10px 0 !important;
                 font-size: 1.2rem !important;
             }
 
-            .time-of-day-label {
-                font-size: 2.2rem !important;
+            .status-fete-typer {
+                font-size: 1.4rem !important;
                 font-weight: 700 !important;
-                margin-top: 0px !important;
+                line-height: 1.2 !important;
             }
 
-
-            body {
-                /* Her setter du paddingen du ønsker for mobil */
-                /* Rekkefølge: topp, høyre, bunn, venstre */
-                padding: 20px 25px 20px 25px !important;
-
-                /* Behold din iPhone-stabilitet her inne */
-                touch-action: manipulation;
+            .info-day-title,
+            .day-header {
+                font-size: 1.2rem !important;
+                margin-bottom: 8px !important;
+                padding-left: 0px !important;
             }
 
-            /* Tvinger alle lister og tekstblokker til venstre */
+            .info-item,
+            .event-item {
+                line-height: 1.1 !important;
+                margin-bottom: 2px !important;
+            }
+
+            /* Herfra tester jeg - Alt essensielt er beholdt */
+            .left-column .aktiv-boks {
+                margin-left: 0px !important;
+                margin-right: 0px !important;
+                padding-left: 25px !important;
+                border-left: 3px solid var(--accent-color) !important;
+                display: flex !important;
+                align-items: flex-start !important;
+            }
+
             ul,
             ol,
             .event-list,
-            .info-content {
+            .info-content,
+            .day-date,
+            .holiday-text,
+            .no-events-text {
                 padding-left: 0 !important;
                 margin-left: 0 !important;
             }
 
-            /* Fjerner innrykk på selve punktene hvis de ligger i en liste */
-            li {
-                list-style-position: inside !important;
-                padding-left: 0 !important;
-            }
-
-
-            li {
-                list-style: none !important;
-                /* Fjerner prikken */
-                padding-left: 0 !important;
-                /* Sikrer at teksten starter helt til venstre */
-            }
-
-
-
+            li,
             .event-item,
-            .info-item,
-            li {
-                /* Vi flytter innholdet litt til venstre og klipper det som stikker ut */
+            .info-item {
+                list-style: none !important;
                 margin-left: -20px !important;
                 padding-left: 20px !important;
             }
 
-
-
             .info-bullet {
                 display: inline-block !important;
-                /* Må være block for at vertikal justering skal virke */
                 vertical-align: middle !important;
-                /* Prøver automatisk sentrering */
                 margin-top: -2px !important;
-                /* Finjustering: Juster dette tallet (f.eks. -1, -2, -3) til den sitter perfekt */
                 line-height: 1 !important;
-                /* Fjerner ekstra luft rundt prikken */
                 margin-right: 8px !important;
-                /* Litt luft mellom prikk og tekst */
             }
-
-
-            .header-date-right {
-                font-size: 1.4rem !important;
-                /* Juster dette tallet for å gjøre datoen større eller mindre */
-                margin-top: 5px !important;
-            }
-
-
-
-            /* 1. Reset klokkens marginer så de ikke dytter teksten unna */
-            .digital-clock-big {
-                margin-bottom: 0px !important;
-                padding-bottom: 0px !important;
-            }
-
-            /* 2. Juster avstanden her (Øk denne for mer luft, minsk for mindre) */
-            .time-of-day-wrapper {
-                margin-top: 0px !important;
-            }
-
-
+        }
 
 
 
