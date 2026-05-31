@@ -18,7 +18,7 @@
         rel="stylesheet">
 
     <style>
-        /* --- Grunnleggende oppsett --- */
+        /* --- Basis oppsett --- */
         html {
             width: 100%;
             height: 100%;
@@ -38,8 +38,10 @@
             scrollbar-width: none;
             padding: 50px 60px 74px 60px;
             transition: background 1s ease, color 1s ease;
-            overscroll-behavior-y: none !important;
-            -webkit-overflow-scrolling: touch !important;
+            overscroll-behavior-y: none;
+            /* Fjernet !important */
+            -webkit-overflow-scrolling: touch;
+            /* Fjernet !important */
         }
 
         body::-webkit-scrollbar {
@@ -138,12 +140,12 @@
         }
 
         .status-fete-typer {
-            font-weight: 900 !important;
-            font-size: 2.4rem !important;
+            font-weight: 900;
+            font-size: 2.4rem;
             color: var(--text-main);
         }
 
-        /* --- Layout: Hovedinnhold --- */
+        /* --- Layout --- */
         main {
             flex: 1;
             display: flex;
@@ -170,7 +172,7 @@
         .info-day-title,
         .day-header {
             font-size: 2.2rem;
-            font-weight: 900 !important;
+            font-weight: 900;
             margin-bottom: 10px;
         }
 
@@ -179,7 +181,7 @@
             display: flex;
             flex-direction: column;
             gap: 8px;
-            padding-left: 40px !important;
+            padding-left: 40px;
         }
 
         .info-item,
@@ -187,7 +189,7 @@
             line-height: 1.4;
             display: flex;
             align-items: flex-start;
-            font-size: 1.55rem !important;
+            font-size: 1.55rem;
         }
 
         .info-bullet,
@@ -215,7 +217,7 @@
         }
 
         .no-dimming .dimmed {
-            opacity: 1 !important;
+            opacity: 1;
         }
 
         .aktiv-boks {
@@ -237,7 +239,7 @@
             padding: 2px 10px;
             border-radius: 6px;
             font-weight: 700;
-            color: #ffffff !important;
+            color: #ffffff;
             margin: 0 10px 2px 0;
         }
 
@@ -253,19 +255,16 @@
             background-color: #0891b2;
         }
 
-        /* Media-spørring: Justerer design for mobil (maks 900px bredde) */
-        /* Media-spørring: Justerer design for mobil */
+        /* --- Mobil-tilpasning (Plassert nederst for naturlig overstyring) --- */
         @media (max-width: 900px) or (orientation: portrait) {
-
-            /* 1. Global mobil-styling */
             body {
-                padding: 20px 25px 20px 25px !important;
+                padding: 20px 25px 20px 25px;
                 touch-action: manipulation;
             }
 
             header {
                 flex-direction: column;
-                height: auto !important;
+                height: auto;
                 gap: 15px;
                 text-align: center;
                 align-items: center;
@@ -281,75 +280,74 @@
 
             .digital-clock-big {
                 font-size: 5rem;
-                margin-bottom: 0px !important;
-                padding-bottom: 0px !important;
+                margin-bottom: 0px;
+                padding-bottom: 0px;
                 letter-spacing: -2px;
             }
 
             .time-of-day-wrapper {
                 align-items: center;
                 text-align: center;
-                margin-top: 0px !important;
+                margin-top: 0px;
             }
 
             .time-of-day-label {
-                font-size: 2.2rem !important;
-                font-weight: 700 !important;
+                font-size: 2.2rem;
+                font-weight: 700;
             }
 
             .header-date-right {
-                font-size: 1.4rem !important;
-                margin-top: 5px !important;
+                font-size: 1.4rem;
+                margin-top: 5px;
             }
 
             main {
-                display: block !important;
+                display: block;
                 min-height: 100vh;
             }
 
             .left-column,
             .right-column {
-                padding-left: 0 !important;
-                padding-right: 0 !important;
-                width: 100% !important;
-                margin-right: 0 !important;
-                border-right: none !important;
+                padding-left: 0;
+                padding-right: 0;
+                width: 100%;
+                margin-right: 0;
+                border-right: none;
             }
 
             .status-box-container {
-                width: 100% !important;
-                padding: 15px !important;
-                margin: 0 0 10px 0 !important;
-                font-size: 1.2rem !important;
+                width: 100%;
+                padding: 15px;
+                margin: 0 0 10px 0;
+                font-size: 1.2rem;
             }
 
             .status-fete-typer {
-                font-size: 1.4rem !important;
-                font-weight: 700 !important;
-                line-height: 1.2 !important;
+                font-size: 1.4rem;
+                font-weight: 700;
+                line-height: 1.2;
             }
 
             .info-day-title,
             .day-header {
-                font-size: 1.2rem !important;
-                margin-bottom: 8px !important;
-                padding-left: 0px !important;
+                font-size: 1.2rem;
+                margin-bottom: 8px;
+                padding-left: 0px;
             }
 
             .info-item,
             .event-item {
-                line-height: 1.1 !important;
-                margin-bottom: 2px !important;
+                line-height: 1.1;
+                margin-bottom: 2px;
             }
 
-            /* Herfra tester jeg - Alt essensielt er beholdt */
             .left-column .aktiv-boks {
-                margin-left: 0px !important;
-                margin-right: 0px !important;
-                padding-left: 25px !important;
-                border-left: 3px solid var(--accent-color) !important;
-                display: flex !important;
-                align-items: flex-start !important;
+                margin-left: 0px;
+                margin-right: 0px;
+                padding-left: 25px;
+                border-left: 3px solid var(--accent-color);
+                display: flex;
+                align-items: flex-start;
             }
 
             ul,
@@ -359,40 +357,26 @@
             .day-date,
             .holiday-text,
             .no-events-text {
-                padding-left: 0 !important;
-                margin-left: 0 !important;
+                padding-left: 0;
+                margin-left: 0;
             }
 
             li,
             .event-item,
             .info-item {
-                list-style: none !important;
-                margin-left: -20px !important;
-                padding-left: 20px !important;
-                font-size: 1.2rem !important;
+                list-style: none;
+                margin-left: -20px;
+                padding-left: 20px;
+                font-size: 1.2rem;
             }
 
             .info-bullet {
-                display: inline-block !important;
-                vertical-align: middle !important;
-                margin-top: -2px !important;
-                line-height: 1 !important;
-                margin-right: 8px !important;
+                display: inline-block;
+                vertical-align: middle;
+                margin-top: -2px;
+                line-height: 1;
+                margin-right: 8px;
             }
-        }
-
-
-
-
-
-
-
-
-
-
-
-
-
         }
     </style>
 </head>
@@ -424,10 +408,6 @@
             <div id="calendar-list">Google Kalender...</div>
         </div>
     </main>
-    <script src="https://apis.google.com/js/api.js"></script>
-    ```
-
-
 
     <script src="https://apis.google.com/js/api.js"></script>
     <script>
