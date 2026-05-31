@@ -357,20 +357,23 @@
                 overflow-x: hidden !important;
             }
 
-            /* Header: Fikser klokke og "Det er formiddag"-overlapp */
+            /* Header: Fjernet unødvendig margin og padding for å tette luften */
             header {
                 flex-direction: column !important;
                 align-items: center !important;
                 text-align: center !important;
                 height: auto !important;
-                padding: 0 10px !important;
-                margin-bottom: 20px !important;
+                padding: 0 !important;
+                /* Fjernet padding */
+                margin-bottom: 15px !important;
+                /* Redusert margin */
             }
 
             .header-clocks-left {
                 width: 100% !important;
                 justify-content: center !important;
-                margin-bottom: 5px !important;
+                margin-bottom: 0 !important;
+                /* Fjernet margin under klokken */
             }
 
             .digital-clock-big {
@@ -395,7 +398,7 @@
                 margin-top: 5px !important;
             }
 
-            /* Main: Tvinger vertikal stabel */
+            /* Main: Vertikal stabel */
             main {
                 display: flex !important;
                 flex-direction: column !important;
@@ -403,7 +406,7 @@
                 gap: 15px !important;
             }
 
-            /* Nøytraliserer kolonner */
+            /* Kolonner */
             .column {
                 width: 100% !important;
                 padding: 0 !important;
@@ -411,20 +414,29 @@
                 border: none !important;
             }
 
-            /* Statusboks: Sørger for riktig bredde og padding */
+            /* Statusboks */
             .status-box-container {
                 width: 100% !important;
                 box-sizing: border-box !important;
                 padding: 15px !important;
-                margin: 0 0 20px 0 !important;
+                margin: 0 0 10px 0 !important;
                 font-size: 1.2rem !important;
             }
 
-            /* Rutiner og lister */
-            .info-content,
-            .event-list {
-                padding-left: 0 !important;
+            /* Rutiner: Tvinger aktiv-boks til 100% bredde */
+            .aktiv-boks {
                 width: 100% !important;
+                box-sizing: border-box !important;
+                margin-left: 0 !important;
+                margin-right: 0 !important;
+                display: flex !important;
+            }
+
+            /* Sørger for at rutine-overskrift og liste følger bredden */
+            #info-text,
+            .info-content {
+                width: 100% !important;
+                padding-left: 0 !important;
             }
 
             .info-day-title,
@@ -432,18 +444,6 @@
                 font-size: 1.6rem !important;
                 margin-bottom: 8px !important;
                 padding-left: 0px !important;
-            }
-
-            .status-fete-typer {
-                font-size: 1.4rem !important;
-                font-weight: 700 !important;
-                line-height: 1.2 !important;
-            }
-
-            .info-item,
-            .event-item {
-                line-height: 1.1 !important;
-                margin-bottom: 2px !important;
             }
         }
         }
