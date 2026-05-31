@@ -455,13 +455,7 @@
                 border-right: none !important;
             }
 
-            .info-content {
-                padding-left: 0px !important;
-            }
 
-            .event-list {
-                padding-left: 10px !important;
-            }
 
             .status-box-container {
                 width: 100% !important;
@@ -486,7 +480,20 @@
                 touch-action: manipulation;
             }
 
+            /* Tvinger alle lister og tekstblokker til venstre */
+            ul,
+            ol,
+            .event-list,
+            .info-content {
+                padding-left: 0 !important;
+                margin-left: 0 !important;
+            }
 
+            /* Fjerner innrykk på selve punktene hvis de ligger i en liste */
+            li {
+                list-style-position: inside !important;
+                padding-left: 0 !important;
+            }
 
 
 
