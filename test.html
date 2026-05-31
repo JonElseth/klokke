@@ -486,7 +486,20 @@
                 touch-action: manipulation;
             }
 
+            /* Tvinger alle lister og tekstblokker til venstre */
+            ul,
+            ol,
+            .event-list,
+            .info-content {
+                padding-left: 0 !important;
+                margin-left: 0 !important;
+            }
 
+            /* Fjerner innrykk på selve punktene hvis de ligger i en liste */
+            li {
+                list-style-position: inside !important;
+                padding-left: 0 !important;
+            }
 
 
 
