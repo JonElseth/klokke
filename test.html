@@ -525,7 +525,7 @@
                 const [t, m] = item.tid.split(':').map(Number);
                 if ((t * 60 + m) + 29 >= nåTidMin) {
                     const erAktiv = ((t * 60 + m) - nåTidMin <= 30 && (t * 60 + m) + 29 >= nåTidMin);
-                    html += `<div class='${erAktiv ? 'event-item aktiv-boks fet-rutine' : 'info-item'}'><span class='info-bullet'>•</span><div><span class='info-time'>kl. ${item.tid}:</span> ${item.tekst}</div></div>`;
+                    html += `<div class='${erAktiv ? 'event-item aktiv-boks fet-rutine' : 'info-item'}'><span class='info-bullet'>•</span><div><span class='info-time'>${item.tid}:</span> ${item.tekst}</div></div>`;
                 }
             });
             return html || "<div class='info-item'>Ingen flere rutiner i dag.</div>";
