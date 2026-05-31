@@ -507,22 +507,12 @@
 
 
 
-
-
-
-            /* Fjerner både ekte listeprikker og manuelle symboler */
-            li,
             .event-item,
-            .info-item {
-                list-style: none !important;
-            }
-
-            li::before,
-            .event-item::before,
-            .info-item::before {
-                content: none !important;
-                /* Dette fjerner eventuelle "hjemmelagde" prikker */
-                display: none !important;
+            .info-item,
+            li {
+                /* Vi flytter innholdet litt til venstre og klipper det som stikker ut */
+                margin-left: -20px !important;
+                padding-left: 20px !important;
             }
 
 
