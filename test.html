@@ -202,22 +202,17 @@
 
         
 
-/* Klokkeslettet: Får den "fete" og røde stilen */
 .info-time,
 .event-time {
   color: var(--clock-accent);
   font-weight: 700;
-  margin-right: 6px;
+  margin-right: 15px; /* Litt mer luft her for å separere tid fra tekst */
   font-family: 'Courier New', Courier, monospace;
-  width: 70px; /* Redusert litt siden vi fjernet "kl." */
+  width: 60px; /* Siden vi fjernet "kl." og ":", trenger vi mindre plass */
   flex-shrink: 0;
 }
 
-/* Teksten ved siden av: Gjør denne litt "lettere" (400) for å skape kontrast */
-.event-text-container {
-  font-weight: 400; 
-  color: var(--text-main);
-}
+
 
 
 
@@ -522,7 +517,7 @@
                 const [t, m] = item.tid.split(':').map(Number);
                 if ((t * 60 + m) + 29 >= nåTidMin) {
                     const erAktiv = ((t * 60 + m) - nåTidMin <= 30 && (t * 60 + m) + 29 >= nåTidMin);
-                    html += `<div class='${erAktiv ? 'event-item aktiv-boks fet-rutine' : 'info-item'}'><span class='info-bullet'>•</span><div><span class='info-time'>${item.tid}:</span> ${item.tekst}</div></div>`;
+                    html += `<div class='${erAktiv ? "event-item aktiv-boks fet-rutine" : "info-item"}'><span class='info-bullet'>•</span><span class='info-time'>${item.tid}</span><span class='event-text-container'>${item.tekst}</span></div>`;
                 }
             });
             return html || "<div class='info-item'>Ingen flere rutiner i dag.</div>";
@@ -624,7 +619,8 @@
                     evs.sort((a, b) => new Date(a.computedStart) - new Date(b.computedStart)).forEach(ev => {
                         const li = document.createElement('div'); li.className = 'event-item';
                         const t = ev.isAllDay ? '' : formatTimeManual(new Date(ev.computedStart));
-                        li.innerHTML = `<span class="event-bullet">•</span><div class="event-text-container">${t ? `<span class="event-time">${t}:</span>` : ""} ${formatEventSummary(ev.summary)}</div>`;
+                        // Finn linjen der du bygger li.innerHTML:
+li.innerHTML = `<span class="event-bullet">•</span><span class="event-time">${t}</span><span class="event-text-container">${formatEventSummary(ev.summary)}</span>`;
                         list.appendChild(li);
                     });
                     sec.appendChild(list);
