@@ -52,7 +52,7 @@
             --bg-color: #f1f5f9;
             --text-main: #1e293b;
             --text-muted: #64748b;
-            --accent-color: #0066cc;
+            --accent-color: #38bdf8;
             --clock-accent: #ef4444;--clock-accent: var(--accent-color); /* Nå bruker den blåfargen din */
             --shadow: rgba(0, 0, 0, 0.05);
             --box-bg: #ffffff;
@@ -202,15 +202,15 @@
 
         
 
-/* Klokkeslettene: Blåfarge og maksimal tykkelse */
+/* Denne har du allerede, vi bare justerer den litt for å få perfekt vertikal linje */
 .info-time,
 .event-time {
-  color: var(--accent-color); /* Bruker nå blåfargen din */
-  font-weight: 900;           /* Økt fra 700 til 900 for mer "tyngde" */
+  color: var(--clock-accent);
+  font-weight: 700;
   font-family: "Courier New", Courier, monospace;
-  width: 75px;                /* Juster denne hvis det blir for trangt */
+  width: 60px; /* Fast bredde på 60px gjør at alt flukter vertikalt */
   flex-shrink: 0;
-  display: inline-block;
+  display: inline-block; /* Sikrer at den respekterer bredden */
 }
 
 
