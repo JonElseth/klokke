@@ -200,17 +200,29 @@
 
 
 
+
+
+
+/* Ny klasse for teksten ved siden av klokken */
+.event-text-container {
+  font-weight: 400; /* Vanlig tykkelse */
+  color: var(--text-main);
+}
+
+
+
+
+        
         
 
-/* Denne har du allerede, vi bare justerer den litt for å få perfekt vertikal linje */
 .info-time,
 .event-time {
-  color: var(--clock-accent);
-  font-weight: 700;
+  color: var(--clock-accent); /* Blåfargen din */
+  font-weight: 700;           /* Behold denne som 700, den er god nok */
   font-family: "Courier New", Courier, monospace;
-  width: 90px; /* Fast bredde på 90px gjør at alt flukter vertikalt */
+  width: 90px;                /* Denne tvinger teksten til å starte på linje */
   flex-shrink: 0;
-  display: inline-block; /* Sikrer at den respekterer bredden */
+  display: inline-block;
 }
 
 
