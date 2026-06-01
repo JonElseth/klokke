@@ -620,7 +620,7 @@
                         const li = document.createElement('div'); li.className = 'event-item';
                         const t = ev.isAllDay ? '' : formatTimeManual(new Date(ev.computedStart));
                         // Finn linjen der du bygger li.innerHTML:
-li.innerHTML = `<span class="event-bullet">•</span><span class="event-time">${t}</span><span class="event-text-container">${formatEventSummary(ev.summary)}</span>`;
+                        li.innerHTML = `<span class="event-bullet">•</span><span class="event-time">${t}</span><span class="event-text-container">${formatEventSummary(ev.summary)}</span>`;
                         list.appendChild(li);
                     });
                     sec.appendChild(list);
