@@ -361,23 +361,21 @@
       }
 
       let forrigeDato = new Date().toDateString();
+
       async function oppdaterDashbord() {
         try {
           const nå = new Date();
-          if (nå.toDateString() !== forrigeDato) {
-            location.reload();
-            return;
-          }
-          forrigeDato = nå.toDateString();
-          const res = await fetch(
-            `http://${window.location.hostname}:3000/api/kalender?t=` +
-              nå.getTime(),
-          );
-          const data = await res.json();
+          // HENT DATA FRA GOOGLE (Fjern den gamle fetch-linjen!)
+          const response = await gapi.client.calendar.events.list({
+            calendarId: CALENDAR_ID,
+            timeMin: nå.toISOString(),
+            singleEvents: true,
+            orderBy: "startTime",
+          });
+
+          const data = response.result.items;
           const nåTid = nå.getTime();
-          const tjuefireTimerFrem = nåTid + 24 * 60 * 60 * 1000;
           const trettiMin = 30 * 60 * 1000;
-          oppdaterTema(nå.getHours());
           const idagStr = nå.toLocaleDateString("sv-SE", {
             timeZone: "Europe/Oslo",
           });
@@ -533,7 +531,8 @@
               });
           }
         } catch (err) {
-          console.error(err);
+          // Her skal linjen din inn
+          console.error("Feil ved henting:", err);
         }
       }
 
