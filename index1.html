@@ -317,7 +317,6 @@
       </div>
     </div>
     <script>
-      // KONFIGURASJON: Fyll inn dine verdier her
       const API_KEY = "AIzaSyAMeiF7aD3eNmSy4YZUN97WT2LWZMYiBT0";
       const CALENDAR_ID =
         "a612aa990b57d4c149f2edfdb080883972e580c6dbddd06b7b6f5aae343c7f51@group.calendar.google.com";
@@ -361,17 +360,20 @@
                 : "Det er kveld";
       }
 
+      let forrigeDato = new Date().toDateString();
       async function oppdaterDashbord() {
         try {
           const nå = new Date();
-          // HENTER DATA DIREKTE FRA GOOGLE I STEDET FOR FETCH
-          const response = await gapi.client.calendar.events.list({
-            calendarId: CALENDAR_ID,
-            timeMin: nå.toISOString(),
-            singleEvents: true,
-            orderBy: "startTime",
-          });
-          const data = response.result.items;
+          if (nå.toDateString() !== forrigeDato) {
+            location.reload();
+            return;
+          }
+          forrigeDato = nå.toDateString();
+          const res = await fetch(
+            `http://${window.location.hostname}:3000/api/kalender?t=` +
+              nå.getTime(),
+          );
+          const data = await res.json();
           const nåTid = nå.getTime();
           const tjuefireTimerFrem = nåTid + 24 * 60 * 60 * 1000;
           const trettiMin = 30 * 60 * 1000;
@@ -522,7 +524,7 @@
                         month: "long",
                       })
                       .replace(/^\w/, (c) => c.toUpperCase());
-                fremtidWrapper.innerHTML += `<div class="kategori-overskrift">${overskriff}</div>`;
+                fremtidWrapper.innerHTML += `<div class="kategori-overskrift">${overskrift}</div>`;
                 grupper[d].forEach(
                   (a) =>
                     (fremtidWrapper.innerHTML += `<div class="rutine-element"><span class="tid">${(a.start.dateTime || a.start.date).split("T")[1].substring(0, 5)}</span> ${lagBadge(a.summary)} ${rensTekst(a.summary)}</div>`),
