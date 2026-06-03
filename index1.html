@@ -317,8 +317,7 @@
       </div>
     </div>
     <script>
-      // HER LIME DU INN INFORMASJONEN DIN
-      // HER LIME DU INN INFORMASJONEN DIN
+      // HER LIME DU INN INFORMASJONEN DIN UNDER
       const API_KEY = "AIzaSyAMeiF7aD3eNmSy4YZUN97WT2LWZMYiBT0";
       const CALENDAR_ID =
         "a612aa990b57d4c149f2edfdb080883972e580c6dbddd06b7b6f5aae343c7f51@group.calendar.google.com";
@@ -334,6 +333,8 @@
           .then(oppdaterDashbord);
       }
       gapi.load("client", initClient);
+
+      // HER LIME DU INN INFORMASJONEN DIN OVER
 
       function oppdaterTema(time) {
         document.body.classList.toggle("natt-modus", time >= 22 || time < 6);
